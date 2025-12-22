@@ -14,7 +14,7 @@ from django_evolution.tests.base_test_case import EvolutionTestCase
 from django_evolution.tests.models import BaseTestModel
 
 
-class AddSequenceFieldInitial(object):
+class AddSequenceFieldInitial:
     def __init__(self, suffix):
         self.suffix = suffix
 

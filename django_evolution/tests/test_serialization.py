@@ -20,7 +20,7 @@ from django_evolution.tests.utils import (F_EXPRESSIONS_TYPE,
                                           VALUE_EXPRESSIONS_TYPE)
 
 
-class MyDeconstructableObject(object):
+class MyDeconstructableObject:
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs

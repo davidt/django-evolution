@@ -30,7 +30,7 @@ from django_evolution.utils.apps import get_app, get_app_label, get_apps
 from django_evolution.utils.sql import SQLExecutor
 
 
-class Evolver(object):
+class Evolver:
     """The main class for managing database evolutions.
 
     The evolver is used to queue up tasks that modify the database. These

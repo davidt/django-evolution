@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 
-class UpgradeMethod(object):
+class UpgradeMethod:
     """Upgrade methods available for an application."""
 
     #: The app is upgraded through Django Evolution.
@@ -13,7 +13,7 @@ class UpgradeMethod(object):
     MIGRATIONS = 'migrations'
 
 
-class EvolutionsSource(object):
+class EvolutionsSource:
     """The source for an app's evolutions."""
 
     #: The evolutions are provided by the app.

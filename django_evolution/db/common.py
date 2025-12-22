@@ -28,7 +28,7 @@ from django_evolution.utils.db import (
 from django_evolution.utils.models import iter_non_m2m_reverse_relations
 
 
-class BaseEvolutionOperations(object):
+class BaseEvolutionOperations:
     """Base class for evolution operations for a database backend."""
 
     #: The name of the database type.

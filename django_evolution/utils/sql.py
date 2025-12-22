@@ -13,7 +13,7 @@ from django_evolution.db import EvolutionOperationsMulti
 logger = logging.getLogger(__name__)
 
 
-class BaseGroupedSQL(object):
+class BaseGroupedSQL:
     """Base class for a grouped list of SQL statements.
 
     This is a simple wrapper around a list of SQL statements, used to
@@ -42,7 +42,7 @@ class NoTransactionSQL(BaseGroupedSQL):
     """A list of SQL statements to execute outside of a transaction."""
 
 
-class SQLExecutor(object):
+class SQLExecutor:
     """Management for the execution of SQL.
 
     This allows callers to perform raw SQL queries against the database,

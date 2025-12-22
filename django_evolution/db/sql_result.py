@@ -5,7 +5,7 @@ from __future__ import annotations
 from django.db.backends.ddl_references import Statement
 
 
-class SQLResult(object):
+class SQLResult:
     """Represents one or more SQL statements.
 
     This is returned by functions generating SQL statements. It can store

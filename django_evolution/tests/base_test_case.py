@@ -573,7 +573,7 @@ class TestCase(DjangoTestCase):
         return norm_generated_sql, norm_expected_sql
 
 
-class MigrationsTestsMixin(object):
+class MigrationsTestsMixin:
     """Mixin for test suites that work with migrations.
 
     This will ensure that no test migrations are marked as applied before

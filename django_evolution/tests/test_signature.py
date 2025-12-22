@@ -896,7 +896,7 @@ class AppSignatureTests(BaseSignatureTestCase):
         """Testing AppSignature.serialize (signature v1) with
         router.allow_syncdb/allow_migrate_model
         """
-        class TestRouter(object):
+        class TestRouter:
             def allow_syncdb(self, db, model):
                 return model is Evolution
 
@@ -988,7 +988,7 @@ class AppSignatureTests(BaseSignatureTestCase):
         """Testing AppSignature.serialize (signature v2) with
         router.allow_syncdb/allow_migrate_model
         """
-        class TestRouter(object):
+        class TestRouter:
             def allow_syncdb(self, db, model):
                 return model is Evolution
 

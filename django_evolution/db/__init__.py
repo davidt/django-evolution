@@ -3,7 +3,7 @@ from __future__ import annotations
 from django.conf import settings
 
 
-class EvolutionOperationsMulti(object):
+class EvolutionOperationsMulti:
     def __init__(self, db_name, database_state=None):
         """Initialize the instance.
 

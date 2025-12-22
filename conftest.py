@@ -57,7 +57,7 @@ def pytest_addoption(parser):
         ))
 
 
-class DjangoSetupPlugin(object):
+class DjangoSetupPlugin:
     """Plugin to manage Django setup specific to Django Evolution.
 
     This will set up Django, covering a range of Django versions.

@@ -34,7 +34,7 @@ class NodeNotFoundError(Exception):
             % key)
 
 
-class Node(object):
+class Node:
     """A node in a graph.
 
     Each node is associated with a key, and tracks caller-provided state,
@@ -103,7 +103,7 @@ class Node(object):
         return '<Node: %s>' % self.key
 
 
-class DependencyGraph(object):
+class DependencyGraph:
     """A graph tracking dependencies between nodes.
 
     This is used to model relations between objects, indicating which nodes

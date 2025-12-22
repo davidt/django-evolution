@@ -11,7 +11,7 @@ from django_evolution.errors import DatabaseStateError
 from django_evolution.utils.db import convert_table_name
 
 
-class IndexState(object):
+class IndexState:
     """An index recorded in the database state."""
 
     def __init__(self, name, columns=[], unique=False):
@@ -69,7 +69,7 @@ class IndexState(object):
             self.name, self.columns, self.unique)
 
 
-class DatabaseState(object):
+class DatabaseState:
     """Tracks some useful state in the database.
 
     This primarily tracks indexes associated with tables, allowing them to be

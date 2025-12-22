@@ -40,7 +40,7 @@ from django_evolution.utils.apps import get_app_name
 _global_custom_migrations = None
 
 
-class MigrationList(object):
+class MigrationList:
     """A list of applied or pending migrations.
 
     This is used to manage a list of migrations in a way that's independent

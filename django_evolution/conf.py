@@ -15,7 +15,7 @@ from django.dispatch import receiver
 from django_evolution.deprecation import RemovedInDjangoEvolution30Warning
 
 
-class DjangoEvolutionSettings(object):
+class DjangoEvolutionSettings:
     """Settings for Django Evolution.
 
     This wraps the settings defined in :py:mod:`django.conf.settings`. If

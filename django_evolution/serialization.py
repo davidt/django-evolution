@@ -32,7 +32,7 @@ _deconstructed_serialization_map = {}
 _serialization_map = {}
 
 
-class BaseSerialization(object):
+class BaseSerialization:
     """Base class for serialization.
 
     Subclasses should override the methods within this class to provide

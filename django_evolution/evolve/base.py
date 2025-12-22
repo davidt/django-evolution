@@ -8,7 +8,7 @@ Version Added:
 from __future__ import annotations
 
 
-class BaseEvolutionTask(object):
+class BaseEvolutionTask:
     """Base class for a task to perform during evolution.
 
     Attributes:

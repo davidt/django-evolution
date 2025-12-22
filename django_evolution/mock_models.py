@@ -173,7 +173,7 @@ def create_field(project_sig, field_name, field_type, field_attrs,
     return field
 
 
-class MockMeta(object):
+class MockMeta:
     """A mock of a models Options object, based on the model signature.
 
     This emulates the standard Meta class for a model, storing data and
@@ -392,7 +392,7 @@ class MockMeta(object):
         return (self.get_field(name), None, True, None)
 
 
-class MockModel(object):
+class MockModel:
     """A mock model.
 
     This replicates some of the state and functionality of a model for
@@ -496,7 +496,7 @@ class MockModel(object):
                 self.model_name == other.model_name)
 
 
-class MockRelated(object):
+class MockRelated:
     """A mock RelatedObject for relation fields.
 
     This replicates some of the state and functionality of

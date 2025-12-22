@@ -17,7 +17,7 @@ from django_evolution.tests.decorators import requires_model_field
 from django_evolution.tests.models import BaseTestModel
 
 
-class ChangeSequenceFieldInitial(object):
+class ChangeSequenceFieldInitial:
     def __init__(self, suffix):
         self.suffix = suffix
 

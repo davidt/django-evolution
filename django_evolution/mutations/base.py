@@ -16,7 +16,7 @@ from django_evolution.signature import ProjectSignature
 from django_evolution.utils.models import get_database_for_model_name
 
 
-class Simulation(object):
+class Simulation:
     """State for a database mutation simulation.
 
     This provides state and utility functions for simulating a mutation on
@@ -193,7 +193,7 @@ class Simulation(object):
         raise SimulationFailure(msg % error_dict)
 
 
-class BaseMutation(object):
+class BaseMutation:
     """Base class for a schema mutation.
 
     These are responsible for simulating schema mutations and applying actual

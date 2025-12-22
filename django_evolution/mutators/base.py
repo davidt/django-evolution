@@ -9,7 +9,7 @@ from __future__ import annotations
 from django_evolution.errors import CannotSimulate
 
 
-class BaseMutator(object):
+class BaseMutator:
     """Base class for all mutators.
 
     Version Added:

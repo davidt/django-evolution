@@ -7,7 +7,7 @@ from optparse import OptionParser
 from django.core.management.base import BaseCommand as DjangoBaseCommand
 
 
-class OptionParserWrapper(object):
+class OptionParserWrapper:
     """Compatibility wrapper for OptionParser.
 
     This exports a more modern :py:class:`~argparse.ArgumentParser`-based API

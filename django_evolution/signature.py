@@ -163,7 +163,7 @@ from django_evolution.utils.models import get_models
 LATEST_SIGNATURE_VERSION = 2
 
 
-class BaseSignature(object):
+class BaseSignature:
     """Base class for a signature."""
 
     @classmethod

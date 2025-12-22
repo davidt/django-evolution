@@ -23,7 +23,7 @@ from django_evolution.placeholders import NullFieldInitialCallback
 from django_evolution.signature import ProjectSignature
 
 
-class Diff(object):
+class Diff:
     """Generates diffs between project signatures.
 
     The resulting diff is contained in two attributes::

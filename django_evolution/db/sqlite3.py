@@ -257,8 +257,8 @@ class SQLiteAlterTableSQLResult(AlterTableSQLResult):
                                     new_db_table=table_name).to_sql()
 
         # Step 5: Restore any indexes.
-        class _Model(object):
-            class _meta(object):
+        class _Model:
+            class _meta:
                 db_table = table_name
                 local_fields = new_fields
                 db_tablespace = None

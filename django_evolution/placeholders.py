@@ -11,7 +11,7 @@ from django.utils.translation import gettext as _
 from django_evolution.errors import EvolutionException
 
 
-class BasePlaceholder(object):
+class BasePlaceholder:
     """A placeholder object for use in generating hints.
 
     Placeholder objects provide stand-ins for values that must be hand-added
