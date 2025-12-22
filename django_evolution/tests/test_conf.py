@@ -115,7 +115,7 @@ class OnSettingChangedTests(TestCase):
     """Unit tests for django_evolution.conf._on_setting_changed"""
 
     def tearDown(self):
-        super(OnSettingChangedTests, self).tearDown()
+        super().tearDown()
 
         # Set back to defaults.
         django_evolution_settings.replace_settings({})

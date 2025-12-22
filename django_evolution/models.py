@@ -73,7 +73,7 @@ class SignatureField(models.TextField):
             name (str):
                 The name of the field.
         """
-        super(SignatureField, self).contribute_to_class(cls, name)
+        super().contribute_to_class(cls, name)
 
         post_init.connect(self._post_init, sender=cls)
 

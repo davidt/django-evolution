@@ -20,7 +20,7 @@ class ModelMutatorTests(EvolutionTestCase):
     default_base_model = ModelMutatorTestModel
 
     def setUp(self):
-        super(ModelMutatorTests, self).setUp()
+        super().setUp()
 
         database_state = self.database_state
         project_sig = self.start_sig

@@ -48,7 +48,7 @@ class Command(BaseCommand):
         """
         if not django_evolution_settings.ENABLED:
             # Run the original migrate command.
-            return super(Command, self).handle(*args, **options)
+            return super().handle(*args, **options)
 
         if options.get('migration_name'):
             raise CommandError(

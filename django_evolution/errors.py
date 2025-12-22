@@ -50,7 +50,7 @@ class EvolutionExecutionError(EvolutionException):
             last_sql_statement (unicode, optional):
                 The last SQL statement that was executed.
         """
-        super(EvolutionExecutionError, self).__init__(msg)
+        super().__init__(msg)
 
         self.app_label = app_label
         self.detailed_error = detailed_error
@@ -99,7 +99,7 @@ class InvalidSignatureVersion(EvolutionException):
             version (int):
                 The invalid signature version.
         """
-        super(InvalidSignatureVersion, self).__init__(
+        super().__init__(
             '%s is not a known signature version' % version)
 
 
@@ -126,7 +126,7 @@ class MigrationConflictsError(BaseMigrationError):
         """
         # Note that we're using the same error message that Django's migrate
         # command uses.
-        super(MigrationConflictsError, self).__init__(
+        super().__init__(
             "Conflicting migrations detected; multiple leaf nodes "
             "in the migration graph: (%s).\n"
             "To fix them run 'python manage.py makemigrations "

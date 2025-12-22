@@ -854,7 +854,7 @@ class EvolutionOperations(BaseEvolutionOperations):
             # We should get these by default for tables created on Django 1.9
             # and later.
             return (
-                super(EvolutionOperations, self)
+                super()
                 .get_drop_unique_constraint_sql(model, index_name)
             )
 

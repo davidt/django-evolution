@@ -35,7 +35,7 @@ class RenameModel(BaseModelMutation):
             db_table (unicode):
                 The table name in the database for this model.
         """
-        super(RenameModel, self).__init__(old_model_name)
+        super().__init__(old_model_name)
 
         self.old_model_name = old_model_name
         self.new_model_name = new_model_name

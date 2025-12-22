@@ -191,7 +191,7 @@ class EvolutionOperations(BaseEvolutionOperations):
         """
         if django.VERSION[:2] >= (1, 7):
             # On Django 1.7+, the default behavior for the index name is used.
-            return super(EvolutionOperations, self).get_default_index_name(
+            return super().get_default_index_name(
                 table_name, field)
         else:
             # On Django < 1.7, a custom form of index name is used.

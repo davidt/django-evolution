@@ -737,7 +737,7 @@ class CombinedExpressionSerialization(DeconstructedSerialization):
                 The object to deconstruct.
         """
         return (
-            super(CombinedExpressionSerialization, cls)
+            super()
             ._deconstruct_object(obj)
         )
 

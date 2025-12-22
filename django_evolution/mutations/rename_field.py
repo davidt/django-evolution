@@ -47,7 +47,7 @@ class RenameField(BaseModelFieldMutation):
                 The explicit table name to use, if specifying a
                 :py:class:`~django.db.models.ManyToManyField`.
         """
-        super(RenameField, self).__init__(model_name, old_field_name)
+        super().__init__(model_name, old_field_name)
 
         self.old_field_name = old_field_name
         self.new_field_name = new_field_name

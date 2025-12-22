@@ -46,7 +46,7 @@ class SQLMutation(BaseMutation):
                 A function to call to simulate updating the database signature.
                 This is required for :py:meth:`simulate` to work.
         """
-        super(SQLMutation, self).__init__()
+        super().__init__()
 
         self.tag = tag
         self.sql = sql

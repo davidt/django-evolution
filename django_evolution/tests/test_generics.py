@@ -45,7 +45,7 @@ class GenericRelationsTests(EvolutionTestCase):
     ]
 
     def create_test_proj_sig(self, model, *args, **kwargs):
-        return super(GenericRelationsTests, self).create_test_proj_sig(
+        return super().create_test_proj_sig(
             model,
             extra_models=[('contenttypes.ContentType', ContentType)],
             *args, **kwargs)

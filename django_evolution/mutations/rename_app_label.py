@@ -22,7 +22,7 @@ class RenameAppLabel(BaseMutation):
 
     def __init__(self, old_app_label, new_app_label, legacy_app_label=None,
                  model_names=None):
-        super(RenameAppLabel, self).__init__()
+        super().__init__()
 
         self.old_app_label = old_app_label
         self.new_app_label = new_app_label

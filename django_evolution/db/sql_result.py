@@ -119,7 +119,7 @@ class AlterTableSQLResult(SQLResult):
     SQL statements to execute.
     """
     def __init__(self, evolver, model, alter_table=None, *args, **kwargs):
-        super(AlterTableSQLResult, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.evolver = evolver
         self.model = model
         self.alter_table = alter_table or []
@@ -136,7 +136,7 @@ class AlterTableSQLResult(SQLResult):
         If a list of SQL statements is passed, it will be added to this
         SQLResult's sql list.
         """
-        super(AlterTableSQLResult, self).add(sql_result)
+        super().add(sql_result)
 
         if isinstance(sql_result, AlterTableSQLResult):
             self.alter_table += sql_result.alter_table

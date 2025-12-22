@@ -29,7 +29,7 @@ class NodeNotFoundError(Exception):
             key (unicode):
                 The key corresponding to the missing node.
         """
-        super(NodeNotFoundError, self).__init__(
+        super().__init__(
             'A graph node with key "%s" was not found.'
             % key)
 
@@ -373,7 +373,7 @@ class EvolutionGraph(DependencyGraph):
             **kwargs (dict):
                 Keyword arguments for the parent.
         """
-        super(EvolutionGraph, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.process_evolution_deps = True
         self.process_migration_deps = supports_migrations

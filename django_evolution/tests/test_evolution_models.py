@@ -35,7 +35,7 @@ class VersionTests(TestCase):
     """Unit tests for django_evolution.models.Version."""
 
     def setUp(self):
-        super(VersionTests, self).setUp()
+        super().setUp()
 
         # Remove anything that may already exist.
         Version.objects.all().delete()

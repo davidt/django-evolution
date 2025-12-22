@@ -426,7 +426,7 @@ class MigrationLoader(DjangoMigrationLoader):
 
         self.extra_applied_migrations = MigrationList()
 
-        super(MigrationLoader, self).__init__(connection, *args, **kwargs)
+        super().__init__(connection, *args, **kwargs)
 
     @property
     def applied_migrations(self):
@@ -490,7 +490,7 @@ class MigrationLoader(DjangoMigrationLoader):
             self._lock_migrations = True
 
         try:
-            super(MigrationLoader, self).build_graph()
+            super().build_graph()
         finally:
             self._lock_migrations = False
 
@@ -502,7 +502,7 @@ class MigrationLoader(DjangoMigrationLoader):
         if self._lock_migrations:
             return
 
-        super(MigrationLoader, self).load_disk()
+        super().load_disk()
 
         for info in self._custom_migrations:
             migration = info['migration']
@@ -554,7 +554,7 @@ class MigrationExecutor(DjangoMigrationExecutor):
 
         self._signal_sender = signal_sender or self
 
-        super(MigrationExecutor, self).__init__(
+        super().__init__(
             connection=connection,
             progress_callback=self._on_progress)
 

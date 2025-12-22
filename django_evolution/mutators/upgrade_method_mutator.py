@@ -30,7 +30,7 @@ class UpgradeMethodMutator(BaseAppStateMutator):
         """
         assert isinstance(mutation, BaseUpgradeMethodMutation)
 
-        super(UpgradeMethodMutator, self).__init__(app_mutator=app_mutator)
+        super().__init__(app_mutator=app_mutator)
 
         self._mutation = mutation
 
@@ -43,6 +43,6 @@ class UpgradeMethodMutator(BaseAppStateMutator):
         After the mutator is finalized, no new state can be scheduled or
         modified.
         """
-        super(UpgradeMethodMutator, self).finalize()
+        super().finalize()
 
         self.run_simulation(self._mutation)

@@ -33,7 +33,7 @@ class PurgeAppTask(BaseEvolutionTask):
             app_label (unicode):
                 The app label for the app to purge.
         """
-        super(PurgeAppTask, self).__init__(task_id='purge-app:%s' % app_label,
+        super().__init__(task_id='purge-app:%s' % app_label,
                                            evolver=evolver)
 
         self.app_label = app_label

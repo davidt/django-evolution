@@ -115,7 +115,7 @@ class EvolveAppTask(BaseEvolutionTask):
         #
         # First, run through the tasks, preparing state that we'll use to
         # build the migrations and evolutions graph and resulting batches.
-        super(EvolveAppTask, cls).prepare_tasks(
+        super().prepare_tasks(
             evolver=evolver,
             tasks=tasks,
             hinted=hinted,
@@ -1100,7 +1100,7 @@ class EvolveAppTask(BaseEvolutionTask):
                 Optional migrations to use for the app instead of loading from
                 files. This is intended for testing purposes.
         """
-        super(EvolveAppTask, self).__init__(
+        super().__init__(
             task_id='evolve-app:%s' % app.__name__,
             evolver=evolver)
 

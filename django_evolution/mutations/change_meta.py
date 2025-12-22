@@ -47,7 +47,7 @@ class ChangeMeta(BaseModelMutation):
             new_value (object):
                 The new value for the property.
         """
-        super(ChangeMeta, self).__init__(model_name)
+        super().__init__(model_name)
 
         self.prop_name = prop_name
         self.new_value = deepcopy(new_value)

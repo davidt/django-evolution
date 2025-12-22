@@ -35,10 +35,10 @@ def apply_patch():
             with self.connection.cursor() as c:
                 c.execute('PRAGMA legacy_alter_table = ON')
 
-            return super(DatabaseSchemaEditor, self).__enter__()
+            return super().__enter__()
 
         def __exit__(self, *args, **kwargs):
-            super(DatabaseSchemaEditor, self).__exit__(*args, **kwargs)
+            super().__exit__(*args, **kwargs)
 
             with self.connection.cursor() as c:
                 c.execute('PRAGMA legacy_alter_table = OFF')

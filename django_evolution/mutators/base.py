@@ -68,7 +68,7 @@ class BaseAppStateMutator(BaseMutator):
             app_mutator (django_evolution.mutators.app_mutator.AppMutator):
                 The parent app mutator.
         """
-        super(BaseAppStateMutator, self).__init__()
+        super().__init__()
 
         self.app_mutator = app_mutator
         self.database = app_mutator.database

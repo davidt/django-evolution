@@ -164,7 +164,7 @@ class ChangeMetaConstraintsTests(BaseChangeMetaTestCase):
     @classmethod
     @requires_meta_constraints
     def setUpClass(cls):
-        super(ChangeMetaConstraintsTests, cls).setUpClass()
+        super().setUpClass()
 
     def test_keeping_empty(self):
         """Testing ChangeMeta(constraints) and keeping list empty"""
@@ -515,7 +515,7 @@ class ChangeMetaDbTableCommentTests(BaseChangeMetaTestCase):
     @classmethod
     @requires_change_meta_field('db_table_comment')
     def setUpClass(cls):
-        super(ChangeMetaDbTableCommentTests, cls).setUpClass()
+        super().setUpClass()
 
     def test_setting_from_none(self):
         """Testing ChangeMeta(db_table_comment) and setting from None"""
@@ -606,7 +606,7 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
     @classmethod
     @requires_meta_indexes
     def setUpClass(cls):
-        super(ChangeMetaIndexesTests, cls).setUpClass()
+        super().setUpClass()
 
     def test_keeping_empty(self):
         """Testing ChangeMeta(indexes) and keeping list empty"""
@@ -1294,7 +1294,7 @@ class ChangeMetaIndexTogetherTests(BaseChangeMetaTestCase):
     @classmethod
     @requires_meta_index_together
     def setUpClass(cls):
-        super(ChangeMetaIndexTogetherTests, cls).setUpClass()
+        super().setUpClass()
 
     def test_keeping_empty(self):
         """Testing ChangeMeta(index_together) and keeping list empty"""

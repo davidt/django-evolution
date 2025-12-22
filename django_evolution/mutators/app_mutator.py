@@ -104,7 +104,7 @@ class AppMutator(BaseMutator):
             database (unicode, optional):
                 The name of the database being evolved.
         """
-        super(AppMutator, self).__init__()
+        super().__init__()
 
         self.app_label = app_label
         self.legacy_app_label = legacy_app_label or app_label

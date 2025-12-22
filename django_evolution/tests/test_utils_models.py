@@ -43,7 +43,7 @@ class UtilsTests(TestCase):
     """Unit tests for django_evolution.utils.models."""
 
     def setUp(self):
-        super(UtilsTests, self).setUp()
+        super().setUp()
 
         register_models(
             database_state=DatabaseState(DEFAULT_DB_ALIAS),
@@ -56,7 +56,7 @@ class UtilsTests(TestCase):
             new_app_label='tests')
 
     def tearDown(self):
-        super(UtilsTests, self).tearDown()
+        super().tearDown()
 
         clear_model_rel_tree()
 

@@ -585,7 +585,7 @@ class EvolveAppTaskTests(MigrationsTestsMixin, BaseEvolverTestCase):
     """Unit tests for django_evolution.evolve.EvolveAppTask."""
 
     def setUp(self):
-        super(EvolveAppTaskTests, self).setUp()
+        super().setUp()
 
         model_sig = ModelSignature.from_model(EvolverTestModel)
         model_sig.get_field_sig('value').field_attrs['max_length'] = 50
@@ -609,7 +609,7 @@ class EvolveAppTaskTests(MigrationsTestsMixin, BaseEvolverTestCase):
         created_models.connect(self._on_created_models)
 
     def tearDown(self):
-        super(EvolveAppTaskTests, self).tearDown()
+        super().tearDown()
 
         applying_evolution.disconnect(self._on_applying_evolution)
         applied_evolution.disconnect(self._on_applied_evolution)
@@ -2361,7 +2361,7 @@ class PurgeAppTaskTests(BaseEvolverTestCase):
     """Unit tests for django_evolution.evolve.PurgeAppTask."""
 
     def setUp(self):
-        super(PurgeAppTaskTests, self).setUp()
+        super().setUp()
 
         app_sig = AppSignature(app_id='tests')
         app_sig.add_model_sig(ModelSignature(

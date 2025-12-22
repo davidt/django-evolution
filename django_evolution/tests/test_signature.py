@@ -137,7 +137,7 @@ class ConstraintSignatureTests(BaseSignatureTestCase):
     @classmethod
     @requires_meta_constraints
     def setUpClass(cls):
-        super(ConstraintSignatureTests, cls).setUpClass()
+        super().setUpClass()
 
     def test_from_constraint_with_fields_lists(self):
         """Testing ConstraintSignature.from_constraint with fields as lists"""

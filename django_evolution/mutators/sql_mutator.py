@@ -31,7 +31,7 @@ class SQLMutator(BaseMutator):
                 The list of SQL statements. See the return type in
                 :py:meth:`to_sql` for possible values.
         """
-        super(SQLMutator, self).__init__()
+        super().__init__()
 
         self.mutation = mutation
         self.sql = sql

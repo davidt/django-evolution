@@ -49,7 +49,7 @@ class AddField(BaseModelFieldMutation):
             **field_attrs (dict):
                 Attributes to set on the field.
         """
-        super(AddField, self).__init__(model_name, field_name)
+        super().__init__(model_name, field_name)
 
         self.field_type = field_type
         self.field_attrs = field_attrs

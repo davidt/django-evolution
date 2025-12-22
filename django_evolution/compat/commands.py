@@ -98,7 +98,7 @@ class BaseCommand(DjangoBaseCommand):
         old_add_arguments = self.add_arguments
         self.add_arguments = lambda *args: None
 
-        parser = super(BaseCommand, self).create_parser(*args, **kwargs)
+        parser = super().create_parser(*args, **kwargs)
 
         self.add_arguments = old_add_arguments
 
@@ -164,4 +164,4 @@ class BaseCommand(DjangoBaseCommand):
                 if option.get_opt_string() not in ('--help', '--version')
             ]
 
-        return super(BaseCommand, self).__getattribute__(name)
+        return super().__getattribute__(name)

@@ -111,7 +111,7 @@ class EvolutionOperations(BaseEvolutionOperations):
                 {remote_field_model: [(model, f)]}))
 
         sql_result.add_sql(
-            super(EvolutionOperations, self).delete_column(model, f))
+            super().delete_column(model, f))
 
         return sql_result
 
@@ -316,7 +316,7 @@ class EvolutionOperations(BaseEvolutionOperations):
                 suffix='_fk_%s_%s' % (target_field.model._meta.db_table,
                                       target_field.column))
 
-        return super(EvolutionOperations, self).get_default_index_name(
+        return super().get_default_index_name(
             table_name, field)
 
     def get_indexes_for_table(self, table_name):

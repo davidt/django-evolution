@@ -73,7 +73,7 @@ class ModelMutator(BaseAppStateMutator):
             database (unicode, optional):
                 The name of the database being evolved.
         """
-        super(ModelMutator, self).__init__(app_mutator=app_mutator)
+        super().__init__(app_mutator=app_mutator)
 
         if not self.database:
             self.database = get_database_for_model_name(self.app_label,
@@ -317,7 +317,7 @@ class ModelMutator(BaseAppStateMutator):
         logger.debug('Running mutation for %s.%s: %r',
                      self.app_label, self.model_name, mutation)
 
-        super(ModelMutator, self).run_mutation(
+        super().run_mutation(
             mutation=mutation,
             mutate_kwargs={
                 'model': self.create_model(),

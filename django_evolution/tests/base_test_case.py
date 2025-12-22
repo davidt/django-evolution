@@ -80,13 +80,13 @@ class TestCase(DjangoTestCase):
             **kwargs (dict):
                 Keyword arguments to pass to the parent constructor.
         """
-        super(TestCase, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.addTypeEqualityFunc(F, 'assertFEqual')
         self.addTypeEqualityFunc(Q, 'assertQEqual')
 
     def setUp(self):
-        super(TestCase, self).setUp()
+        super().setUp()
 
         # If these are in the database, we need to delete them so we don't
         # carry signatures between tests.
@@ -102,7 +102,7 @@ class TestCase(DjangoTestCase):
             self.ensure_evolution_models()
 
     def tearDown(self):
-        super(TestCase, self).tearDown()
+        super().tearDown()
 
         self.ensure_deleted_apps()
         unregister_test_models()
@@ -583,7 +583,7 @@ class MigrationsTestsMixin:
     needs_evolution_models = True
 
     def setUp(self):
-        super(MigrationsTestsMixin, self).setUp()
+        super().setUp()
 
         if supports_migrations:
             connection = connections[DEFAULT_DB_ALIAS]
@@ -605,7 +605,7 @@ class EvolutionTestCase(TestCase):
     default_extra_models = []
 
     def setUp(self):
-        super(EvolutionTestCase, self).setUp()
+        super().setUp()
 
         self.base_model = None
         self.pre_extra_models = []
@@ -625,7 +625,7 @@ class EvolutionTestCase(TestCase):
         if self._models_registered:
             unregister_app('tests')
 
-        super(EvolutionTestCase, self).tearDown()
+        super().tearDown()
 
     def default_create_test_data(self, db_name):
         """Default function for creating test data for base models.

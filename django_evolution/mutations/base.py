@@ -520,7 +520,7 @@ class BaseModelMutation(BaseMutation):
             model_name (unicode):
                 The name of the model being mutated.
         """
-        super(BaseModelMutation, self).__init__()
+        super().__init__()
 
         self.model_name = model_name
 
@@ -608,6 +608,6 @@ class BaseModelFieldMutation(BaseModelMutation):
             field_name (unicode):
                 The name of the field to mutate.
         """
-        super(BaseModelFieldMutation, self).__init__(model_name)
+        super().__init__(model_name)
 
         self.field_name = field_name
