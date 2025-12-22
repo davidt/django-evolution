@@ -2,17 +2,10 @@
 
 from __future__ import annotations
 
-from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from django.core.management.commands.migrate import Command as BaseCommand
 from django.utils.translation import gettext as _
-
-try:
-    from django.core.management.commands.migrate import Command as BaseCommand
-    has_migrate = True
-except ImportError:
-    from django_evolution.compat.commands import BaseCommand
-    has_migrate = False
 
 from django_evolution.conf import django_evolution_settings
 
@@ -53,11 +46,6 @@ class Command(BaseCommand):
                 Arguments were invalid or something went wrong. Details are
                 in the message.
         """
-        if not has_migrate:
-            raise CommandError(
-                _('migrate is not available on this version of Django. '
-                  'Use `syncdb` instead.'))
-
         if not django_evolution_settings.ENABLED:
             # Run the original migrate command.
             return super(Command, self).handle(*args, **options)
@@ -87,3 +75,5 @@ class Command(BaseCommand):
                      interactive=options.get('interactive'),
                      database=options.get('database'),
                      execute=True)
+
+        return 0

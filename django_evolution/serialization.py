@@ -19,28 +19,11 @@ from __future__ import annotations
 import inspect
 from collections import OrderedDict
 from copy import deepcopy
+from enum import Enum
 from importlib import import_module
 
-try:
-    from enum import Enum
-except ImportError:
-    Enum = None
-
 from django.db.models import Q
-
-try:
-    # Django >= 3.1
-    from django.db.models import Deferrable
-except ImportError:
-    # Django <= 3.0
-    Deferrable = None
-
-try:
-    # Django >= 1.8
-    from django.db.models.expressions import CombinedExpression
-except ImportError:
-    # Django <= 1.7
-    CombinedExpression = None
+from django.db.models.expressions import CombinedExpression
 
 from django_evolution.placeholders import BasePlaceholder
 
@@ -753,23 +736,10 @@ class CombinedExpressionSerialization(DeconstructedSerialization):
             obj (django.db.models.expressions.CombinedExpression):
                 The object to deconstruct.
         """
-        if hasattr(obj, 'deconstruct'):
-            # Django >= 2.0
-            return (
-                super(CombinedExpressionSerialization, cls)
-                ._deconstruct_object(obj)
-            )
-        else:
-            # Django <= 1.11
-            return (
-                '%s.%s' % (CombinedExpression.__module__,
-                           CombinedExpression.__name__),
-                (
-                    serialize_to_signature(obj.lhs),
-                    serialize_to_signature(obj.connector),
-                    serialize_to_signature(obj.rhs)),
-                {},
-            )
+        return (
+            super(CombinedExpressionSerialization, cls)
+            ._deconstruct_object(obj)
+        )
 
 
 class QSerialization(DeconstructedSerialization):
@@ -929,12 +899,9 @@ def _init_serialization():
         return
 
     _deconstructed_serialization_map = {
+        CombinedExpression: CombinedExpressionSerialization,
         Q: QSerialization,
     }
-
-    if CombinedExpression is not None:
-        _deconstructed_serialization_map[CombinedExpression] = \
-            CombinedExpressionSerialization
 
     _serialization_map = {
         # String-based
@@ -991,17 +958,15 @@ def _get_serializer_for_value(value, serializing):
     else:
         if cls in _deconstructed_serialization_map:
             serialization_cls = _deconstructed_serialization_map[cls]
-        elif (Enum is not None and
-              (serializing and issubclass(cls, Enum)) or
+        elif ((serializing and issubclass(cls, Enum)) or
               (not serializing and
                cls is dict and
                value.get('_enum') is True)):
             serialization_cls = EnumSerialization
-        elif serializing and hasattr(value, 'deconstruct'):
-            serialization_cls = DeconstructedSerialization
-        elif (not serializing and
-              cls is dict and
-              value.get('_deconstructed') is True):
+        elif ((serializing and hasattr(value, 'deconstruct')) or
+              (not serializing and
+               cls is dict and
+               value.get('_deconstructed') is True)):
             serialization_cls = DeconstructedSerialization
         elif isinstance(value, BasePlaceholder):
             serialization_cls = PlaceholderSerialization

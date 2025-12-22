@@ -5,22 +5,7 @@ from __future__ import annotations
 from unittest import skipUnless
 
 from django.db import models
-from django.db.models import F, Q
-
-try:
-    # Django >= 2.2
-    from django.db.models import CheckConstraint, UniqueConstraint
-except ImportError:
-    # Django <= 2.1
-    CheckConstraint = None
-    UniqueConstraint = None
-
-try:
-    # Django >= 1.11
-    from django.db.models import Index
-except ImportError:
-    # Django <= 1.10
-    Index = None
+from django.db.models import CheckConstraint, Index, F, Q, UniqueConstraint
 
 from django_evolution.mutations import ChangeMeta
 from django_evolution.support import (

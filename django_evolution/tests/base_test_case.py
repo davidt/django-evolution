@@ -4,7 +4,6 @@ import copy
 import re
 from contextlib import contextmanager
 
-import django
 from django.db import ConnectionRouter, DEFAULT_DB_ALIAS, connections, router
 from django.db.models import F, Q
 from django.test.testcases import TestCase as DjangoTestCase
@@ -60,22 +59,13 @@ class TestCase(DjangoTestCase):
     # Override some internal functions on Django's TestCase to avoid setting
     # up transactions. We won't bother documenting these, since we're just
     # trying to turn off logic.
-    if django.VERSION[:2] >= (1, 8):
-        # Django >= 1.8
-        @classmethod
-        def _enter_atomics(cls):
-            return
+    @classmethod
+    def _enter_atomics(cls):
+        return
 
-        @classmethod
-        def _rollback_atomics(cls, atomics):
-            return
-    else:
-        # Django <= 1.7
-        def _fixture_setup(self):
-            return
-
-        def _fixture_teardown(self):
-            return
+    @classmethod
+    def _rollback_atomics(cls, atomics):
+        return
 
     def __init__(self, *args, **kwargs):
         """Initialize the test suite.
@@ -487,19 +477,7 @@ class TestCase(DjangoTestCase):
             AssertionError:
                 The two F objects were not equal.
         """
-        if django.VERSION[0] >= 2:
-            # Django 2.0+ supports equality checks for F objects.
-            self._baseAssertEqual(f1, f2)
-        else:
-            # Django 1.11 and older does not, so we'll need to compare
-            # string representations.
-            #
-            # Note that this assumes that two F() objects were constructed
-            # identically (for instance, both use native strings for field
-            # names, and not Unicode strings).
-            self.assertIsInstance(f1, F)
-            self.assertIsInstance(f2, F)
-            self.assertEqual(str(f1), str(f2))
+        self._baseAssertEqual(f1, f2)
 
     def assertQEqual(self, q1, q2, msg=None):
         """Assert that two Q objects are identical.
@@ -523,19 +501,7 @@ class TestCase(DjangoTestCase):
             AssertionError:
                 The two Q objects were not equal.
         """
-        if django.VERSION[0] >= 2:
-            # Django 2.0+ supports equality checks for Q objects.
-            self._baseAssertEqual(q1, q2, msg=msg)
-        else:
-            # Django 1.11 and older does not, so we'll need to compare
-            # string representations.
-            #
-            # Note that this assumes that two Q() objects were constructed
-            # identically (for instance, both use native strings for field
-            # names, and not Unicode strings).
-            self.assertIsInstance(q1, Q, msg=msg)
-            self.assertIsInstance(q2, Q, msg=msg)
-            self.assertEqual(str(q1), str(q2), msg=msg)
+        self._baseAssertEqual(q1, q2, msg=msg)
 
     def _normalize_sql_for_compare(self, generated_sql, expected_sql):
         """Normalize the generated and expected SQL for comparison.

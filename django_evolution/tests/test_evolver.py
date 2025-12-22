@@ -4,14 +4,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 
-from django.db import DEFAULT_DB_ALIAS, models
-
-try:
-    # Django >= 1.7
-    from django.db import migrations
-except ImportError:
-    # Django < 1.7
-    migrations = None
+from django.db import DEFAULT_DB_ALIAS, migrations, models
 
 from django_evolution.consts import UpgradeMethod
 from django_evolution.db.state import DatabaseState

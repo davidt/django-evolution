@@ -2,12 +2,7 @@
 
 from __future__ import annotations
 
-try:
-    # Django >= 2.0
-    from django.db.backends.ddl_references import Statement
-except ImportError:
-    # Django <= 1.11
-    Statement = None
+from django.db.backends.ddl_references import Statement
 
 
 class SQLResult(object):
@@ -60,7 +55,7 @@ class SQLResult(object):
             self.sql += sql_or_result
         elif isinstance(sql_or_result, (str, tuple)):
             self.sql.append(sql_or_result)
-        elif Statement is not None and isinstance(sql_or_result, Statement):
+        elif isinstance(sql_or_result, Statement):
             self.sql.append('%s;' % sql_or_result)
         elif callable(sql_or_result):
             self.sql.append(sql_or_result)

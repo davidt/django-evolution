@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from django.db import DEFAULT_DB_ALIAS, connections
+from django.db import DEFAULT_DB_ALIAS, connections, migrations
 
 from django_evolution.models import Evolution, Version
 from django_evolution.support import supports_migrations
@@ -18,15 +18,6 @@ from django_evolution.utils.migrations import (MigrationExecutor,
                                                MigrationList,
                                                MigrationLoader,
                                                record_applied_migrations)
-
-try:
-    # Django >= 1.7
-    from django.db import migrations
-    from django.db.migrations.graph import MigrationGraph
-except ImportError:
-    # Django < 1.7
-    MigrationGraph = None
-    migrations = None
 
 
 class EvolutionGraphTests(MigrationsTestsMixin, TestCase):

@@ -2,19 +2,10 @@
 
 from __future__ import annotations
 
-from django.conf import settings
-from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.utils.translation import gettext as _
 
-try:
-    from django.core.management.commands.syncdb import Command as BaseCommand
-    has_syncdb = True
-except ImportError:
-    from django_evolution.compat.commands import BaseCommand
-    has_syncdb = False
-
-from django_evolution.conf import django_evolution_settings
+from django_evolution.compat.commands import BaseCommand
 
 
 class Command(BaseCommand):
@@ -49,17 +40,6 @@ class Command(BaseCommand):
                 Arguments were invalid or something went wrong. Details are
                 in the message.
         """
-        if not has_syncdb:
-            raise CommandError(
-                _('syncdb is not available on this version of Django. '
-                  'Use `migrate` instead.'))
-
-        if not django_evolution_settings.ENABLED:
-            # Run the original syncdb command.
-            return super(Command, self).handle(*args, **options)
-
-        call_command('evolve',
-                     verbosity=options.get('verbosity'),
-                     interactive=options.get('interactive'),
-                     database=options.get('database'),
-                     execute=True)
+        raise CommandError(
+            _('syncdb is not available on this version of Django. '
+              'Use `migrate` instead.'))

@@ -1447,10 +1447,6 @@ class BaseEvolutionOperations(object):
             django_evolution.sql_result.SQLResult:
             The SQL statements for changing ``Meta.constraints``.
         """
-        # The mutation should have failed before getting here on older
-        # versions of Django.
-        assert django.VERSION >= (2, 2)
-
         CheckConstraint = models.CheckConstraint
         connection = self.connection
         supports_table_check_constraints = \

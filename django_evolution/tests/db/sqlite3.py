@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import re
 
-import django
 from django.db.backends.sqlite3.base import Database
 
 from django_evolution.compat.models import get_default_auto_field
@@ -10,13 +9,7 @@ from django_evolution.tests.utils import (make_generate_index_name,
                                           make_generate_unique_constraint_name)
 
 
-django_version = django.VERSION[:2]
 sqlite_version = Database.sqlite_version_info[:2]
-
-if django_version < (2, 0) or django_version >= (3, 1):
-    DESC = ' DESC'
-else:
-    DESC = 'DESC'
 
 
 if get_default_auto_field() == 'django.db.models.BigAutoField':
@@ -66,7 +59,7 @@ def add_field(connection):
     else:
         auto_field_suffix = get_field_suffix('AutoField')
 
-    mappings = {
+    return {
         'AddNonNullNonCallableColumnModel': [
             'CREATE TABLE "TEMP_TABLE" '
             '("id" integer NOT NULL PRIMARY KEY,'
@@ -393,292 +386,96 @@ def add_field(connection):
             % generate_index_name('tests_testmodel', 'added_field_id',
                                   'added_field'),
         ],
+
+        'AddManyToManyDatabaseTableModel': [
+            f'CREATE TABLE "tests_testmodel_added_field" '
+            f'("id" integer NOT NULL PRIMARY '
+            f'KEY{auto_field_suffix},'
+            f' "testmodel_id" {fk_type} NOT NULL'
+            f' REFERENCES "tests_testmodel" ("id")'
+            f' DEFERRABLE INITIALLY DEFERRED,'
+            f' "addanchor1_id" {fk_type} NOT NULL'
+            f' REFERENCES "tests_addanchor1" ("id")'
+            f' DEFERRABLE INITIALLY DEFERRED'
+            f');',
+
+            'CREATE UNIQUE INDEX "%s" ON'
+            ' "tests_testmodel_added_field"'
+            ' ("testmodel_id", "addanchor1_id");'
+            % generate_unique_constraint_name(
+                'tests_testmodel_added_field',
+                ['testmodel_id', 'addanchor1_id']),
+
+            'CREATE INDEX "%s" ON'
+            ' "tests_testmodel_added_field" ("testmodel_id");'
+            % generate_index_name('tests_testmodel_added_field',
+                                  'testmodel_id'),
+
+            'CREATE INDEX "%s" ON'
+            ' "tests_testmodel_added_field" ("addanchor1_id");'
+            % generate_index_name('tests_testmodel_added_field',
+                                  'addanchor1_id'),
+        ],
+
+        'AddManyToManyNonDefaultDatabaseTableModel': [
+            f'CREATE TABLE "tests_testmodel_added_field" '
+            f'("id" integer NOT NULL PRIMARY '
+            f'KEY{auto_field_suffix},'
+            f' "testmodel_id" {fk_type} NOT NULL'
+            f' REFERENCES "tests_testmodel" ("id")'
+            f' DEFERRABLE INITIALLY DEFERRED,'
+            f' "addanchor2_id" {fk_type} NOT NULL'
+            f' REFERENCES "custom_add_anchor_table" ("id")'
+            f' DEFERRABLE INITIALLY DEFERRED'
+            f');',
+
+            'CREATE UNIQUE INDEX "%s" ON'
+            ' "tests_testmodel_added_field"'
+            ' ("testmodel_id", "addanchor2_id");'
+            % generate_unique_constraint_name(
+                'tests_testmodel_added_field',
+                ['testmodel_id', 'addanchor2_id']),
+
+            'CREATE INDEX "%s" ON'
+            ' "tests_testmodel_added_field" ("testmodel_id");'
+            % generate_index_name('tests_testmodel_added_field',
+                                  'testmodel_id'),
+
+            'CREATE INDEX "%s" ON'
+            ' "tests_testmodel_added_field" ("addanchor2_id");'
+            % generate_index_name('tests_testmodel_added_field',
+                                  'addanchor2_id'),
+        ],
+
+        'AddManyToManySelf': [
+            f'CREATE TABLE "tests_testmodel_added_field" '
+            f'("id" integer NOT NULL PRIMARY '
+            f'KEY{auto_field_suffix},'
+            f' "from_testmodel_id" {fk_type} NOT NULL'
+            f' REFERENCES "tests_testmodel" ("id")'
+            f' DEFERRABLE INITIALLY DEFERRED,'
+            f' "to_testmodel_id" {fk_type} NOT NULL'
+            f' REFERENCES "tests_testmodel" ("id")'
+            f' DEFERRABLE INITIALLY DEFERRED'
+            f');',
+
+            'CREATE UNIQUE INDEX "%s" ON "tests_testmodel_added_field"'
+            ' ("from_testmodel_id", "to_testmodel_id");'
+            % generate_unique_constraint_name(
+                'tests_testmodel_added_field',
+                ['from_testmodel_id', 'to_testmodel_id']),
+
+            'CREATE INDEX "%s" ON'
+            ' "tests_testmodel_added_field" ("from_testmodel_id");'
+            % generate_index_name('tests_testmodel_added_field',
+                                  'from_testmodel_id'),
+
+            'CREATE INDEX "%s" ON'
+            ' "tests_testmodel_added_field" ("to_testmodel_id");'
+            % generate_index_name('tests_testmodel_added_field',
+                                  'to_testmodel_id'),
+        ],
     }
-
-    if django_version >= (2, 0):
-        mappings.update({
-            'AddManyToManyDatabaseTableModel': [
-                f'CREATE TABLE "tests_testmodel_added_field" '
-                f'("id" integer NOT NULL PRIMARY '
-                f'KEY{auto_field_suffix},'
-                f' "testmodel_id" {fk_type} NOT NULL'
-                f' REFERENCES "tests_testmodel" ("id")'
-                f' DEFERRABLE INITIALLY DEFERRED,'
-                f' "addanchor1_id" {fk_type} NOT NULL'
-                f' REFERENCES "tests_addanchor1" ("id")'
-                f' DEFERRABLE INITIALLY DEFERRED'
-                f');',
-
-                'CREATE UNIQUE INDEX "%s" ON'
-                ' "tests_testmodel_added_field"'
-                ' ("testmodel_id", "addanchor1_id");'
-                % generate_unique_constraint_name(
-                    'tests_testmodel_added_field',
-                    ['testmodel_id', 'addanchor1_id']),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("testmodel_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'testmodel_id'),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("addanchor1_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'addanchor1_id'),
-            ],
-
-            'AddManyToManyNonDefaultDatabaseTableModel': [
-                f'CREATE TABLE "tests_testmodel_added_field" '
-                f'("id" integer NOT NULL PRIMARY '
-                f'KEY{auto_field_suffix},'
-                f' "testmodel_id" {fk_type} NOT NULL'
-                f' REFERENCES "tests_testmodel" ("id")'
-                f' DEFERRABLE INITIALLY DEFERRED,'
-                f' "addanchor2_id" {fk_type} NOT NULL'
-                f' REFERENCES "custom_add_anchor_table" ("id")'
-                f' DEFERRABLE INITIALLY DEFERRED'
-                f');',
-
-                'CREATE UNIQUE INDEX "%s" ON'
-                ' "tests_testmodel_added_field"'
-                ' ("testmodel_id", "addanchor2_id");'
-                % generate_unique_constraint_name(
-                    'tests_testmodel_added_field',
-                    ['testmodel_id', 'addanchor2_id']),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("testmodel_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'testmodel_id'),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("addanchor2_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'addanchor2_id'),
-            ],
-
-            'AddManyToManySelf': [
-                f'CREATE TABLE "tests_testmodel_added_field" '
-                f'("id" integer NOT NULL PRIMARY '
-                f'KEY{auto_field_suffix},'
-                f' "from_testmodel_id" {fk_type} NOT NULL'
-                f' REFERENCES "tests_testmodel" ("id")'
-                f' DEFERRABLE INITIALLY DEFERRED,'
-                f' "to_testmodel_id" {fk_type} NOT NULL'
-                f' REFERENCES "tests_testmodel" ("id")'
-                f' DEFERRABLE INITIALLY DEFERRED'
-                f');',
-
-                'CREATE UNIQUE INDEX "%s" ON "tests_testmodel_added_field"'
-                ' ("from_testmodel_id", "to_testmodel_id");'
-                % generate_unique_constraint_name(
-                    'tests_testmodel_added_field',
-                    ['from_testmodel_id', 'to_testmodel_id']),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("from_testmodel_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'from_testmodel_id'),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("to_testmodel_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'to_testmodel_id'),
-            ],
-        })
-    elif django_version >= (1, 9):
-        mappings.update({
-            'AddManyToManyDatabaseTableModel': [
-                'CREATE TABLE "tests_testmodel_added_field" '
-                '("id" integer NOT NULL PRIMARY KEY%s,'
-                ' "testmodel_id" integer NOT NULL'
-                ' REFERENCES "tests_testmodel" ("id"),'
-                ' "addanchor1_id" integer NOT NULL'
-                ' REFERENCES "tests_addanchor1" ("id")'
-                ');'
-                % get_field_suffix('AutoField'),
-
-                'CREATE UNIQUE INDEX "%s" ON'
-                ' "tests_testmodel_added_field"'
-                ' ("testmodel_id", "addanchor1_id");'
-                % generate_unique_constraint_name(
-                    'tests_testmodel_added_field',
-                    ['testmodel_id', 'addanchor1_id']),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("testmodel_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'testmodel_id'),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("addanchor1_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'addanchor1_id'),
-            ],
-
-            'AddManyToManyNonDefaultDatabaseTableModel': [
-                'CREATE TABLE "tests_testmodel_added_field" '
-                '("id" integer NOT NULL PRIMARY KEY%s,'
-                ' "testmodel_id" integer NOT NULL'
-                ' REFERENCES "tests_testmodel" ("id"),'
-                ' "addanchor2_id" integer NOT NULL'
-                ' REFERENCES "custom_add_anchor_table" ("id")'
-                ');'
-                % get_field_suffix('AutoField'),
-
-                'CREATE UNIQUE INDEX "%s" ON'
-                ' "tests_testmodel_added_field"'
-                ' ("testmodel_id", "addanchor2_id");'
-                % generate_unique_constraint_name(
-                    'tests_testmodel_added_field',
-                    ['testmodel_id', 'addanchor2_id']),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("testmodel_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'testmodel_id'),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("addanchor2_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'addanchor2_id'),
-            ],
-
-            'AddManyToManySelf': [
-                'CREATE TABLE "tests_testmodel_added_field" '
-                '("id" integer NOT NULL PRIMARY KEY%s,'
-                ' "from_testmodel_id" integer NOT NULL'
-                ' REFERENCES "tests_testmodel" ("id"),'
-                ' "to_testmodel_id" integer NOT NULL'
-                ' REFERENCES "tests_testmodel" ("id")'
-                ');'
-                % get_field_suffix('AutoField'),
-
-                'CREATE UNIQUE INDEX "%s" ON "tests_testmodel_added_field"'
-                ' ("from_testmodel_id", "to_testmodel_id");'
-                % generate_unique_constraint_name(
-                    'tests_testmodel_added_field',
-                    ['from_testmodel_id', 'to_testmodel_id']),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("from_testmodel_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'from_testmodel_id'),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("to_testmodel_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'to_testmodel_id'),
-            ],
-        })
-    elif django_version >= (1, 7):
-        mappings.update({
-            'AddManyToManyDatabaseTableModel': [
-                'CREATE TABLE "tests_testmodel_added_field" '
-                '("id" integer NOT NULL PRIMARY KEY%s,'
-                ' "testmodel_id" integer NOT NULL'
-                ' REFERENCES "tests_testmodel" ("id"),'
-                ' "addanchor1_id" integer NOT NULL'
-                ' REFERENCES "tests_addanchor1" ("id"),'
-                ' UNIQUE ("testmodel_id", "addanchor1_id")'
-                ');'
-                % get_field_suffix('AutoField'),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("testmodel_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'testmodel_id'),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("addanchor1_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'addanchor1_id'),
-            ],
-
-            'AddManyToManyNonDefaultDatabaseTableModel': [
-                'CREATE TABLE "tests_testmodel_added_field" '
-                '("id" integer NOT NULL PRIMARY KEY%s,'
-                ' "testmodel_id" integer NOT NULL'
-                ' REFERENCES "tests_testmodel" ("id"),'
-                ' "addanchor2_id" integer NOT NULL'
-                ' REFERENCES "custom_add_anchor_table" ("id"),'
-                ' UNIQUE ("testmodel_id", "addanchor2_id")'
-                ');'
-                % get_field_suffix('AutoField'),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("testmodel_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'testmodel_id'),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("addanchor2_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'addanchor2_id'),
-            ],
-
-            'AddManyToManySelf': [
-                'CREATE TABLE "tests_testmodel_added_field" '
-                '("id" integer NOT NULL PRIMARY KEY%s,'
-                ' "from_testmodel_id" integer NOT NULL'
-                ' REFERENCES "tests_testmodel" ("id"),'
-                ' "to_testmodel_id" integer NOT NULL'
-                ' REFERENCES "tests_testmodel" ("id"),'
-                ' UNIQUE ("from_testmodel_id", "to_testmodel_id")'
-                ');'
-                % get_field_suffix('AutoField'),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("from_testmodel_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'from_testmodel_id'),
-
-                'CREATE INDEX "%s" ON'
-                ' "tests_testmodel_added_field" ("to_testmodel_id");'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'to_testmodel_id'),
-            ],
-        })
-    else:
-        mappings.update({
-            'AddManyToManyDatabaseTableModel': [
-                'CREATE TABLE "tests_testmodel_added_field" (',
-                '    "id" integer NOT NULL PRIMARY KEY%s,'
-                % get_field_suffix('AutoField'),
-
-                '    "testmodel_id" integer NOT NULL,',
-                '    "addanchor1_id" integer NOT NULL,',
-                '    UNIQUE ("testmodel_id", "addanchor1_id")',
-                ')',
-                ';',
-            ],
-
-            'AddManyToManyNonDefaultDatabaseTableModel': [
-                'CREATE TABLE "tests_testmodel_added_field" (',
-                '    "id" integer NOT NULL PRIMARY KEY%s,'
-                % get_field_suffix('AutoField'),
-
-                '    "testmodel_id" integer NOT NULL,',
-                '    "addanchor2_id" integer NOT NULL,',
-                '    UNIQUE ("testmodel_id", "addanchor2_id")',
-                ')',
-                ';',
-            ],
-
-            'AddManyToManySelf': [
-                'CREATE TABLE "tests_testmodel_added_field" (',
-                '    "id" integer NOT NULL PRIMARY KEY%s,'
-                % get_field_suffix('AutoField'),
-
-                '    "from_testmodel_id" integer NOT NULL,',
-                '    "to_testmodel_id" integer NOT NULL,',
-                '    UNIQUE ("from_testmodel_id", "to_testmodel_id")',
-                ')',
-                ';',
-            ],
-        })
-
-    return mappings
 
 
 def change_meta_db_table_comment(connection):
@@ -2101,13 +1898,13 @@ def rename_field(connection):
             ),
         })
     else:
-        if django_version >= (1, 7):
-            # On Django 1.7 and higher, M2M intermediary tables set
-            # references on the field pointing back to the owning model. This
-            # triggers our special logic on SQLite <= 3.25 that performs a
-            # schema rewrite in order to update those references to point to
-            # the new table name.
-            mappings['RenamePrimaryKeyColumnModel'] = [
+        # On Django 1.7 and higher, M2M intermediary tables set
+        # references on the field pointing back to the owning model. This
+        # triggers our special logic on SQLite <= 3.25 that performs a
+        # schema rewrite in order to update those references to point to
+        # the new table name.
+        mappings.update({
+            'RenamePrimaryKeyColumnModel': [
                 'CREATE TABLE "TEMP_TABLE" '
                 '("my_pk_id" integer NOT NULL PRIMARY KEY,'
                 ' "char_field" varchar(20) NOT NULL,'
@@ -2158,47 +1955,8 @@ def rename_field(connection):
                 '-- Run outside of a transaction:',
 
                 'VACUUM;',
-            ]
-        else:
-            # Django 1.6 and earlier don't generate those references on the
-            # M2M intermediary table, so we don't need to worry about the
-            # schema rewrite.
-            mappings['RenamePrimaryKeyColumnModel'] = [
-                'CREATE TABLE "TEMP_TABLE" '
-                '("my_pk_id" integer NOT NULL PRIMARY KEY,'
-                ' "char_field" varchar(20) NOT NULL,'
-                ' "int_field" integer NOT NULL,'
-                ' "custom_db_col_name" integer NOT NULL,'
-                ' "custom_db_col_name_indexed" integer NOT NULL,'
-                ' "fk_field_id" integer NOT NULL'
-                ' REFERENCES "tests_renameanchor1" ("id")'
-                ' DEFERRABLE INITIALLY DEFERRED);',
+            ],
 
-                'INSERT INTO "TEMP_TABLE"'
-                ' ("my_pk_id", "char_field", "int_field",'
-                ' "custom_db_col_name", "custom_db_col_name_indexed",'
-                ' "fk_field_id")'
-                ' SELECT "id", "char_field", "int_field",'
-                ' "custom_db_col_name", "custom_db_col_name_indexed",'
-                ' "fk_field_id"'
-                ' FROM "tests_testmodel";',
-
-                'DROP TABLE "tests_testmodel";',
-
-                'ALTER TABLE "TEMP_TABLE" RENAME TO "tests_testmodel";',
-
-                'CREATE INDEX "%s" ON "tests_testmodel"'
-                ' ("custom_db_col_name_indexed");'
-                % generate_index_name('tests_testmodel',
-                                      'custom_db_col_name_indexed',
-                                      'int_field_named_indexed'),
-
-                'CREATE INDEX "%s" ON "tests_testmodel" ("fk_field_id");'
-                % generate_index_name('tests_testmodel', 'fk_field_id',
-                                      'fk_field'),
-            ]
-
-        mappings.update({
             'RenameColumnModel': [
                 'CREATE TABLE "TEMP_TABLE" '
                 '("id" integer NOT NULL PRIMARY KEY,'
@@ -2515,7 +2273,7 @@ def unique_together(connection):
     generate_unique_constraint_name = \
         make_generate_unique_constraint_name(connection)
 
-    mappings = {
+    return {
         'setting_from_empty': [
             'CREATE UNIQUE INDEX "%s"'
             ' ON "tests_testmodel" ("int_field1", "char_field1");'
@@ -2550,80 +2308,27 @@ def unique_together(connection):
             % generate_unique_constraint_name('tests_testmodel',
                                               ['int_field1', 'char_field1']),
         ],
+
+        'replace_list': [
+            'DROP INDEX "%s";'
+            % generate_unique_constraint_name(
+                'tests_testmodel',
+                ['int_field1', 'char_field1']),
+
+            'CREATE UNIQUE INDEX "%s"'
+            ' ON "tests_testmodel" ("int_field2", "char_field2");'
+            % generate_unique_constraint_name(
+                'tests_testmodel',
+                ['int_field2', 'char_field2']),
+        ],
+
+        'removing': [
+            'DROP INDEX "%s";'
+            % generate_unique_constraint_name(
+                'tests_testmodel',
+                ['int_field1', 'char_field1']),
+        ],
     }
-
-    if django_version >= (1, 9):
-        # Django >= 1.9
-        mappings.update({
-            'replace_list': [
-                'DROP INDEX "%s";'
-                % generate_unique_constraint_name(
-                    'tests_testmodel',
-                    ['int_field1', 'char_field1']),
-
-                'CREATE UNIQUE INDEX "%s"'
-                ' ON "tests_testmodel" ("int_field2", "char_field2");'
-                % generate_unique_constraint_name(
-                    'tests_testmodel',
-                    ['int_field2', 'char_field2']),
-            ],
-
-            'removing': [
-                'DROP INDEX "%s";'
-                % generate_unique_constraint_name(
-                    'tests_testmodel',
-                    ['int_field1', 'char_field1']),
-            ],
-        })
-    else:
-        # Django < 1.9
-        mappings.update({
-            'replace_list': [
-                'CREATE TABLE "TEMP_TABLE" '
-                '("id" integer NOT NULL PRIMARY KEY,'
-                ' "int_field1" integer NOT NULL,'
-                ' "int_field2" integer NOT NULL,'
-                ' "char_field1" varchar(20) NOT NULL,'
-                ' "char_field2" varchar(40) NOT NULL);',
-
-                'INSERT INTO "TEMP_TABLE"'
-                ' ("id", "int_field1", "int_field2", "char_field1",'
-                ' "char_field2")'
-                ' SELECT "id", "int_field1", "int_field2", "char_field1",'
-                ' "char_field2" FROM "tests_testmodel";',
-
-                'DROP TABLE "tests_testmodel";',
-
-                'ALTER TABLE "TEMP_TABLE" RENAME TO "tests_testmodel";',
-
-                'CREATE UNIQUE INDEX "%s"'
-                ' ON "tests_testmodel" ("int_field2", "char_field2");'
-                % generate_unique_constraint_name(
-                    'tests_testmodel',
-                    ['int_field2', 'char_field2']),
-            ],
-
-            'removing': [
-                'CREATE TABLE "TEMP_TABLE" '
-                '("id" integer NOT NULL PRIMARY KEY,'
-                ' "int_field1" integer NOT NULL,'
-                ' "int_field2" integer NOT NULL,'
-                ' "char_field1" varchar(20) NOT NULL,'
-                ' "char_field2" varchar(40) NOT NULL);',
-
-                'INSERT INTO "TEMP_TABLE"'
-                ' ("id", "int_field1", "int_field2", "char_field1",'
-                ' "char_field2")'
-                ' SELECT "id", "int_field1", "int_field2", "char_field1",'
-                ' "char_field2" FROM "tests_testmodel";',
-
-                'DROP TABLE "tests_testmodel";',
-
-                'ALTER TABLE "TEMP_TABLE" RENAME TO "tests_testmodel";',
-            ],
-        })
-
-    return mappings
 
 
 def index_together(connection):
@@ -2902,8 +2607,7 @@ def indexes(connection):
                                   model_meta_indexes=True),
 
             'CREATE INDEX "my_custom_index"'
-            ' ON "tests_testmodel" ("char_field1", "char_field2"%s);'
-            % DESC,
+            ' ON "tests_testmodel" ("char_field1", "char_field2" DESC);',
         },
 
         'setting_from_empty_with_condition': [
@@ -3357,7 +3061,7 @@ def evolver(connection):
     """
     generate_index_name = make_generate_index_name(connection)
 
-    mappings = {
+    return {
         'complex_deps_new_db_new_models': [
             f'CREATE TABLE "evolutions_app2_evolutionsapp2testmodel"'
             f' ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
@@ -3366,27 +3070,31 @@ def evolver(connection):
             f' REFERENCES "evolutions_app_evolutionsapptestmodel" ("id")'
             f' DEFERRABLE INITIALLY DEFERRED);',
 
-            'CREATE TABLE "evolutions_app2_evolutionsapp2testmodel2"'
-            ' ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
-            ' "fkey_id" integer NULL'
-            ' REFERENCES "evolutions_app2_evolutionsapp2testmodel" ("id")'
-            ' DEFERRABLE INITIALLY DEFERRED,'
-            ' "int_field" integer NOT NULL);',
+            f'CREATE TABLE "evolutions_app2_evolutionsapp2testmodel2"'
+            f' ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
+            f' "fkey_id" {fk_type} NULL'
+            f' REFERENCES "evolutions_app2_evolutionsapp2testmodel" ("id")'
+            f' DEFERRABLE INITIALLY DEFERRED,'
+            f' "int_field" integer NOT NULL);',
 
             'CREATE TABLE "evolutions_app_evolutionsapptestmodel"'
             ' ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
             ' "char_field" varchar(10) NULL,'
             ' "char_field2" varchar(20) NULL);',
 
-            'CREATE INDEX "%s" ON "evolutions_app2_evolutionsapp2testmodel"'
-            ' ("fkey_id");'
-            % generate_index_name('evolutions_app2_evolutionsapp2testmodel',
-                                  'fkey_id', 'fkey'),
+            'CREATE INDEX "%s"'
+            ' ON "evolutions_app2_evolutionsapp2testmodel" ("fkey_id");'
+            % generate_index_name(
+                'evolutions_app2_evolutionsapp2testmodel',
+                'fkey_id',
+                'fkey'),
 
-            'CREATE INDEX "%s" ON "evolutions_app2_evolutionsapp2testmodel2"'
-            ' ("fkey_id");'
-            % generate_index_name('evolutions_app2_evolutionsapp2testmodel2',
-                                  'fkey_id', 'fkey'),
+            'CREATE INDEX "%s"'
+            ' ON "evolutions_app2_evolutionsapp2testmodel2" ("fkey_id");'
+            % generate_index_name(
+                'evolutions_app2_evolutionsapp2testmodel2',
+                'fkey_id',
+                'fkey'),
         ],
 
         'complex_deps_upgrade_task_1': [
@@ -3428,6 +3136,22 @@ def evolver(connection):
                                   'fkey_id', 'fkey'),
         ],
 
+        'create_tables_with_deferred_refs': [
+            f'CREATE TABLE "tests_testmodel" '
+            f'("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
+            f' "value" varchar(100) NOT NULL,'
+            f' "ref_id" {fk_type} NOT NULL'
+            f' REFERENCES "evolutions_app_reffedevolvertestmodel" ("id")'
+            f' DEFERRABLE INITIALLY DEFERRED);',
+
+            'CREATE TABLE "evolutions_app_reffedevolvertestmodel" '
+            '("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
+            ' "value" varchar(100) NOT NULL);',
+
+            'CREATE INDEX "%s" ON "tests_testmodel" ("ref_id");'
+            % generate_index_name('tests_testmodel', 'ref_id'),
+        ],
+
         'evolve_app_task': [
             'CREATE TABLE "TEMP_TABLE" '
             '("id" integer NOT NULL PRIMARY KEY,'
@@ -3441,191 +3165,13 @@ def evolver(connection):
             'ALTER TABLE "TEMP_TABLE" RENAME TO "tests_testmodel";',
         ],
 
+        'create_table': [
+            'CREATE TABLE "tests_testmodel" '
+            '("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
+            ' "value" varchar(100) NOT NULL);',
+        ],
+
         'purge_app_task': [
             'DROP TABLE "tests_testmodel";',
         ],
     }
-
-    if django_version >= (1, 7):
-        mappings.update({
-            'create_table': [
-                'CREATE TABLE "tests_testmodel" '
-                '("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
-                ' "value" varchar(100) NOT NULL);',
-            ],
-        })
-    else:
-        mappings.update({
-            'create_table': [
-                'CREATE TABLE "tests_testmodel" (',
-                '    "id" integer NOT NULL PRIMARY KEY,',
-                '    "value" varchar(100) NOT NULL',
-                ')',
-
-                ';',
-            ],
-        })
-
-    if django_version >= (2, 0):
-        mappings.update({
-            'complex_deps_new_db_new_models': [
-                f'CREATE TABLE "evolutions_app2_evolutionsapp2testmodel"'
-                f' ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
-                f' "char_field" varchar(10) NOT NULL,'
-                f' "fkey_id" {fk_type} NULL'
-                f' REFERENCES "evolutions_app_evolutionsapptestmodel" ("id")'
-                f' DEFERRABLE INITIALLY DEFERRED);',
-
-                f'CREATE TABLE "evolutions_app2_evolutionsapp2testmodel2"'
-                f' ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
-                f' "fkey_id" {fk_type} NULL'
-                f' REFERENCES "evolutions_app2_evolutionsapp2testmodel" ("id")'
-                f' DEFERRABLE INITIALLY DEFERRED,'
-                f' "int_field" integer NOT NULL);',
-
-                'CREATE TABLE "evolutions_app_evolutionsapptestmodel"'
-                ' ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
-                ' "char_field" varchar(10) NULL,'
-                ' "char_field2" varchar(20) NULL);',
-
-                'CREATE INDEX "%s"'
-                ' ON "evolutions_app2_evolutionsapp2testmodel" ("fkey_id");'
-                % generate_index_name(
-                    'evolutions_app2_evolutionsapp2testmodel',
-                    'fkey_id',
-                    'fkey'),
-
-                'CREATE INDEX "%s"'
-                ' ON "evolutions_app2_evolutionsapp2testmodel2" ("fkey_id");'
-                % generate_index_name(
-                    'evolutions_app2_evolutionsapp2testmodel2',
-                    'fkey_id',
-                    'fkey'),
-            ],
-
-            'create_tables_with_deferred_refs': [
-                f'CREATE TABLE "tests_testmodel" '
-                f'("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
-                f' "value" varchar(100) NOT NULL,'
-                f' "ref_id" {fk_type} NOT NULL'
-                f' REFERENCES "evolutions_app_reffedevolvertestmodel" ("id")'
-                f' DEFERRABLE INITIALLY DEFERRED);',
-
-                'CREATE TABLE "evolutions_app_reffedevolvertestmodel" '
-                '("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
-                ' "value" varchar(100) NOT NULL);',
-
-                'CREATE INDEX "%s" ON "tests_testmodel" ("ref_id");'
-                % generate_index_name('tests_testmodel', 'ref_id'),
-            ],
-        })
-    elif django_version >= (1, 7):
-        mappings.update({
-            'complex_deps_new_db_new_models': [
-                'CREATE TABLE "evolutions_app2_evolutionsapp2testmodel"'
-                ' ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
-                ' "char_field" varchar(10) NOT NULL,'
-                ' "fkey_id" integer NULL'
-                ' REFERENCES "evolutions_app_evolutionsapptestmodel" ("id"));',
-
-                'CREATE TABLE "evolutions_app2_evolutionsapp2testmodel2"'
-                ' ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
-                ' "fkey_id" integer NULL'
-                ' REFERENCES "evolutions_app2_evolutionsapp2testmodel" ("id"),'
-                ' "int_field" integer NOT NULL);',
-
-                'CREATE TABLE "evolutions_app_evolutionsapptestmodel"'
-                ' ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
-                ' "char_field" varchar(10) NULL,'
-                ' "char_field2" varchar(20) NULL);',
-
-                'CREATE INDEX "%s"'
-                ' ON "evolutions_app2_evolutionsapp2testmodel" ("fkey_id");'
-                % generate_index_name(
-                    'evolutions_app2_evolutionsapp2testmodel',
-                    'fkey_id',
-                    'fkey'),
-
-                'CREATE INDEX "%s"'
-                ' ON "evolutions_app2_evolutionsapp2testmodel2" ("fkey_id");'
-                % generate_index_name(
-                    'evolutions_app2_evolutionsapp2testmodel2',
-                    'fkey_id',
-                    'fkey'),
-            ],
-
-            'create_tables_with_deferred_refs': [
-                'CREATE TABLE "tests_testmodel" '
-                '("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
-                ' "value" varchar(100) NOT NULL,'
-                ' "ref_id" integer NOT NULL'
-                ' REFERENCES "evolutions_app_reffedevolvertestmodel" ("id"));',
-
-                'CREATE TABLE "evolutions_app_reffedevolvertestmodel" '
-                '("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
-                ' "value" varchar(100) NOT NULL);',
-
-                'CREATE INDEX "%s" ON "tests_testmodel" ("ref_id");'
-                % generate_index_name('tests_testmodel', 'ref_id'),
-            ],
-        })
-    else:
-        mappings.update({
-            'complex_deps_new_db_new_models': [
-                'CREATE TABLE "evolutions_app2_evolutionsapp2testmodel" (',
-                '    "id" integer NOT NULL PRIMARY KEY,',
-                '    "char_field" varchar(10) NOT NULL,',
-                '    "fkey_id" integer',
-                ')',
-                ';',
-
-                'CREATE TABLE "evolutions_app2_evolutionsapp2testmodel2" (',
-                '    "id" integer NOT NULL PRIMARY KEY,',
-                '    "fkey_id" integer REFERENCES'
-                ' "evolutions_app2_evolutionsapp2testmodel" ("id"),',
-                '    "int_field" integer NOT NULL',
-                ')',
-                ';',
-
-                'CREATE TABLE "evolutions_app_evolutionsapptestmodel" (',
-                '    "id" integer NOT NULL PRIMARY KEY,',
-                '    "char_field" varchar(10),',
-                '    "char_field2" varchar(20)',
-                ')',
-                ';',
-
-                'CREATE INDEX "%s"'
-                ' ON "evolutions_app2_evolutionsapp2testmodel" ("fkey_id");'
-                % generate_index_name(
-                    'evolutions_app2_evolutionsapp2testmodel',
-                    'fkey_id',
-                    'fkey'),
-
-                'CREATE INDEX "%s"'
-                ' ON "evolutions_app2_evolutionsapp2testmodel2" ("fkey_id");'
-                % generate_index_name(
-                    'evolutions_app2_evolutionsapp2testmodel2',
-                    'fkey_id',
-                    'fkey'),
-            ],
-
-            'create_tables_with_deferred_refs': [
-                'CREATE TABLE "tests_testmodel" (',
-                '    "id" integer NOT NULL PRIMARY KEY,',
-                '    "value" varchar(100) NOT NULL,',
-                '    "ref_id" integer NOT NULL',
-                ')',
-                ';',
-
-                'CREATE TABLE "evolutions_app_reffedevolvertestmodel" (',
-                '    "id" integer NOT NULL PRIMARY KEY,',
-                '    "value" varchar(100) NOT NULL',
-                ')',
-                ';',
-
-                'CREATE INDEX "%s" ON "tests_testmodel" ("ref_id");'
-                % generate_index_name('tests_testmodel', 'ref_id', 'ref'),
-            ],
-        })
-
-    return mappings

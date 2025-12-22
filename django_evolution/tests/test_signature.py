@@ -11,30 +11,15 @@ from django.contrib.contenttypes.fields import (
 )
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import F, Q
+from django.db.models import (
+    CheckConstraint,
+    Deferrable,
+    Index,
+    F,
+    Q,
+    UniqueConstraint,
+)
 from django.db.utils import DEFAULT_DB_ALIAS
-
-try:
-    # Django >= 3.1
-    from django.db.models import Deferrable
-except ImportError:
-    # Django <= 3.0
-    Deferrable = None
-
-try:
-    # Django >= 2.2
-    from django.db.models import CheckConstraint, UniqueConstraint
-except ImportError:
-    # Django <= 2.1
-    CheckConstraint = None
-    UniqueConstraint = None
-
-try:
-    # Django >= 1.11
-    from django.db.models import Index
-except ImportError:
-    # Django <= 1.10
-    Index = None
 
 from django_evolution.compat.models import (
     get_default_auto_field,
@@ -310,18 +295,12 @@ class ConstraintSignatureTests(BaseSignatureTestCase):
 
     def test_serialize_v2(self):
         """Testing ConstraintSignature.serialize (signature v2)"""
-        if Deferrable is None:
-            # Django <= 3.0
-            deferrable = None
-            expected_deferrable = None
-        else:
-            # Django >= 3.0
-            deferrable = Deferrable.DEFERRED
-            expected_deferrable = {
-                '_enum': True,
-                'type': 'django.db.models.constraints.Deferrable',
-                'value': 'DEFERRED',
-            }
+        deferrable = Deferrable.DEFERRED
+        expected_deferrable = {
+            '_enum': True,
+            'type': 'django.db.models.constraints.Deferrable',
+            'value': 'DEFERRED',
+        }
 
         constraint_sig = ConstraintSignature(
             name='my_constraint',
@@ -1014,15 +993,7 @@ class AppSignatureTests(BaseSignatureTestCase):
                 return model is Evolution
 
             def allow_migrate(self, *args, **hints):
-                if 'model' in hints:
-                    # Django 1.8+
-                    model = hints['model']
-                else:
-                    # Django 1.7
-                    assert len(args) == 2
-                    model = args[1]
-
-                return model is Evolution
+                return hints['model'] is Evolution
 
         with self.override_db_routers([TestRouter()]):
             app_sig = AppSignature.from_app(get_app('django_evolution'),
@@ -1766,17 +1737,16 @@ class ModelSignatureTests(BaseSignatureTestCase):
         self.assertEqual(len(field_sigs), 1)
         self.assertEqual(field_sigs[0].field_name, 'field1')
 
-        if Index:
-            index_sigs = list(model_sig.index_sigs)
-            self.assertEqual(len(index_sigs), 2)
+        index_sigs = list(model_sig.index_sigs)
+        self.assertEqual(len(index_sigs), 2)
 
-            index_sig = index_sigs[0]
-            self.assertEqual(index_sig.name, 'index1')
-            self.assertEqual(index_sig.fields, ['field1'])
+        index_sig = index_sigs[0]
+        self.assertEqual(index_sig.name, 'index1')
+        self.assertEqual(index_sig.fields, ['field1'])
 
-            index_sig = index_sigs[1]
-            self.assertEqual(index_sig.name, 'index2')
-            self.assertEqual(index_sig.fields, ['field2'])
+        index_sig = index_sigs[1]
+        self.assertEqual(index_sig.name, 'index2')
+        self.assertEqual(index_sig.fields, ['field2'])
 
     def test_deserialize_v2(self):
         """Testing ModelSignature.deserialize (signature v2)"""
@@ -1822,17 +1792,16 @@ class ModelSignatureTests(BaseSignatureTestCase):
         self.assertEqual(len(field_sigs), 1)
         self.assertEqual(field_sigs[0].field_name, 'field1')
 
-        if Index:
-            index_sigs = list(model_sig.index_sigs)
-            self.assertEqual(len(index_sigs), 2)
+        index_sigs = list(model_sig.index_sigs)
+        self.assertEqual(len(index_sigs), 2)
 
-            index_sig = index_sigs[0]
-            self.assertEqual(index_sig.name, 'index1')
-            self.assertEqual(index_sig.fields, ['field1'])
+        index_sig = index_sigs[0]
+        self.assertEqual(index_sig.name, 'index1')
+        self.assertEqual(index_sig.fields, ['field1'])
 
-            index_sig = index_sigs[1]
-            self.assertEqual(index_sig.name, 'index2')
-            self.assertEqual(index_sig.fields, ['field2'])
+        index_sig = index_sigs[1]
+        self.assertEqual(index_sig.name, 'index2')
+        self.assertEqual(index_sig.fields, ['field2'])
 
     def test_add_field(self):
         """Testing ModelSignature.add_field"""

@@ -4,35 +4,17 @@ from __future__ import annotations
 
 from importlib import import_module
 
-import django
 from django.apps.registry import apps
-
-try:
-    # Django >= 1.7
-    from django.core.management.sql import (emit_post_migrate_signal,
-                                            emit_pre_migrate_signal)
-    from django.db.migrations import Migration
-    from django.db.migrations.executor import (MigrationExecutor as
-                                               DjangoMigrationExecutor)
-    from django.db.migrations.loader import (MigrationLoader as
-                                             DjangoMigrationLoader)
-    from django.db.migrations.recorder import MigrationRecorder
-    from django.db.migrations.state import ModelState
-
-    emit_post_sync_signal = None
-    emit_pre_sync_signal = None
-except ImportError:
-    # Django < 1.7
-    from django.core.management.sql import (emit_post_sync_signal,
-                                            emit_pre_sync_signal)
-
-    DjangoMigrationExecutor = object
-    DjangoMigrationLoader = object
-    Migration = None
-    MigrationRecorder = None
-    ModelState = None
-    emit_post_migrate_signal = None
-    emit_pre_migrate_signal = None
+from django.core.management.sql import (emit_post_migrate_signal,
+                                        emit_pre_migrate_signal)
+from django.db.migrations import Migration
+from django.db.migrations.exceptions import InconsistentMigrationHistory
+from django.db.migrations.executor import (MigrationExecutor as
+                                           DjangoMigrationExecutor)
+from django.db.migrations.loader import (MigrationLoader as
+                                         DjangoMigrationLoader)
+from django.db.migrations.recorder import MigrationRecorder
+from django.db.migrations.state import ModelState
 
 from django_evolution.errors import (DjangoEvolutionSupportError,
                                      MigrationConflictsError,
@@ -40,9 +22,6 @@ from django_evolution.errors import (DjangoEvolutionSupportError,
 from django_evolution.signals import applied_migration, applying_migration
 from django_evolution.support import supports_migrations
 from django_evolution.utils.apps import get_app_name
-
-
-django_version = django.VERSION[:2]
 
 
 #: A list of all globally-registered custom migrations.
@@ -458,33 +437,25 @@ class MigrationLoader(DjangoMigrationLoader):
         """
         extra_migrations = self.extra_applied_migrations
 
-        if isinstance(self._applied_migrations, dict):
-            # Django >= 3.0
-            applied_migrations = self._applied_migrations.copy()
-
-            for info in extra_migrations:
-                app_label = info['app_label']
-                name = info['name']
-                recorded_migration = info['recorded_migration']
-
-                if recorded_migration is None:
-                    recorded_migration = MigrationRecorder.Migration(
-                        app=app_label,
-                        name=name,
-                        applied=True)
-
-                applied_migrations[(app_label, name)] = recorded_migration
-
-        elif isinstance(self._applied_migrations, set):
-            # Django < 3.0
-            applied_migrations = self._applied_migrations | set(
-                (info['app_label'], info['name'])
-                for info in extra_migrations
-            )
-        else:
+        if not isinstance(self._applied_migrations, dict):
             raise DjangoEvolutionSupportError(
                 'Migration.applied_migrations is an unexpected type (%s)'
                 % type(self._applied_migrations))
+
+        applied_migrations = self._applied_migrations.copy()
+
+        for info in extra_migrations:
+            app_label = info['app_label']
+            name = info['name']
+            recorded_migration = info['recorded_migration']
+
+            if recorded_migration is None:
+                recorded_migration = MigrationRecorder.Migration(
+                    app=app_label,
+                    name=name,
+                    applied=True)
+
+            applied_migrations[(app_label, name)] = recorded_migration
 
         return applied_migrations
 
@@ -496,7 +467,7 @@ class MigrationLoader(DjangoMigrationLoader):
             value (set of tuple):
                 The migrations already applied to the database.
         """
-        if value is not None and not isinstance(value, (dict, set)):
+        if value is not None and not isinstance(value, dict):
             raise DjangoEvolutionSupportError(
                 'Migration.applied_migrations was set to an unexpected type '
                 '(%s)'
@@ -505,10 +476,7 @@ class MigrationLoader(DjangoMigrationLoader):
         if value is None:
             self._applied_migrations = None
         else:
-            if django_version >= (3, 0):
-                self._applied_migrations = dict(value)
-            else:
-                self._applied_migrations = value
+            self._applied_migrations = dict(value)
 
     def build_graph(self, reload_migrations=True):
         """Rebuild the migrations graph.
@@ -608,15 +576,10 @@ class MigrationExecutor(DjangoMigrationExecutor):
                 There are unapplied dependencies to applied migrations.
         """
         # Make sure that the migration files in the tree form a proper history.
-        if hasattr(self.loader, 'check_consistent_history'):
-            # Django >= 1.10
-            from django.db.migrations.exceptions import \
-                InconsistentMigrationHistory
-
-            try:
-                self.loader.check_consistent_history(self.connection)
-            except InconsistentMigrationHistory as e:
-                raise MigrationHistoryError(str(e))
+        try:
+            self.loader.check_consistent_history(self.connection)
+        except InconsistentMigrationHistory as e:
+            raise MigrationHistoryError(str(e))
 
         # Now check that there aren't any conflicts between any migrations that
         # we may end up working with.
@@ -870,12 +833,9 @@ def create_pre_migrate_state(executor):
     assert supports_migrations, \
         'This cannot be called on Django 1.6 or earlier.'
 
-    if django_version >= (1, 10):
-        # Unfortunately, we have to call into a private method here, just as
-        # the migrate command does. Ideally, this would be official API.
-        return executor._create_project_state(with_applied_migrations=True)
-
-    return None
+    # Unfortunately, we have to call into a private method here, just as
+    # the migrate command does. Ideally, this would be official API.
+    return executor._create_project_state(with_applied_migrations=True)
 
 
 def apply_migrations(executor, targets, plan, pre_migrate_state):
@@ -922,15 +882,10 @@ def apply_migrations(executor, targets, plan, pre_migrate_state):
         'targets': targets,
     }
 
-    # Build version-dependent state needed for the signals and migrate
-    # operation.
-    if django_version >= (1, 8):
-        # Mark any migrations that introduce new models that are already in
-        # the database as applied.
-        migrate_kwargs['fake_initial'] = True
-
-    if django_version >= (1, 10):
-        migrate_kwargs['state'] = pre_migrate_state.clone()
+    # Mark any migrations that introduce new models that are already in
+    # the database as applied.
+    migrate_kwargs['fake_initial'] = True
+    migrate_kwargs['state'] = pre_migrate_state.clone()
 
     # Perform the migration and record the result. This only returns a value
     # on Django >= 1.10.
@@ -951,27 +906,23 @@ def finalize_migrations(post_migrate_state):
     assert supports_migrations, \
         'This cannot be called on Django 1.6 or earlier.'
 
-    if django_version >= (1, 10):
-        # On Django 1.10, we have a few more steps for generating the state
-        # needed for the signal.
-        if django_version >= (1, 11):
-            post_migrate_state.clear_delayed_apps_cache()
+    post_migrate_state.clear_delayed_apps_cache()
 
-        post_migrate_apps = post_migrate_state.apps
-        assert post_migrate_apps is not None
+    post_migrate_apps = post_migrate_state.apps
+    assert post_migrate_apps is not None
 
-        model_keys = []
+    model_keys = []
 
-        with post_migrate_apps.bulk_update():
-            for model_state in post_migrate_apps.real_models:
-                model_key = (model_state.app_label, model_state.name_lower)
-                model_keys.append(model_key)
-                post_migrate_apps.unregister_model(*model_key)
+    with post_migrate_apps.bulk_update():
+        for model_state in post_migrate_apps.real_models:
+            model_key = (model_state.app_label, model_state.name_lower)
+            model_keys.append(model_key)
+            post_migrate_apps.unregister_model(*model_key)
 
-        post_migrate_apps.render_multiple([
-            ModelState.from_model(apps.get_model(*model))
-            for model in model_keys
-        ])
+    post_migrate_apps.render_multiple([
+        ModelState.from_model(apps.get_model(*model))
+        for model in model_keys
+    ])
 
 
 def emit_pre_migrate_or_sync(verbosity, interactive, database_name,
@@ -1008,23 +959,17 @@ def emit_pre_migrate_or_sync(verbosity, interactive, database_name,
         'verbosity': verbosity,
     }
 
-    if django_version <= (1, 8):
-        emit_kwargs['create_models'] = create_models
-    elif django_version >= (1, 10):
-        if pre_migrate_state:
-            apps = pre_migrate_state.apps
-        else:
-            apps = None
-
-        emit_kwargs.update({
-            'apps': apps,
-            'plan': plan,
-        })
-
-    if emit_pre_sync_signal:
-        emit_pre_sync_signal(**emit_kwargs)
+    if pre_migrate_state:
+        apps = pre_migrate_state.apps
     else:
-        emit_pre_migrate_signal(**emit_kwargs)
+        apps = None
+
+    emit_kwargs.update({
+        'apps': apps,
+        'plan': plan,
+    })
+
+    emit_pre_migrate_signal(**emit_kwargs)
 
 
 def emit_post_migrate_or_sync(verbosity, interactive, database_name,
@@ -1061,20 +1006,14 @@ def emit_post_migrate_or_sync(verbosity, interactive, database_name,
         'verbosity': verbosity,
     }
 
-    if django_version <= (1, 8):
-        emit_kwargs['created_models'] = created_models
-    elif django_version >= (1, 10):
-        if post_migrate_state:
-            apps = post_migrate_state.apps
-        else:
-            apps = None
-
-        emit_kwargs.update({
-            'apps': apps,
-            'plan': plan,
-        })
-
-    if emit_post_sync_signal:
-        emit_post_sync_signal(**emit_kwargs)
+    if post_migrate_state:
+        apps = post_migrate_state.apps
     else:
-        emit_post_migrate_signal(**emit_kwargs)
+        apps = None
+
+    emit_kwargs.update({
+        'apps': apps,
+        'plan': plan,
+    })
+
+    emit_post_migrate_signal(**emit_kwargs)

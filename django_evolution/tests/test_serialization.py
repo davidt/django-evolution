@@ -7,29 +7,17 @@ Version Added:
 from __future__ import annotations
 
 from collections import OrderedDict
-from unittest import SkipTest
 
-from django.db.models import CharField, F, Q
-
-try:
-    # Django >= 3.1
-    from django.db.models import Deferrable
-except ImportError:
-    # Django <= 3.0
-    Deferrable = None
+from django.db.models import CharField, Deferrable, F, Q
+from django.db.models.expressions import CombinedExpression
 
 from django_evolution.placeholders import NullFieldInitialCallback
-from django_evolution.serialization import (CombinedExpression,
-                                            deserialize_from_signature,
+from django_evolution.serialization import (deserialize_from_signature,
                                             serialize_to_python,
                                             serialize_to_signature)
 from django_evolution.tests.base_test_case import TestCase
 from django_evolution.tests.utils import (F_EXPRESSIONS_TYPE,
                                           VALUE_EXPRESSIONS_TYPE)
-
-
-can_test_combined_expressions = (CombinedExpression is not None and
-                                 hasattr(CombinedExpression, 'deconstruct'))
 
 
 class MyDeconstructableObject(object):
@@ -59,9 +47,6 @@ class DeserializeFromSignatureTests(TestCase):
         """Testing deserialize_from_signature with CombinedExpression using
         Django <= 4.0 signature
         """
-        if not can_test_combined_expressions:
-            raise SkipTest('Not supported on this version of Django')
-
         self.assertEqual(
             deserialize_from_signature({
                 '_deconstructed': True,
@@ -89,9 +74,6 @@ class DeserializeFromSignatureTests(TestCase):
         """Testing deserialize_from_signature with CombinedExpression using
         Django >= 4.1 signature
         """
-        if not can_test_combined_expressions:
-            raise SkipTest('Not supported on this version of Django')
-
         self.assertEqual(
             deserialize_from_signature({
                 '_deconstructed': True,
@@ -152,9 +134,6 @@ class DeserializeFromSignatureTests(TestCase):
 
     def test_with_deferrable(self):
         """Testing deserialize_from_signature with Deferrable enum value"""
-        if Deferrable is None:
-            raise SkipTest('Not supported on this version of Django')
-
         self.assertEqual(
             deserialize_from_signature({
                 '_enum': True,
@@ -294,9 +273,6 @@ class SerializeToPythonTests(TestCase):
 
     def test_with_combined_expression(self):
         """Testing serialize_to_python with CombinedExpression"""
-        if not can_test_combined_expressions:
-            raise SkipTest('Not supported on this version of Django')
-
         value = F('a') + 1
         self.assertIsInstance(value, CombinedExpression)
 
@@ -326,9 +302,6 @@ class SerializeToPythonTests(TestCase):
 
     def test_with_deferrable(self):
         """Testing serialize_to_python with Deferrable enum value"""
-        if Deferrable is None:
-            raise SkipTest('Not supported on this version of Django')
-
         self.assertEqual(
             serialize_to_python(Deferrable.DEFERRED),
             'models.Deferrable.DEFERRED')
@@ -418,9 +391,6 @@ class SerializeToSignatureTests(TestCase):
 
     def test_with_combined_expression(self):
         """Testing serialize_to_signature with CombinedExpression"""
-        if not can_test_combined_expressions:
-            raise SkipTest('Not supported on this version of Django')
-
         value = F('a') + 1
         self.assertIsInstance(value, CombinedExpression)
 
@@ -484,9 +454,6 @@ class SerializeToSignatureTests(TestCase):
 
     def test_with_deferrable(self):
         """Testing serialize_to_signature with Deferrable enum value"""
-        if Deferrable is None:
-            raise SkipTest('Not supported on this version of Django')
-
         self.assertEqual(
             serialize_to_signature(Deferrable.DEFERRED),
             {

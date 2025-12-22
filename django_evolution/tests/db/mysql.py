@@ -11,12 +11,6 @@ from django_evolution.tests.utils import (make_generate_constraint_name,
 django_version = django.VERSION[:2]
 
 
-if django_version < (2, 0) or django_version >= (3, 1):
-    DESC = ' DESC'
-else:
-    DESC = 'DESC'
-
-
 if django_version < (5, 0):
     PCT = '%%'
 else:
@@ -51,7 +45,94 @@ def add_field(connection):
     generate_unique_constraint_name = \
         make_generate_unique_constraint_name(connection)
 
-    mappings = {
+    return {
+        'AddManyToManyDatabaseTableModel': [
+            f'CREATE TABLE `tests_testmodel_added_field` '
+            f'(`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
+            f' `testmodel_id` {pk_type} NOT NULL,'
+            f' `addanchor1_id` {pk_type} NOT NULL'
+            f');',
+
+            'ALTER TABLE `tests_testmodel_added_field`'
+            ' ADD CONSTRAINT `%s`'
+            ' UNIQUE (`testmodel_id`, `addanchor1_id`);'
+            % generate_unique_constraint_name(
+                'tests_testmodel_added_field',
+                ['testmodel_id', 'addanchor1_id']),
+
+            'ALTER TABLE `tests_testmodel_added_field`'
+            ' ADD CONSTRAINT `%s` FOREIGN KEY (`testmodel_id`)'
+            ' REFERENCES `tests_testmodel` (`id`);'
+            % generate_constraint_name('testmodel_id', 'id',
+                                       'tests_testmodel_added_field',
+                                       'tests_testmodel'),
+
+            'ALTER TABLE `tests_testmodel_added_field`'
+            ' ADD CONSTRAINT `%s` FOREIGN KEY (`addanchor1_id`)'
+            ' REFERENCES `tests_addanchor1` (`id`);'
+            % generate_constraint_name('addanchor1_id', 'id',
+                                       'tests_testmodel_added_field',
+                                       'tests_addanchor1'),
+        ],
+
+        'AddManyToManyNonDefaultDatabaseTableModel': [
+            f'CREATE TABLE `tests_testmodel_added_field` '
+            f'(`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
+            f' `testmodel_id` {pk_type} NOT NULL,'
+            f' `addanchor2_id` {pk_type} NOT NULL'
+            f');',
+
+            'ALTER TABLE `tests_testmodel_added_field`'
+            ' ADD CONSTRAINT `%s`'
+            ' UNIQUE (`testmodel_id`, `addanchor2_id`);'
+            % generate_unique_constraint_name(
+                'tests_testmodel_added_field',
+                ['testmodel_id', 'addanchor2_id']),
+
+            'ALTER TABLE `tests_testmodel_added_field`'
+            ' ADD CONSTRAINT `%s` FOREIGN KEY (`testmodel_id`)'
+            ' REFERENCES `tests_testmodel` (`id`);'
+            % generate_constraint_name('testmodel_id', 'id',
+                                       'tests_testmodel_added_field',
+                                       'tests_testmodel'),
+
+            'ALTER TABLE `tests_testmodel_added_field`'
+            ' ADD CONSTRAINT `%s` FOREIGN KEY (`addanchor2_id`)'
+            ' REFERENCES `custom_add_anchor_table` (`id`);'
+            % generate_constraint_name('addanchor2_id', 'id',
+                                       'tests_testmodel_added_field',
+                                       'custom_add_anchor_table'),
+        ],
+
+        'AddManyToManySelf': [
+            f'CREATE TABLE `tests_testmodel_added_field` '
+            f'(`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
+            f' `from_testmodel_id` {pk_type} NOT NULL,'
+            f' `to_testmodel_id` {pk_type} NOT NULL'
+            f');',
+
+            'ALTER TABLE `tests_testmodel_added_field`'
+            ' ADD CONSTRAINT `%s` UNIQUE'
+            ' (`from_testmodel_id`, `to_testmodel_id`);'
+            % generate_unique_constraint_name(
+                'tests_testmodel_added_field',
+                ['from_testmodel_id', 'to_testmodel_id']),
+
+            'ALTER TABLE `tests_testmodel_added_field`'
+            ' ADD CONSTRAINT `%s` FOREIGN KEY (`from_testmodel_id`)'
+            ' REFERENCES `tests_testmodel` (`id`);'
+            % generate_constraint_name('from_testmodel_id', 'id',
+                                       'tests_testmodel_added_field',
+                                       'tests_testmodel'),
+
+            'ALTER TABLE `tests_testmodel_added_field`'
+            ' ADD CONSTRAINT `%s` FOREIGN KEY (`to_testmodel_id`)'
+            ' REFERENCES `tests_testmodel` (`id`);'
+            % generate_constraint_name('to_testmodel_id', 'id',
+                                       'tests_testmodel_added_field',
+                                       'tests_testmodel'),
+        ],
+
         'AddNonNullNonCallableColumnModel': [
             'ALTER TABLE `tests_testmodel`'
             ' ADD COLUMN `added_field` integer NOT NULL DEFAULT 1;',
@@ -197,442 +278,6 @@ def add_field(connection):
                                   'added_field_id', 'added_field'),
         ],
     }
-
-    if django_version >= (3, 0):
-        # Django 3.0+ annoyingly switches around the order of the ALTER TABLE
-        # statements for ManyToManyField intermediary tables.
-        mappings.update({
-            'AddManyToManyDatabaseTableModel': [
-                f'CREATE TABLE `tests_testmodel_added_field` '
-                f'(`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                f' `testmodel_id` {pk_type} NOT NULL,'
-                f' `addanchor1_id` {pk_type} NOT NULL'
-                f');',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s`'
-                ' UNIQUE (`testmodel_id`, `addanchor1_id`);'
-                % generate_unique_constraint_name(
-                    'tests_testmodel_added_field',
-                    ['testmodel_id', 'addanchor1_id']),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`addanchor1_id`)'
-                ' REFERENCES `tests_addanchor1` (`id`);'
-                % generate_constraint_name('addanchor1_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_addanchor1'),
-            ],
-
-            'AddManyToManyNonDefaultDatabaseTableModel': [
-                f'CREATE TABLE `tests_testmodel_added_field` '
-                f'(`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                f' `testmodel_id` {pk_type} NOT NULL,'
-                f' `addanchor2_id` {pk_type} NOT NULL'
-                f');',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s`'
-                ' UNIQUE (`testmodel_id`, `addanchor2_id`);'
-                % generate_unique_constraint_name(
-                    'tests_testmodel_added_field',
-                    ['testmodel_id', 'addanchor2_id']),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`addanchor2_id`)'
-                ' REFERENCES `custom_add_anchor_table` (`id`);'
-                % generate_constraint_name('addanchor2_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'custom_add_anchor_table'),
-            ],
-
-            'AddManyToManySelf': [
-                f'CREATE TABLE `tests_testmodel_added_field` '
-                f'(`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                f' `from_testmodel_id` {pk_type} NOT NULL,'
-                f' `to_testmodel_id` {pk_type} NOT NULL'
-                f');',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` UNIQUE'
-                ' (`from_testmodel_id`, `to_testmodel_id`);'
-                % generate_unique_constraint_name(
-                    'tests_testmodel_added_field',
-                    ['from_testmodel_id', 'to_testmodel_id']),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`from_testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('from_testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`to_testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('to_testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-            ],
-        })
-    elif django_version >= (1, 9):
-        # Django 1.9+ no longer includes a UNIQUE keyword in the table
-        # creation, instead creating these through constraints.
-        mappings.update({
-            'AddManyToManyDatabaseTableModel': [
-                'CREATE TABLE `tests_testmodel_added_field` '
-                '(`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                ' `testmodel_id` integer NOT NULL,'
-                ' `addanchor1_id` integer NOT NULL'
-                ');',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`addanchor1_id`)'
-                ' REFERENCES `tests_addanchor1` (`id`);'
-                % generate_constraint_name('addanchor1_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_addanchor1'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s`'
-                ' UNIQUE (`testmodel_id`, `addanchor1_id`);'
-                % generate_unique_constraint_name(
-                    'tests_testmodel_added_field',
-                    ['testmodel_id', 'addanchor1_id']),
-            ],
-
-            'AddManyToManyNonDefaultDatabaseTableModel': [
-                'CREATE TABLE `tests_testmodel_added_field` '
-                '(`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                ' `testmodel_id` integer NOT NULL,'
-                ' `addanchor2_id` integer NOT NULL'
-                ');',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`addanchor2_id`)'
-                ' REFERENCES `custom_add_anchor_table` (`id`);'
-                % generate_constraint_name('addanchor2_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'custom_add_anchor_table'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s`'
-                ' UNIQUE (`testmodel_id`, `addanchor2_id`);'
-                % generate_unique_constraint_name(
-                    'tests_testmodel_added_field',
-                    ['testmodel_id', 'addanchor2_id']),
-            ],
-
-            'AddManyToManySelf': [
-                'CREATE TABLE `tests_testmodel_added_field` '
-                '(`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                ' `from_testmodel_id` integer NOT NULL,'
-                ' `to_testmodel_id` integer NOT NULL'
-                ');',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`from_testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('from_testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`to_testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('to_testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` UNIQUE'
-                ' (`from_testmodel_id`, `to_testmodel_id`);'
-                % generate_unique_constraint_name(
-                    'tests_testmodel_added_field',
-                    ['from_testmodel_id', 'to_testmodel_id']),
-            ],
-        })
-    elif django_version == (1, 8):
-        # Django 1.8+ no longer creates indexes for the ForeignKeys on the
-        # ManyToMany table.
-        mappings.update({
-            'AddManyToManyDatabaseTableModel': [
-                'CREATE TABLE `tests_testmodel_added_field` '
-                '(`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                ' `testmodel_id` integer NOT NULL,'
-                ' `addanchor1_id` integer NOT NULL,'
-                ' UNIQUE (`testmodel_id`, `addanchor1_id`)'
-                ');',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`addanchor1_id`)'
-                ' REFERENCES `tests_addanchor1` (`id`);'
-                % generate_constraint_name('addanchor1_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_addanchor1'),
-            ],
-
-            'AddManyToManyNonDefaultDatabaseTableModel': [
-                'CREATE TABLE `tests_testmodel_added_field` '
-                '(`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                ' `testmodel_id` integer NOT NULL,'
-                ' `addanchor2_id` integer NOT NULL,'
-                ' UNIQUE (`testmodel_id`, `addanchor2_id`)'
-                ');',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`addanchor2_id`)'
-                ' REFERENCES `custom_add_anchor_table` (`id`);'
-                % generate_constraint_name('addanchor2_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'custom_add_anchor_table'),
-            ],
-
-            'AddManyToManySelf': [
-                'CREATE TABLE `tests_testmodel_added_field` '
-                '(`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                ' `from_testmodel_id` integer NOT NULL,'
-                ' `to_testmodel_id` integer NOT NULL,'
-                ' UNIQUE (`from_testmodel_id`, `to_testmodel_id`)'
-                ');',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`from_testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('from_testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`to_testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('to_testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-            ],
-        })
-    elif django_version == (1, 7):
-        # Django 1.7 introduced more condensed CREATE TABLE statements, and
-        # indexes for fields on the model. (The indexes were removed for MySQL
-        # in subsequent releases.)
-        mappings.update({
-            'AddManyToManyDatabaseTableModel': [
-                'CREATE TABLE `tests_testmodel_added_field` '
-                '(`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                ' `testmodel_id` integer NOT NULL,'
-                ' `addanchor1_id` integer NOT NULL,'
-                ' UNIQUE (`testmodel_id`, `addanchor1_id`)'
-                ');',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`addanchor1_id`)'
-                ' REFERENCES `tests_addanchor1` (`id`);'
-                % generate_constraint_name('addanchor1_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_addanchor1'),
-
-                'CREATE INDEX `%s` ON'
-                ' `tests_testmodel_added_field` (`testmodel_id`);'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'testmodel_id'),
-
-                'CREATE INDEX `%s` ON'
-                ' `tests_testmodel_added_field` (`addanchor1_id`);'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'addanchor1_id'),
-            ],
-
-            'AddManyToManyNonDefaultDatabaseTableModel': [
-                'CREATE TABLE `tests_testmodel_added_field` '
-                '(`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                ' `testmodel_id` integer NOT NULL,'
-                ' `addanchor2_id` integer NOT NULL,'
-                ' UNIQUE (`testmodel_id`, `addanchor2_id`)'
-                ');',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`addanchor2_id`)'
-                ' REFERENCES `custom_add_anchor_table` (`id`);'
-                % generate_constraint_name('addanchor2_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'custom_add_anchor_table'),
-
-                'CREATE INDEX `%s` ON'
-                ' `tests_testmodel_added_field` (`testmodel_id`);'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'testmodel_id'),
-
-                'CREATE INDEX `%s` ON'
-                ' `tests_testmodel_added_field` (`addanchor2_id`);'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'addanchor2_id'),
-            ],
-
-            'AddManyToManySelf': [
-                'CREATE TABLE `tests_testmodel_added_field` '
-                '(`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                ' `from_testmodel_id` integer NOT NULL,'
-                ' `to_testmodel_id` integer NOT NULL,'
-                ' UNIQUE (`from_testmodel_id`, `to_testmodel_id`)'
-                ');',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`from_testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('from_testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`to_testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('to_testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'CREATE INDEX `%s` ON'
-                ' `tests_testmodel_added_field` (`from_testmodel_id`);'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'from_testmodel_id'),
-
-                'CREATE INDEX `%s` ON'
-                ' `tests_testmodel_added_field` (`to_testmodel_id`);'
-                % generate_index_name('tests_testmodel_added_field',
-                                      'to_testmodel_id'),
-            ],
-        })
-    else:
-        mappings.update({
-            'AddManyToManyDatabaseTableModel': [
-                'CREATE TABLE `tests_testmodel_added_field` (',
-                '    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,',
-                '    `testmodel_id` integer NOT NULL,',
-                '    `addanchor1_id` integer NOT NULL,',
-                '    UNIQUE (`testmodel_id`, `addanchor1_id`)',
-                ')',
-                ';',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`addanchor1_id`)'
-                ' REFERENCES `tests_addanchor1` (`id`);'
-                % generate_constraint_name('addanchor1_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_addanchor1'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-            ],
-
-            'AddManyToManyNonDefaultDatabaseTableModel': [
-                'CREATE TABLE `tests_testmodel_added_field` (',
-                '    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,',
-                '    `testmodel_id` integer NOT NULL,',
-                '    `addanchor2_id` integer NOT NULL,',
-                '    UNIQUE (`testmodel_id`, `addanchor2_id`)',
-                ')',
-                ';',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`addanchor2_id`)'
-                ' REFERENCES `custom_add_anchor_table` (`id`);'
-                % generate_constraint_name('addanchor2_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'custom_add_anchor_table'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-            ],
-
-            'AddManyToManySelf': [
-                'CREATE TABLE `tests_testmodel_added_field` (',
-                '    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,',
-                '    `from_testmodel_id` integer NOT NULL,',
-                '    `to_testmodel_id` integer NOT NULL,',
-                '    UNIQUE (`from_testmodel_id`, `to_testmodel_id`)',
-                ')',
-                ';',
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`from_testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('from_testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-
-                'ALTER TABLE `tests_testmodel_added_field`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`to_testmodel_id`)'
-                ' REFERENCES `tests_testmodel` (`id`);'
-                % generate_constraint_name('to_testmodel_id', 'id',
-                                           'tests_testmodel_added_field',
-                                           'tests_testmodel'),
-            ],
-        })
-
-    return mappings
 
 
 def change_meta_db_table_comment(connection):
@@ -1267,7 +912,7 @@ def unique_together(connection):
     generate_unique_constraint_name = \
         make_generate_unique_constraint_name(connection)
 
-    mappings = {
+    return {
         'setting_from_empty': [
             'CREATE UNIQUE INDEX `%s`'
             ' ON `tests_testmodel` (`int_field1`, `char_field1`);'
@@ -1296,6 +941,26 @@ def unique_together(connection):
                                               ['char_field1', 'char_field2']),
         ],
 
+        'removing': [
+            'DROP INDEX `%s` ON `tests_testmodel`;'
+            % generate_unique_constraint_name(
+                'tests_testmodel',
+                ['int_field1', 'char_field1']),
+        ],
+
+        'replace_list': [
+            'DROP INDEX `%s` ON `tests_testmodel`;'
+            % generate_unique_constraint_name(
+                'tests_testmodel',
+                ['int_field1', 'char_field1']),
+
+            'CREATE UNIQUE INDEX `%s`'
+            ' ON `tests_testmodel` (`int_field2`, `char_field2`);'
+            % generate_unique_constraint_name(
+                'tests_testmodel',
+                ['int_field2', 'char_field2']),
+        ],
+
         'upgrade_from_v1_sig': [
             'CREATE UNIQUE INDEX `%s`'
             ' ON `tests_testmodel` (`int_field1`, `char_field1`);'
@@ -1303,52 +968,6 @@ def unique_together(connection):
                                               ['int_field1', 'char_field1']),
         ],
     }
-
-    if django_version >= (1, 9):
-        # In Django >= 1.9, unique_together indexes are created specifically
-        # after table creation, using Django's generated constraint names.
-        mappings.update({
-            'removing': [
-                'DROP INDEX `%s` ON `tests_testmodel`;'
-                % generate_unique_constraint_name(
-                    'tests_testmodel',
-                    ['int_field1', 'char_field1']),
-            ],
-
-            'replace_list': [
-                'DROP INDEX `%s` ON `tests_testmodel`;'
-                % generate_unique_constraint_name(
-                    'tests_testmodel',
-                    ['int_field1', 'char_field1']),
-
-                'CREATE UNIQUE INDEX `%s`'
-                ' ON `tests_testmodel` (`int_field2`, `char_field2`);'
-                % generate_unique_constraint_name(
-                    'tests_testmodel',
-                    ['int_field2', 'char_field2']),
-            ],
-        })
-    else:
-        # In Django < 1.9, unique_together indexes are created during table
-        # creation, using MySQL's default name scheme, instead of using a
-        # generated name, so we need to drop with those hard-coded names.
-        mappings.update({
-            'removing': [
-                'DROP INDEX `int_field1` ON `tests_testmodel`;',
-            ],
-
-            'replace_list': [
-                'DROP INDEX `int_field1` ON `tests_testmodel`;',
-
-                'CREATE UNIQUE INDEX `%s`'
-                ' ON `tests_testmodel` (`int_field2`, `char_field2`);'
-                % generate_unique_constraint_name(
-                    'tests_testmodel',
-                    ['int_field2', 'char_field2']),
-            ],
-        })
-
-    return mappings
 
 
 def index_together(connection):
@@ -1427,113 +1046,79 @@ def constraints(connection):
         The dictionary of SQL mappings.
     """
     is_mariadb = getattr(connection, 'mysql_is_mariadb', False)
-    supports_table_check_constraints = \
-        getattr(connection.features, 'supports_table_check_constraints', False)
 
-    mappings = {}
+    mappings = {
+        'append_list': [
+            "ALTER TABLE `tests_testmodel`"
+            " ADD CONSTRAINT `new_unique_constraint`"
+            " UNIQUE (`int_field2`, `int_field1`);",
 
-    if supports_table_check_constraints:
-        # Django 3.0+ with either MySQL 8.0.16+ or MariaDB 10.2.1+.
+            "ALTER TABLE `tests_testmodel`"
+            " ADD CONSTRAINT `new_check_constraint`"
+            " CHECK (`int_field1` >= 100);",
+        ],
+
+        'setting_from_empty': [
+            f"ALTER TABLE `tests_testmodel`"
+            f" ADD CONSTRAINT `new_check_constraint`"
+            f" CHECK (`char_field1` LIKE BINARY 'test{PCT}');",
+
+            'ALTER TABLE `tests_testmodel`'
+            ' ADD CONSTRAINT `new_unique_constraint_plain`'
+            ' UNIQUE (`int_field1`, `int_field2`);',
+        ],
+    }
+
+    if is_mariadb:
         mappings.update({
-            'append_list': [
+            'removing': [
                 "ALTER TABLE `tests_testmodel`"
-                " ADD CONSTRAINT `new_unique_constraint`"
-                " UNIQUE (`int_field2`, `int_field1`);",
+                " DROP CONSTRAINT IF EXISTS `base_check_constraint`;",
 
                 "ALTER TABLE `tests_testmodel`"
-                " ADD CONSTRAINT `new_check_constraint`"
-                " CHECK (`int_field1` >= 100);",
+                " DROP INDEX `base_unique_constraint_plain`;",
             ],
 
-            'setting_from_empty': [
+            'replace_list': [
+                'ALTER TABLE `tests_testmodel`'
+                ' DROP CONSTRAINT IF EXISTS `base_check_constraint`;',
+
+                'ALTER TABLE `tests_testmodel`'
+                ' DROP INDEX `base_unique_constraint_plain`;',
+
                 f"ALTER TABLE `tests_testmodel`"
                 f" ADD CONSTRAINT `new_check_constraint`"
                 f" CHECK (`char_field1` LIKE BINARY 'test{PCT}');",
 
                 'ALTER TABLE `tests_testmodel`'
                 ' ADD CONSTRAINT `new_unique_constraint_plain`'
-                ' UNIQUE (`int_field1`, `int_field2`);',
+                ' UNIQUE (`int_field1`, `char_field1`);',
             ],
         })
-
-        if is_mariadb:
-            mappings.update({
-                'removing': [
-                    "ALTER TABLE `tests_testmodel`"
-                    " DROP CONSTRAINT IF EXISTS `base_check_constraint`;",
-
-                    "ALTER TABLE `tests_testmodel`"
-                    " DROP INDEX `base_unique_constraint_plain`;",
-                ],
-
-                'replace_list': [
-                    'ALTER TABLE `tests_testmodel`'
-                    ' DROP CONSTRAINT IF EXISTS `base_check_constraint`;',
-
-                    'ALTER TABLE `tests_testmodel`'
-                    ' DROP INDEX `base_unique_constraint_plain`;',
-
-                    f"ALTER TABLE `tests_testmodel`"
-                    f" ADD CONSTRAINT `new_check_constraint`"
-                    f" CHECK (`char_field1` LIKE BINARY 'test{PCT}');",
-
-                    'ALTER TABLE `tests_testmodel`'
-                    ' ADD CONSTRAINT `new_unique_constraint_plain`'
-                    ' UNIQUE (`int_field1`, `char_field1`);',
-                ],
-            })
-        else:
-            mappings.update({
-                'removing': [
-                    "ALTER TABLE `tests_testmodel`"
-                    " DROP CHECK `base_check_constraint`;",
-
-                    "ALTER TABLE `tests_testmodel`"
-                    " DROP INDEX `base_unique_constraint_plain`;",
-                ],
-
-                'replace_list': [
-                    'ALTER TABLE `tests_testmodel`'
-                    ' DROP CHECK `base_check_constraint`;',
-
-                    'ALTER TABLE `tests_testmodel`'
-                    ' DROP INDEX `base_unique_constraint_plain`;',
-
-                    f"ALTER TABLE `tests_testmodel`"
-                    f" ADD CONSTRAINT `new_check_constraint`"
-                    f" CHECK (`char_field1` LIKE BINARY 'test{PCT}');",
-
-                    'ALTER TABLE `tests_testmodel`'
-                    ' ADD CONSTRAINT `new_unique_constraint_plain`'
-                    ' UNIQUE (`int_field1`, `char_field1`);',
-                ],
-            })
     else:
         mappings.update({
-            'append_list': [
-                "ALTER TABLE `tests_testmodel`"
-                " ADD CONSTRAINT `new_unique_constraint`"
-                " UNIQUE (`int_field2`, `int_field1`);",
-            ],
-
             'removing': [
+                "ALTER TABLE `tests_testmodel`"
+                " DROP CHECK `base_check_constraint`;",
+
                 "ALTER TABLE `tests_testmodel`"
                 " DROP INDEX `base_unique_constraint_plain`;",
             ],
 
             'replace_list': [
-                "ALTER TABLE `tests_testmodel`"
-                " DROP INDEX `base_unique_constraint_plain`;",
+                'ALTER TABLE `tests_testmodel`'
+                ' DROP CHECK `base_check_constraint`;',
 
-                "ALTER TABLE `tests_testmodel`"
-                " ADD CONSTRAINT `new_unique_constraint_plain`"
-                " UNIQUE (`int_field1`, `char_field1`);",
-            ],
+                'ALTER TABLE `tests_testmodel`'
+                ' DROP INDEX `base_unique_constraint_plain`;',
 
-            'setting_from_empty': [
-                "ALTER TABLE `tests_testmodel`"
-                " ADD CONSTRAINT `new_unique_constraint_plain`"
-                " UNIQUE (`int_field1`, `int_field2`);",
+                f"ALTER TABLE `tests_testmodel`"
+                f" ADD CONSTRAINT `new_check_constraint`"
+                f" CHECK (`char_field1` LIKE BINARY 'test{PCT}');",
+
+                'ALTER TABLE `tests_testmodel`'
+                ' ADD CONSTRAINT `new_unique_constraint_plain`'
+                ' UNIQUE (`int_field1`, `char_field1`);',
             ],
         })
 
@@ -1642,8 +1227,7 @@ def indexes(connection):
                                   model_meta_indexes=True),
 
             'CREATE INDEX `my_custom_index`'
-            ' ON `tests_testmodel` (`char_field1`, `char_field2`%s);'
-            % DESC,
+            ' ON `tests_testmodel` (`char_field1`, `char_field2` DESC);',
         },
 
         # NOTE: condition is ignored for MySQL.
@@ -1713,8 +1297,8 @@ def preprocessing(connection):
 
     return {
         'add_change_field': [
-            'ALTER TABLE `tests_testmodel`'
-            ' ADD COLUMN `added_field` varchar(50) NULL DEFAULT \'bar\';',
+            "ALTER TABLE `tests_testmodel`"
+            " ADD COLUMN `added_field` varchar(50) NULL DEFAULT 'bar';",
 
             'ALTER TABLE `tests_testmodel`'
             ' ALTER COLUMN `added_field` DROP DEFAULT;',
@@ -1866,7 +1450,42 @@ def evolver(connection):
     generate_constraint_name = make_generate_constraint_name(connection)
     generate_index_name = make_generate_index_name(connection)
 
-    mappings = {
+    return {
+        'complex_deps_new_db_new_models': [
+            f'CREATE TABLE `evolutions_app2_evolutionsapp2testmodel`'
+            f' (`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
+            f' `char_field` varchar(10) NOT NULL,'
+            f' `fkey_id` {pk_type} NULL);',
+
+            f'CREATE TABLE `evolutions_app2_evolutionsapp2testmodel2`'
+            f' (`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
+            f' `fkey_id` {pk_type} NULL,'
+            f' `int_field` integer NOT NULL);',
+
+            f'CREATE TABLE `evolutions_app_evolutionsapptestmodel`'
+            f' (`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
+            f' `char_field` varchar(10) NULL,'
+            f' `char_field2` varchar(20) NULL);',
+
+            'ALTER TABLE `evolutions_app2_evolutionsapp2testmodel`'
+            ' ADD CONSTRAINT `%s` FOREIGN KEY (`fkey_id`)'
+            ' REFERENCES `evolutions_app_evolutionsapptestmodel` (`id`);'
+            % generate_constraint_name(
+                'fkey_id',
+                'id',
+                'evolutions_app2_evolutionsapp2testmodel',
+                'evolutions_app_evolutionsapptestmodel'),
+
+            'ALTER TABLE `evolutions_app2_evolutionsapp2testmodel2`'
+            ' ADD CONSTRAINT `%s` FOREIGN KEY (`fkey_id`)'
+            ' REFERENCES `evolutions_app2_evolutionsapp2testmodel` (`id`);'
+            % generate_constraint_name(
+                'fkey_id',
+                'id',
+                'evolutions_app2_evolutionsapp2testmodel2',
+                'evolutions_app2_evolutionsapp2testmodel'),
+        ],
+
         'complex_deps_upgrade_task_1': [
             'ALTER TABLE `evolutions_app_evolutionsapptestmodel`'
             ' MODIFY COLUMN `char_field` varchar(10) DEFAULT NULL,'
@@ -1884,6 +1503,32 @@ def evolver(connection):
                                   'fkey_id', 'fkey'),
         ],
 
+        'create_table': [
+            f'CREATE TABLE `tests_testmodel` '
+            f'(`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
+            f' `value` varchar(100) NOT NULL);',
+        ],
+
+        'create_tables_with_deferred_refs': [
+            f'CREATE TABLE `tests_testmodel` '
+            f'(`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
+            f' `value` varchar(100) NOT NULL,'
+            f' `ref_id` {pk_type} NOT NULL);',
+
+            f'CREATE TABLE `evolutions_app_reffedevolvertestmodel` '
+            f'(`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
+            f' `value` varchar(100) NOT NULL);',
+
+            'ALTER TABLE `tests_testmodel`'
+            ' ADD CONSTRAINT `%s` FOREIGN KEY (`ref_id`)'
+            ' REFERENCES `evolutions_app_reffedevolvertestmodel` (`id`);'
+            % generate_constraint_name(
+                'ref_id',
+                'id',
+                'tests_testmodel',
+                'evolutions_app_reffedevolvertestmodel'),
+        ],
+
         'evolve_app_task': [
             'UPDATE `tests_testmodel` SET `value`=LEFT(`value`,100);',
 
@@ -1895,240 +1540,3 @@ def evolver(connection):
             'DROP TABLE `tests_testmodel`;',
         ],
     }
-
-    if django_version >= (1, 7):
-        mappings.update({
-            'create_table': [
-                f'CREATE TABLE `tests_testmodel` '
-                f'(`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                f' `value` varchar(100) NOT NULL);',
-            ],
-        })
-    else:
-        mappings.update({
-            'create_table': [
-                'CREATE TABLE `tests_testmodel` (',
-                '    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,',
-                '    `value` varchar(100) NOT NULL',
-                ')',
-                ';',
-            ],
-        })
-
-    if django_version >= (1, 8):
-        mappings.update({
-            'complex_deps_new_db_new_models': [
-                f'CREATE TABLE `evolutions_app2_evolutionsapp2testmodel`'
-                f' (`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                f' `char_field` varchar(10) NOT NULL,'
-                f' `fkey_id` {pk_type} NULL);',
-
-                f'CREATE TABLE `evolutions_app2_evolutionsapp2testmodel2`'
-                f' (`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                f' `fkey_id` {pk_type} NULL,'
-                f' `int_field` integer NOT NULL);',
-
-                f'CREATE TABLE `evolutions_app_evolutionsapptestmodel`'
-                f' (`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                f' `char_field` varchar(10) NULL,'
-                f' `char_field2` varchar(20) NULL);',
-
-                'ALTER TABLE `evolutions_app2_evolutionsapp2testmodel`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`fkey_id`)'
-                ' REFERENCES `evolutions_app_evolutionsapptestmodel` (`id`);'
-                % generate_constraint_name(
-                    'fkey_id',
-                    'id',
-                    'evolutions_app2_evolutionsapp2testmodel',
-                    'evolutions_app_evolutionsapptestmodel'),
-
-                'ALTER TABLE `evolutions_app2_evolutionsapp2testmodel2`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`fkey_id`)'
-                ' REFERENCES `evolutions_app2_evolutionsapp2testmodel` (`id`);'
-                % generate_constraint_name(
-                    'fkey_id',
-                    'id',
-                    'evolutions_app2_evolutionsapp2testmodel2',
-                    'evolutions_app2_evolutionsapp2testmodel'),
-            ],
-
-            'create_tables_with_deferred_refs': [
-                f'CREATE TABLE `tests_testmodel` '
-                f'(`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                f' `value` varchar(100) NOT NULL,'
-                f' `ref_id` {pk_type} NOT NULL);',
-
-                f'CREATE TABLE `evolutions_app_reffedevolvertestmodel` '
-                f'(`id` {pk_type} AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                f' `value` varchar(100) NOT NULL);',
-
-                'ALTER TABLE `tests_testmodel`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`ref_id`)'
-                ' REFERENCES `evolutions_app_reffedevolvertestmodel` (`id`);'
-                % generate_constraint_name(
-                    'ref_id',
-                    'id',
-                    'tests_testmodel',
-                    'evolutions_app_reffedevolvertestmodel'),
-            ],
-        })
-    elif django_version >= (1, 7):
-        mappings.update({
-            'complex_deps_new_db_new_models': [
-                'CREATE TABLE `evolutions_app2_evolutionsapp2testmodel`'
-                ' (`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                ' `char_field` varchar(10) NOT NULL,'
-                ' `fkey_id` integer NULL);',
-
-                'CREATE TABLE `evolutions_app2_evolutionsapp2testmodel2`'
-                ' (`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                ' `fkey_id` integer NULL,'
-                ' `int_field` integer NOT NULL);',
-
-                'CREATE TABLE `evolutions_app_evolutionsapptestmodel`'
-                ' (`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                ' `char_field` varchar(10) NULL,'
-                ' `char_field2` varchar(20) NULL);',
-
-                'ALTER TABLE `evolutions_app2_evolutionsapp2testmodel`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`fkey_id`)'
-                ' REFERENCES `evolutions_app_evolutionsapptestmodel` (`id`);'
-                % generate_constraint_name(
-                    'fkey_id',
-                    'id',
-                    'evolutions_app2_evolutionsapp2testmodel',
-                    'evolutions_app_evolutionsapptestmodel'),
-
-                'CREATE INDEX `%s`'
-                ' ON `evolutions_app2_evolutionsapp2testmodel` (`fkey_id`);'
-                % generate_index_name(
-                    'evolutions_app2_evolutionsapp2testmodel',
-                    'fkey_id',
-                    'fkey'),
-
-                'ALTER TABLE `evolutions_app2_evolutionsapp2testmodel2`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`fkey_id`)'
-                ' REFERENCES `evolutions_app2_evolutionsapp2testmodel` (`id`);'
-                % generate_constraint_name(
-                    'fkey_id',
-                    'id',
-                    'evolutions_app2_evolutionsapp2testmodel2',
-                    'evolutions_app2_evolutionsapp2testmodel'),
-
-                'CREATE INDEX `%s`'
-                ' ON `evolutions_app2_evolutionsapp2testmodel2` (`fkey_id`);'
-                % generate_index_name(
-                    'evolutions_app2_evolutionsapp2testmodel2',
-                    'fkey_id',
-                    'fkey'),
-            ],
-
-            'create_tables_with_deferred_refs': [
-                'CREATE TABLE `tests_testmodel` '
-                '(`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                ' `value` varchar(100) NOT NULL,'
-                ' `ref_id` integer NOT NULL);',
-
-                'CREATE TABLE `evolutions_app_reffedevolvertestmodel` '
-                '(`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,'
-                ' `value` varchar(100) NOT NULL);',
-
-                'ALTER TABLE `tests_testmodel`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`ref_id`)'
-                ' REFERENCES `evolutions_app_reffedevolvertestmodel` (`id`);'
-                % generate_constraint_name(
-                    'ref_id',
-                    'id',
-                    'tests_testmodel',
-                    'evolutions_app_reffedevolvertestmodel'),
-
-                'CREATE INDEX `%s` ON `tests_testmodel` (`ref_id`);'
-                % generate_index_name('tests_testmodel', 'ref_id', 'ref'),
-            ],
-        })
-    else:
-        mappings.update({
-            'complex_deps_new_db_new_models': [
-                'CREATE TABLE `evolutions_app2_evolutionsapp2testmodel` (',
-                '    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,',
-                '    `char_field` varchar(10) NOT NULL,',
-                '    `fkey_id` integer',
-                ')',
-                ';',
-
-                'CREATE TABLE `evolutions_app2_evolutionsapp2testmodel2` (',
-                '    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,',
-                '    `fkey_id` integer,',
-                '    `int_field` integer NOT NULL',
-                ')',
-                ';',
-
-                'CREATE TABLE `evolutions_app_evolutionsapptestmodel` (',
-                '    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,',
-                '    `char_field` varchar(10),',
-                '    `char_field2` varchar(20)',
-                ')',
-                ';',
-
-                'ALTER TABLE `evolutions_app2_evolutionsapp2testmodel2`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`fkey_id`)'
-                ' REFERENCES `evolutions_app2_evolutionsapp2testmodel` (`id`);'
-                % generate_constraint_name(
-                    'fkey_id',
-                    'id',
-                    'evolutions_app2_evolutionsapp2testmodel2',
-                    'evolutions_app2_evolutionsapp2testmodel'),
-
-                'ALTER TABLE `evolutions_app2_evolutionsapp2testmodel`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`fkey_id`)'
-                ' REFERENCES `evolutions_app_evolutionsapptestmodel` (`id`);'
-                % generate_constraint_name(
-                    'fkey_id',
-                    'id',
-                    'evolutions_app2_evolutionsapp2testmodel',
-                    'evolutions_app_evolutionsapptestmodel'),
-
-                'CREATE INDEX `%s`'
-                ' ON `evolutions_app2_evolutionsapp2testmodel` (`fkey_id`);'
-                % generate_index_name(
-                    'evolutions_app2_evolutionsapp2testmodel',
-                    'fkey_id',
-                    'fkey'),
-
-                'CREATE INDEX `%s`'
-                ' ON `evolutions_app2_evolutionsapp2testmodel2` (`fkey_id`);'
-                % generate_index_name(
-                    'evolutions_app2_evolutionsapp2testmodel2',
-                    'fkey_id',
-                    'fkey'),
-            ],
-
-            'create_tables_with_deferred_refs': [
-                'CREATE TABLE `tests_testmodel` (',
-                '    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,',
-                '    `value` varchar(100) NOT NULL,',
-                '    `ref_id` integer NOT NULL',
-                ')',
-                ';',
-
-                'CREATE TABLE `evolutions_app_reffedevolvertestmodel` (',
-                '    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,',
-                '    `value` varchar(100) NOT NULL',
-                ')',
-                ';',
-
-                'ALTER TABLE `tests_testmodel`'
-                ' ADD CONSTRAINT `%s` FOREIGN KEY (`ref_id`)'
-                ' REFERENCES `evolutions_app_reffedevolvertestmodel` (`id`);'
-                % generate_constraint_name(
-                    'ref_id',
-                    'id',
-                    'tests_testmodel',
-                    'evolutions_app_reffedevolvertestmodel'),
-
-                'CREATE INDEX `%s` ON `tests_testmodel` (`ref_id`);'
-                % generate_index_name('tests_testmodel', 'ref_id', 'ref'),
-            ],
-        })
-
-    return mappings

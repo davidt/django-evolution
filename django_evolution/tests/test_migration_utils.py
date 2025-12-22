@@ -2,16 +2,8 @@
 
 from __future__ import annotations
 
-from django.db import DEFAULT_DB_ALIAS, connections, models
-
-try:
-    # Django >= 1.7
-    from django.db import migrations
-    from django.db.migrations.recorder import MigrationRecorder
-except ImportError:
-    # Django < 1.7
-    MigrationRecorder = None
-    migrations = None
+from django.db import DEFAULT_DB_ALIAS, connections, migrations, models
+from django.db.migrations.recorder import MigrationRecorder
 
 from django_evolution.db.state import DatabaseState
 from django_evolution.errors import (MigrationConflictsError,
@@ -45,36 +37,33 @@ class MigrationTestModel(BaseTestModel):
     field3 = models.BooleanField()
 
 
-if migrations:
-    class InitialMigration(migrations.Migration):
-        operations = [
-            migrations.CreateModel(
-                name='MigrationTestModel',
-                fields=[
-                    ('id', models.AutoField(verbose_name='ID',
-                                            serialize=False,
-                                            auto_created=True,
-                                            primary_key=True)),
-                    ('field1', models.IntegerField()),
-                    ('field2', models.CharField(max_length=10)),
-                ]
-            ),
-        ]
+class InitialMigration(migrations.Migration):
+    operations = [
+        migrations.CreateModel(
+            name='MigrationTestModel',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID',
+                                        serialize=False,
+                                        auto_created=True,
+                                        primary_key=True)),
+                ('field1', models.IntegerField()),
+                ('field2', models.CharField(max_length=10)),
+            ]
+        ),
+    ]
 
-    class AddFieldMigration(migrations.Migration):
-        dependencies = [
-            ('tests', '0001_initial'),
-        ]
 
-        operations = [
-            migrations.AddField(
-                model_name='MigrationTestModel',
-                name='field3',
-                field=models.BooleanField()),
-        ]
-else:
-    InitialMigration = None
-    AddFieldMigration = None
+class AddFieldMigration(migrations.Migration):
+    dependencies = [
+        ('tests', '0001_initial'),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name='MigrationTestModel',
+            name='field3',
+            field=models.BooleanField()),
+    ]
 
 
 class MigrationListTests(TestCase):

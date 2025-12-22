@@ -171,18 +171,6 @@ class AddField(BaseModelFieldMutation):
                               model=model,
                               field=field)
 
-        if hasattr(field, '_get_m2m_column_name'):
-            # Django < 1.2
-            field.m2m_column_name = \
-                partial(field._get_m2m_column_name, related)
-            field.m2m_reverse_name = \
-                partial(field._get_m2m_reverse_name, related)
-
-            field.m2m_column_name = \
-                partial(field._get_m2m_attr, related, 'column')
-            field.m2m_reverse_name = \
-                partial(field._get_m2m_reverse_attr, related, 'column')
-
         mutator.add_sql(self, mutator.evolver.add_m2m_table(model, field))
 
     def _create_field(self, mutator, parent_model):

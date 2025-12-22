@@ -4,23 +4,12 @@ from __future__ import annotations
 
 from inspect import signature
 
-from django.db.models import CheckConstraint, F, Q
+from django import apps
+from django.db.models import CheckConstraint, Index, F, Q
 from django.db.models.options import Options
 
-try:
-    # Django >= 1.7
-    from django import apps
-except ImportError:
-    # Django < 1.7
-    apps = None
 
-try:
-    # Django >= 1.11
-    from django.db.models import Index
-    _test_index = Index(fields=['test'])
-except ImportError:
-    Index = None
-    _test_index = None
+_test_index = Index(fields=['test'])
 
 
 _options = Options({})

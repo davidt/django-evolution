@@ -9,14 +9,8 @@ from __future__ import annotations
 from copy import deepcopy
 
 from django.conf import settings
+from django.core.signals import setting_changed
 from django.dispatch import receiver
-
-try:
-    # Django >= 1.8
-    from django.core.signals import setting_changed
-except ImportError:
-    # Django < 1.8
-    from django.test.signals import setting_changed
 
 from django_evolution.deprecation import RemovedInDjangoEvolution30Warning
 

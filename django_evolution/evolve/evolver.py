@@ -135,9 +135,7 @@ class Evolver(object):
 
         self.connection = connections[database_name]
 
-        if hasattr(self.connection, 'prepare_database'):
-            # Django >= 1.8
-            self.connection.prepare_database()
+        self.connection.prepare_database()
 
         self.database_state = DatabaseState(self.database_name)
         self.target_project_sig = \
