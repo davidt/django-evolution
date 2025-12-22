@@ -139,7 +139,6 @@ from django.db import DEFAULT_DB_ALIAS, models
 from django.db.models import CheckConstraint
 from django.utils.translation import gettext as _
 
-from django_evolution.compat.db import db_router_allows_schema_upgrade
 from django_evolution.compat.models import (GenericRelation,
                                             get_models,
                                             get_remote_field,
@@ -157,6 +156,7 @@ from django_evolution.utils.apps import (
     get_apps,
     get_legacy_app_label,
 )
+from django_evolution.utils.db import db_router_allows_schema_upgrade
 from django_evolution.utils.evolutions import get_app_upgrade_info
 from django_evolution.utils.migrations import MigrationList
 

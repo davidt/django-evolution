@@ -66,7 +66,6 @@ Private API
    django_evolution.placeholders
    django_evolution.support
    django_evolution.compat.commands
-   django_evolution.compat.db
    django_evolution.compat.models
    django_evolution.compat.pickle
    django_evolution.db.common
@@ -77,6 +76,7 @@ Private API
    django_evolution.db.state
    django_evolution.utils.apps
    django_evolution.utils.datastructures
+   django_evolution.utils.db
    django_evolution.utils.evolutions
    django_evolution.utils.graph
    django_evolution.utils.migrations

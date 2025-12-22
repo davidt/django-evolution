@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from django.core.management import color
 
-from django_evolution.compat.db import sql_delete_constraints
 from django_evolution.compat.models import (get_rel_target_field,
                                             get_remote_field,
                                             get_remote_field_model)
 from django_evolution.db.common import BaseEvolutionOperations
 from django_evolution.db.sql_result import AlterTableSQLResult, SQLResult
+from django_evolution.utils.db import sql_delete_constraints
 
 
 class EvolutionOperations(BaseEvolutionOperations):

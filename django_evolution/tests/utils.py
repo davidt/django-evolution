@@ -13,12 +13,6 @@ from django.conf import settings
 from django.db import connections
 from django.db.utils import ConnectionHandler, DEFAULT_DB_ALIAS
 
-from django_evolution.compat.db import (create_index_name,
-                                        create_index_together_name,
-                                        digest,
-                                        sql_create_app,
-                                        sql_delete,
-                                        truncate_name)
 from django_evolution.compat.models import (all_models,
                                             get_model_name,
                                             get_models,
@@ -34,6 +28,14 @@ from django_evolution.utils.apps import (
     register_app,
     register_app_models,
     unregister_app_model,
+)
+from django_evolution.utils.db import (
+    create_index_name,
+    create_index_together_name,
+    digest,
+    sql_create_app,
+    sql_delete,
+    truncate_name,
 )
 from django_evolution.utils.sql import SQLExecutor
 

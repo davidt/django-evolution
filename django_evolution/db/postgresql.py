@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import django
 
-from django_evolution.compat.db import truncate_name
+from django_evolution.compat.models import get_field_is_relation
 from django_evolution.db.common import BaseEvolutionOperations
 from django_evolution.db.sql_result import AlterTableSQLResult
-from django_evolution.utils.models import get_field_is_relation
+from django_evolution.utils.db import truncate_name
 
 
 class EvolutionOperations(BaseEvolutionOperations):

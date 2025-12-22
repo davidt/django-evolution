@@ -5,9 +5,8 @@ from __future__ import annotations
 import logging
 
 from django.db import connections
-from django.db.transaction import TransactionManagementError
+from django.db.transaction import atomic, TransactionManagementError
 
-from django_evolution.compat.db import atomic
 from django_evolution.db import EvolutionOperationsMulti
 
 

@@ -13,7 +13,6 @@ except ImportError:
     # Django < 1.7
     migrations = None
 
-from django_evolution.compat.db import sql_create_app, sql_delete
 from django_evolution.consts import UpgradeMethod
 from django_evolution.db.state import DatabaseState
 from django_evolution.errors import (EvolutionTaskAlreadyQueuedError,
@@ -56,6 +55,7 @@ from django_evolution.utils.apps import (
     get_apps,
     register_app_models,
 )
+from django_evolution.utils.db import sql_create_app, sql_delete
 from django_evolution.utils.migrations import (MigrationList,
                                                record_applied_migrations)
 

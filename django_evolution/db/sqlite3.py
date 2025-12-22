@@ -8,13 +8,10 @@ import django
 from django.db import models
 from django.db.backends.sqlite3.base import Database
 
-from django_evolution.compat.db import (create_index_name,
-                                        sql_indexes_for_model)
-from django_evolution.compat.models import (get_remote_field,
-                                            get_remote_field_model)
-from django_evolution.db.common import (AlterTableSQLResult,
-                                        BaseEvolutionOperations,
-                                        SQLResult)
+from django_evolution.db.common import BaseEvolutionOperations
+from django_evolution.db.sql_result import AlterTableSQLResult, SQLResult
+from django_evolution.utils.db import (create_index_name,
+                                       sql_indexes_for_model)
 from django_evolution.utils.sql import NewTransactionSQL, NoTransactionSQL
 
 

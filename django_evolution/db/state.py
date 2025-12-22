@@ -6,9 +6,9 @@ from copy import deepcopy
 
 from django.db import connections
 
-from django_evolution.compat.db import convert_table_name
 from django_evolution.db import EvolutionOperationsMulti
 from django_evolution.errors import DatabaseStateError
+from django_evolution.utils.db import convert_table_name
 
 
 class IndexState(object):

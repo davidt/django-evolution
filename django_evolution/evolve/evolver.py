@@ -11,10 +11,10 @@ from collections import OrderedDict
 from contextlib import contextmanager
 
 from django.db import connections
+from django.db.transaction import atomic
 from django.db.utils import DEFAULT_DB_ALIAS
 from django.utils.translation import gettext as _
 
-from django_evolution.compat.db import atomic
 from django_evolution.db.state import DatabaseState
 from django_evolution.diff import Diff
 from django_evolution.errors import (EvolutionException,

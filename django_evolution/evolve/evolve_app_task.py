@@ -13,8 +13,6 @@ from collections import OrderedDict
 
 from django.utils.translation import gettext as _
 
-from django_evolution.compat.db import (db_get_installable_models_for_app,
-                                        sql_create_models)
 from django_evolution.consts import UpgradeMethod
 from django_evolution.errors import EvolutionExecutionError
 from django_evolution.evolve.base import BaseEvolutionTask
@@ -29,6 +27,8 @@ from django_evolution.support import supports_migrations
 from django_evolution.utils.apps import get_app_label, get_legacy_app_label
 from django_evolution.utils.datastructures import (filter_dup_list_items,
                                                    merge_dicts)
+from django_evolution.utils.db import (db_get_installable_models_for_app,
+                                       sql_create_models)
 from django_evolution.utils.evolutions import (get_app_pending_mutations,
                                                get_app_upgrade_info,
                                                get_applied_evolutions,

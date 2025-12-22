@@ -10,22 +10,24 @@ import django
 from django.db import connection as default_connection, models
 
 from django_evolution import support
-from django_evolution.compat.db import (collect_sql_schema_editor,
-                                        create_index_name,
-                                        create_index_together_name,
-                                        sql_add_constraints,
-                                        sql_create_for_many_to_many_field,
-                                        sql_delete_constraints,
-                                        sql_delete_index,
-                                        sql_indexes_for_field,
-                                        sql_indexes_for_fields,
-                                        truncate_name)
 from django_evolution.compat.models import (get_remote_field,
                                             get_remote_field_model,
                                             get_remote_field_related_model)
 from django_evolution.db.sql_result import AlterTableSQLResult, SQLResult
 from django_evolution.errors import EvolutionNotImplementedError
 from django_evolution.support import supports_index_feature
+from django_evolution.utils.db import (
+    collect_sql_schema_editor,
+    create_index_name,
+    create_index_together_name,
+    sql_add_constraints,
+    sql_create_for_many_to_many_field,
+    sql_delete_constraints,
+    sql_delete_index,
+    sql_indexes_for_field,
+    sql_indexes_for_fields,
+    truncate_name,
+)
 from django_evolution.utils.models import iter_non_m2m_reverse_relations
 
 
