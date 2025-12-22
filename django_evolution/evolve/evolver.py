@@ -179,11 +179,11 @@ class Evolver:
 
             # Let's make completely sure that we've only found the models
             # we expect. This is mostly for the benefit of unit tests.
-            model_names = set(
+            model_names = {
                 model_sig.model_name
                 for model_sig in app_sig.model_sigs
-            )
-            expected_model_names = set(['Evolution', 'Version'])
+            }
+            expected_model_names = {'Evolution', 'Version'}
 
             assert model_names == expected_model_names, (
                 'Unexpected models found for django_evolution app: %s'

@@ -161,7 +161,7 @@ class BaseCommand(DjangoBaseCommand):
             return [
                 option
                 for option in parser.option_list
-                if option.get_opt_string() not in ('--help', '--version')
+                if option.get_opt_string() not in {'--help', '--version'}
             ]
 
         return super().__getattribute__(name)

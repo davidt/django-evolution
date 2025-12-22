@@ -379,8 +379,7 @@ class EvolutionOperations(BaseEvolutionOperations):
         internal_type = base_field.get_internal_type()
 
         if internal_type == 'ArrayField':
-            for field_type in self._iter_field_types(base_field):
-                yield field_type
+            yield from self._iter_field_types(base_field)
         elif base_field.is_relation:
             yield field.rel_db_type(self.connection)
         else:

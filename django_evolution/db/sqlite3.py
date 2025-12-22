@@ -236,11 +236,11 @@ class SQLiteAlterTableSQLResult(AlterTableSQLResult):
                 qn(TEMP_TABLE_NAME),
                 ', '.join(
                     qn(column)
-                    for column in field_values.keys()
+                    for column in field_values
                 ),
                 ', '.join(
-                    str(_value)
-                    for _value in field_values.values()
+                    str(value)
+                    for value in field_values.values()
                 ),
                 qn(table_name),
             ),
@@ -356,11 +356,10 @@ class EvolutionOperations(BaseEvolutionOperations):
 
     name = 'SQLite'
 
-    supported_change_meta = dict(
-        BaseEvolutionOperations.supported_change_meta,
-        **{
-            'db_table_comment': False,
-        })
+    supported_change_meta = {
+        **BaseEvolutionOperations.supported_change_meta,
+        'db_table_comment': False,
+    }
 
     alter_table_sql_result_cls = SQLiteAlterTableSQLResult
 

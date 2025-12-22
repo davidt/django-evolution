@@ -140,7 +140,7 @@ class ChangeField(BaseModelFieldMutation):
         field = model._meta.get_field(field_name)
 
         if self.field_type is None:
-            for attr_name in self.field_attrs.keys():
+            for attr_name in self.field_attrs:
                 if attr_name not in mutator.evolver.supported_change_attrs:
                     raise EvolutionNotImplementedError(
                         "ChangeField does not support modifying the '%s' "

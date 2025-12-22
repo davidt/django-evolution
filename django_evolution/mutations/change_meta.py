@@ -69,7 +69,7 @@ class ChangeMeta(BaseModelMutation):
         """
         prop_name = self.prop_name
 
-        if prop_name in ('index_together', 'unique_together'):
+        if prop_name in {'index_together', 'unique_together'}:
             # Make sure these always appear as lists and not tuples, for
             # compatibility.
             norm_value = list(self.new_value)

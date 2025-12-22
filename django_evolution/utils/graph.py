@@ -189,11 +189,11 @@ class DependencyGraph:
         if not isinstance(node_keys, set):
             node_keys = set(node_keys)
 
-        self._pending_deps -= set(
+        self._pending_deps -= {
             dep
             for dep in self._pending_deps
             if dep[0] in node_keys or dep[1] in node_keys
-        )
+        }
 
     def finalize(self):
         """Finalize the graph.
@@ -547,10 +547,10 @@ class EvolutionGraph(DependencyGraph):
             migrations (django_evolution.utils.migrations.MigrationList):
                 The list of migrations to mark as applied.
         """
-        self.remove_dependencies(set(
+        self.remove_dependencies({
             self._make_migration_key(migration_target)
             for migration_target in migrations.to_targets()
-        ))
+        })
 
     def iter_batches(self):
         """Iterate through batches of consecutive evolutions and migrations.

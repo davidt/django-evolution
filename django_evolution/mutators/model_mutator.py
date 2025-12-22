@@ -237,7 +237,7 @@ class ModelMutator(BaseAppStateMutator):
         """
         assert not self.finalized
 
-        if prop_name in ('index_together', 'unique_together'):
+        if prop_name in {'index_together', 'unique_together'}:
             old_value = getattr(self.model_sig, prop_name)
         elif prop_name == 'constraints':
             # Django >= 2.2

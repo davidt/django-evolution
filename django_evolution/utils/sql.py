@@ -282,8 +282,7 @@ class SQLExecutor:
             if callable(statements):
                 statements = statements(self._cursor)
 
-                for result in self._prepare_sql(statements):
-                    yield result
+                yield from self._prepare_sql(statements)
             else:
                 new_transaction = False
 

@@ -340,5 +340,4 @@ def iter_non_m2m_reverse_relations(field):
             # Now do the same for the fields on the model of the related field.
             other_rel_fields = iter_non_m2m_reverse_relations(rel.remote_field)
 
-            for rel2 in other_rel_fields:
-                yield rel2
+            yield from other_rel_fields

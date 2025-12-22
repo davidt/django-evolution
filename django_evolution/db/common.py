@@ -67,7 +67,7 @@ class BaseEvolutionOperations:
     )
 
     ignored_m2m_attrs = {
-        models.ManyToManyField: set(['null']),
+        models.ManyToManyField: {'null'},
     }
 
     #: The default tablespace for the database, if tablespaces are supported.
@@ -1656,10 +1656,11 @@ class BaseEvolutionOperations:
                     index_name = index_state.name
 
                     index = self._create_index_from_mutation_info(
-                        dict(index_info, **{
+                        {
+                            **index_info,
                             'name': index_name,
                             'fields': list(index_field_names),
-                        }))
+                        })
                     sql_result.add('%s;' % index.remove_sql(model,
                                                             schema_editor))
 
@@ -1983,13 +1984,13 @@ class BaseEvolutionOperations:
                                             new_rel.field))
                 if (rel_from_model._meta.db_table not in seen_m2m_models and
                     db_state.has_model(rel_from_model)):
-                        models_to_refs[rel_to_model].append(
-                            (rel_from_model, old_rel_field))
+                    models_to_refs[rel_to_model].append(
+                        (rel_from_model, old_rel_field))
 
         if models_to_refs:
             remove_refs = models_to_refs.copy()
 
-            for ref_to_model in models_to_refs.keys():
+            for ref_to_model in models_to_refs:
                 sql_result.add_sql(sql_delete_constraints(
                     connection=connection,
                     model=ref_to_model,

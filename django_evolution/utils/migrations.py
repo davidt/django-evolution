@@ -247,10 +247,10 @@ class MigrationList:
             A set of migration targets. Each entry is a tuple containing
             the app label and name.
         """
-        return set(
+        return {
             (info['app_label'], info['name'])
             for info in self
-        )
+        }
 
     def get_app_labels(self):
         """Iterate through the app labels.
@@ -261,7 +261,7 @@ class MigrationList:
             list of unicode:
             The sorted list of app labels with associated migrations.
         """
-        return list(sorted(self._by_app_label.keys()))
+        return sorted(self._by_app_label.keys())
 
     def clone(self):
         """Clone the list.
@@ -341,8 +341,7 @@ class MigrationList:
         """
         for app_label, info_list in sorted(self._by_app_label.items(),
                                            key=lambda pair: pair[0]):
-            for info in info_list:
-                yield info
+            yield from info_list
 
     def __add__(self, other):
         """Return a combined copy of this list and another list.

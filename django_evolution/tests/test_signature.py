@@ -472,10 +472,10 @@ class ProjectSignatureTests(BaseSignatureTestCase):
         """Testing ProjectSignature.from_database"""
         project_sig = ProjectSignature.from_database('default')
 
-        app_ids = set(
+        app_ids = {
             app_sig.app_id
             for app_sig in project_sig.app_sigs
-        )
+        }
 
         self.assertIn('contenttypes', app_ids)
         self.assertIn('django_evolution', app_ids)
@@ -490,11 +490,11 @@ class ProjectSignatureTests(BaseSignatureTestCase):
             })
 
         self.assertEqual(
-            set(
+            {
                 app_sig.app_id
                 for app_sig in project_sig.app_sigs
-            ),
-            set(['app1', 'app2']))
+            },
+            {'app1', 'app2'})
 
     def test_deserialize_v2(self):
         """Testing ProjectSignature.deserialize (signature v2)"""
@@ -514,11 +514,11 @@ class ProjectSignatureTests(BaseSignatureTestCase):
             })
 
         self.assertEqual(
-            set(
+            {
                 app_sig.app_id
                 for app_sig in project_sig.app_sigs
-            ),
-            set(['app1', 'app2']))
+            },
+            {'app1', 'app2'})
 
     def test_add_app(self):
         """Testing ProjectSignature.add_app"""
@@ -671,10 +671,10 @@ class AppSignatureTests(BaseSignatureTestCase):
         """Testing AppSignature.from_app"""
         app_sig = AppSignature.from_app(get_app('django_evolution'),
                                         database=DEFAULT_DB_ALIAS)
-        model_names = set(
+        model_names = {
             model_sig.model_name
             for model_sig in app_sig.model_sigs
-        )
+        }
 
         self.assertEqual(app_sig.app_id, 'django_evolution')
         self.assertEqual(app_sig.upgrade_method, UpgradeMethod.EVOLUTIONS)
@@ -775,7 +775,7 @@ class AppSignatureTests(BaseSignatureTestCase):
         self.assertEqual(app_sig.upgrade_method, UpgradeMethod.MIGRATIONS)
         self.assertIsInstance(app_sig.applied_migrations, set)
         self.assertEqual(app_sig.applied_migrations,
-                         set(['0001_initial', '0002_last_applied']))
+                         {'0001_initial', '0002_last_applied'})
 
     def test_add_model(self):
         """Testing AppSignature.add_model"""
@@ -852,7 +852,7 @@ class AppSignatureTests(BaseSignatureTestCase):
                                         database=DEFAULT_DB_ALIAS)
         app_sig.legacy_app_label = 'legacy'
         app_sig.upgrade_method = UpgradeMethod.MIGRATIONS
-        app_sig.applied_migrations = set(['0001_initial', '0002_last_applied'])
+        app_sig.applied_migrations = {'0001_initial', '0002_last_applied'}
 
         cloned_app_sig = app_sig.clone()
         self.assertEqual(cloned_app_sig.app_id, 'django_evolution')
@@ -860,7 +860,7 @@ class AppSignatureTests(BaseSignatureTestCase):
         self.assertEqual(cloned_app_sig.upgrade_method,
                          UpgradeMethod.MIGRATIONS)
         self.assertEqual(cloned_app_sig.applied_migrations,
-                         set(['0001_initial', '0002_last_applied']))
+                         {'0001_initial', '0002_last_applied'})
 
         for cloned_model_sig, model_sig in zip(cloned_app_sig.model_sigs,
                                                app_sig.model_sigs):

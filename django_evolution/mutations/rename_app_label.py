@@ -92,10 +92,7 @@ class RenameAppLabel(BaseMutation):
 
         if model_names is None:
             # Move over every single model listed under the app's signature.
-            model_sigs = [
-                model_sig
-                for model_sig in old_app_sig.model_sigs
-            ]
+            model_sigs = list(old_app_sig.model_sigs)
         else:
             # Move over only the requested models, in case the app signature
             # has the contents of two separate apps merged. Each will be

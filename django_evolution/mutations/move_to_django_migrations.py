@@ -87,10 +87,10 @@ class MoveToDjangoMigrations(BaseUpgradeMethodMutation):
         #    migrations *after* the ones we're marking as applied. Otherwise,
         #    the order of dependencies and evolutions can end up being wrong.
         return {
-            'replace_migrations': set(
+            'replace_migrations': {
                 (app_label, migration_name)
                 for migration_name in self.mark_applied
-            )
+            }
         }
 
     def simulate(self, simulation):

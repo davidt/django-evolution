@@ -1357,7 +1357,7 @@ class EvolveAppTaskTests(MigrationsTestsMixin, BaseEvolverTestCase):
             # Check the app signature for the new state.
             self.assertEqual(app_sig.upgrade_method, UpgradeMethod.MIGRATIONS)
             self.assertEqual(app_sig.applied_migrations,
-                             set(['0001_initial', '0002_add_field']))
+                             {'0001_initial', '0002_add_field'})
 
             # Check that all evolutions were recorded.
             new_evolutions = task.new_evolutions

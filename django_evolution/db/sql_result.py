@@ -244,7 +244,7 @@ class AlterTableSQLResult(SQLResult):
                 if 'column' in item:
                     alter_table_attrs.append(qn(item['column']))
 
-                if op in ('MODIFY COLUMN', 'ADD COLUMN') and 'db_type' in item:
+                if op in {'MODIFY COLUMN', 'ADD COLUMN'} and 'db_type' in item:
                     alter_table_attrs.append(item['db_type'])
 
                 if 'params' in item:
