@@ -1,3 +1,0 @@
-django_evolution/builtin_evolutions/__init__.py:*: 'Message' imported but unused
-django_evolution/tests/db/mysql_old.py:*: 'from mysql import *' used; unable to detect undefined names
-django_evolution/tests/db/postgresql_psycopg2.py:*: 'from postgresql import *' used; unable to detect undefined names
