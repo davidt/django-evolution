@@ -20,7 +20,7 @@ def get_version_string():
     version = '%s.%s' % (VERSION[0], VERSION[1])
 
     if VERSION[2]:
-        version += ".%s" % VERSION[2]
+        version += '.%s' % VERSION[2]
 
     if VERSION[3] != 'final':
         if VERSION[3] == 'rc':
@@ -29,7 +29,7 @@ def get_version_string():
             version += ' %s %s' % (VERSION[3], VERSION[4])
 
     if not is_release():
-        version += " (dev)"
+        version += ' (dev)'
 
     return version
 
@@ -38,7 +38,7 @@ def get_package_version():
     version = '%s.%s' % (VERSION[0], VERSION[1])
 
     if VERSION[2]:
-        version += ".%s" % VERSION[2]
+        version += '.%s' % VERSION[2]
 
     tag = VERSION[3]
 

@@ -161,17 +161,17 @@ def add_field(connection):
         ],
 
         'AddStringColumnModel': [
-            'ALTER TABLE `tests_testmodel`'
-            ' ADD COLUMN `added_field` varchar(10) NOT NULL'
-            ' DEFAULT \'abc\\\'s xyz\';',
+            "ALTER TABLE `tests_testmodel`"
+            " ADD COLUMN `added_field` varchar(10) NOT NULL"
+            " DEFAULT 'abc\\'s xyz';",
 
             'ALTER TABLE `tests_testmodel`'
             ' ALTER COLUMN `added_field` DROP DEFAULT;',
         ],
 
         'AddBlankStringColumnModel': [
-            'ALTER TABLE `tests_testmodel`'
-            ' ADD COLUMN `added_field` varchar(10) NOT NULL DEFAULT \'\';',
+            "ALTER TABLE `tests_testmodel`"
+            " ADD COLUMN `added_field` varchar(10) NOT NULL DEFAULT '';",
 
             'ALTER TABLE `tests_testmodel`'
             ' ALTER COLUMN `added_field` DROP DEFAULT;',
@@ -228,8 +228,8 @@ def add_field(connection):
         ],
 
         'AddEmptyStringDefaultColumnModel': [
-            'ALTER TABLE `tests_testmodel`'
-            ' ADD COLUMN `added_field` varchar(20) NOT NULL DEFAULT \'\';',
+            "ALTER TABLE `tests_testmodel`"
+            " ADD COLUMN `added_field` varchar(20) NOT NULL DEFAULT '';",
 
             'ALTER TABLE `tests_testmodel`'
             ' ALTER COLUMN `added_field` DROP DEFAULT;',
@@ -383,9 +383,9 @@ def change_field(connection):
 
     return {
         'SetNotNullChangeModelWithConstant': [
-            'UPDATE `tests_testmodel`'
-            ' SET `char_field1` = \'abc\\\'s xyz\''
-            ' WHERE `char_field1` IS NULL;',
+            "UPDATE `tests_testmodel`"
+            " SET `char_field1` = 'abc\\'s xyz'"
+            " WHERE `char_field1` IS NULL;",
 
             'ALTER TABLE `tests_testmodel`'
             ' MODIFY COLUMN `char_field1` varchar(25) NOT NULL;',
@@ -1049,13 +1049,13 @@ def constraints(connection):
 
     mappings = {
         'append_list': [
-            "ALTER TABLE `tests_testmodel`"
-            " ADD CONSTRAINT `new_unique_constraint`"
-            " UNIQUE (`int_field2`, `int_field1`);",
+            'ALTER TABLE `tests_testmodel`'
+            ' ADD CONSTRAINT `new_unique_constraint`'
+            ' UNIQUE (`int_field2`, `int_field1`);',
 
-            "ALTER TABLE `tests_testmodel`"
-            " ADD CONSTRAINT `new_check_constraint`"
-            " CHECK (`int_field1` >= 100);",
+            'ALTER TABLE `tests_testmodel`'
+            ' ADD CONSTRAINT `new_check_constraint`'
+            ' CHECK (`int_field1` >= 100);',
         ],
 
         'setting_from_empty': [
@@ -1072,11 +1072,11 @@ def constraints(connection):
     if is_mariadb:
         mappings.update({
             'removing': [
-                "ALTER TABLE `tests_testmodel`"
-                " DROP CONSTRAINT IF EXISTS `base_check_constraint`;",
+                'ALTER TABLE `tests_testmodel`'
+                ' DROP CONSTRAINT IF EXISTS `base_check_constraint`;',
 
-                "ALTER TABLE `tests_testmodel`"
-                " DROP INDEX `base_unique_constraint_plain`;",
+                'ALTER TABLE `tests_testmodel`'
+                ' DROP INDEX `base_unique_constraint_plain`;',
             ],
 
             'replace_list': [
@@ -1098,11 +1098,11 @@ def constraints(connection):
     else:
         mappings.update({
             'removing': [
-                "ALTER TABLE `tests_testmodel`"
-                " DROP CHECK `base_check_constraint`;",
+                'ALTER TABLE `tests_testmodel`'
+                ' DROP CHECK `base_check_constraint`;',
 
-                "ALTER TABLE `tests_testmodel`"
-                " DROP INDEX `base_unique_constraint_plain`;",
+                'ALTER TABLE `tests_testmodel`'
+                ' DROP INDEX `base_unique_constraint_plain`;',
             ],
 
             'replace_list': [
@@ -1305,8 +1305,8 @@ def preprocessing(connection):
         ],
 
         'add_change_rename_field': [
-            'ALTER TABLE `tests_testmodel`'
-            ' ADD COLUMN `renamed_field` varchar(50) NULL DEFAULT \'bar\';',
+            "ALTER TABLE `tests_testmodel`"
+            " ADD COLUMN `renamed_field` varchar(50) NULL DEFAULT 'bar';",
 
             'ALTER TABLE `tests_testmodel`'
             ' ALTER COLUMN `renamed_field` DROP DEFAULT;',
@@ -1329,16 +1329,16 @@ def preprocessing(connection):
         ],
 
         'add_rename_change_field': [
-            'ALTER TABLE `tests_testmodel`'
-            ' ADD COLUMN `renamed_field` varchar(50) NULL DEFAULT \'bar\';',
+            "ALTER TABLE `tests_testmodel`"
+            " ADD COLUMN `renamed_field` varchar(50) NULL DEFAULT 'bar';",
 
             'ALTER TABLE `tests_testmodel`'
             ' ALTER COLUMN `renamed_field` DROP DEFAULT;',
         ],
 
         'add_rename_change_rename_change_field': [
-            'ALTER TABLE `tests_testmodel`'
-            ' ADD COLUMN `renamed_field` varchar(50) NULL DEFAULT \'foo\';',
+            "ALTER TABLE `tests_testmodel`"
+            " ADD COLUMN `renamed_field` varchar(50) NULL DEFAULT 'foo';",
 
             'ALTER TABLE `tests_testmodel`'
             ' ALTER COLUMN `renamed_field` DROP DEFAULT;',

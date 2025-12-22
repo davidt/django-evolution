@@ -355,7 +355,7 @@ class SerializeToPythonTests(TestCase):
     def test_with_set(self):
         """Testing serialize_to_python with set"""
         self.assertEqual(serialize_to_python({1, 3, 2}),
-                         "{1, 2, 3}")
+                         '{1, 2, 3}')
 
     def test_with_tuple(self):
         """Testing serialize_to_python with tuple"""

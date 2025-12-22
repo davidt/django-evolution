@@ -45,8 +45,8 @@ class Command(BaseCommand):
             'args',
             metavar='EVOLUTION_LABEL',
             nargs='*',
-            help=_('One or more evolution labels to mark as applied. '
-                   'This is required if --all isn\'t specified.'))
+            help=_("One or more evolution labels to mark as applied. "
+                   "This is required if --all isn't specified."))
         parser.add_argument(
             '--noinput',
             action='store_false',

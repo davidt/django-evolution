@@ -64,7 +64,7 @@ class RenameModelTests(EvolutionTestCase):
                 RenameModel('TestModel', 'DestModel',
                             db_table='tests_destmodel'),
             ],
-            "The model tests.TestModel has been deleted",
+            'The model tests.TestModel has been deleted',
             [
                 "DeleteModel('TestModel')",
             ],
@@ -86,7 +86,7 @@ class RenameModelTests(EvolutionTestCase):
                 RenameModel('TestModel', 'DestModel',
                             db_table='tests_testmodel'),
             ],
-            "The model tests.TestModel has been deleted",
+            'The model tests.TestModel has been deleted',
             [
                 "DeleteModel('TestModel')",
             ],

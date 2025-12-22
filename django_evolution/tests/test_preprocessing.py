@@ -649,7 +649,7 @@ class PreprocessingTests(EvolutionTestCase):
                 RenameModel('TempModel', 'DestModel',
                             db_table='tests_testmodel'),
             ],
-            "The model tests.TestModel has been deleted",
+            'The model tests.TestModel has been deleted',
             [
                 "DeleteModel('TestModel')",
             ],
@@ -672,7 +672,7 @@ class PreprocessingTests(EvolutionTestCase):
                             db_table='tests_testmodel'),
                 DeleteModel('TempModel'),
             ],
-            "The model tests.TestModel has been deleted",
+            'The model tests.TestModel has been deleted',
             [
                 "DeleteModel('TestModel')",
             ],

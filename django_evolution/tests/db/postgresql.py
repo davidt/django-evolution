@@ -849,7 +849,7 @@ def delete_application(connection):
             'DROP TABLE "app_delete_custom_table_name";',
         ],
 
-        'DeleteApplicationWithoutDatabase': "",
+        'DeleteApplicationWithoutDatabase': '',
     }
 
 
