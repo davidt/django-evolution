@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from importlib import import_module
 
 from django.apps.config import AppConfig
@@ -10,7 +11,6 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import module_has_submodule
 
-from django_evolution.compat.datastructures import OrderedDict
 from django_evolution.compat.models import all_models
 
 

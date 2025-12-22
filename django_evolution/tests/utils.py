@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from collections import OrderedDict
 from contextlib import contextmanager
 from functools import partial
 
@@ -12,7 +13,6 @@ from django.conf import settings
 from django.db import connections
 from django.db.utils import ConnectionHandler, DEFAULT_DB_ALIAS
 
-from django_evolution.compat.datastructures import OrderedDict
 from django_evolution.compat.db import (create_index_name,
                                         create_index_together_name,
                                         digest,

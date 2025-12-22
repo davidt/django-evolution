@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from unittest import skipUnless
 
 from django.contrib.contenttypes.models import ContentType
@@ -31,7 +32,6 @@ except ImportError:
     # Django <= 1.10
     Index = None
 
-from django_evolution.compat.datastructures import OrderedDict
 from django_evolution.compat.models import (
     GenericForeignKey,
     GenericRelation,

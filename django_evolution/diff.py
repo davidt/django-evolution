@@ -8,9 +8,10 @@ Version Changed:
 
 from __future__ import annotations
 
+from collections import OrderedDict
+
 from django.db import models
 
-from django_evolution.compat.datastructures import OrderedDict
 from django_evolution.compat.models import get_model
 from django_evolution.mutations import (AddField,
                                         ChangeField,

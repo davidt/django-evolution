@@ -6,11 +6,11 @@ Version Added:
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from copy import deepcopy
 
 from django.db.models import CheckConstraint
 
-from django_evolution.compat.datastructures import OrderedDict
 from django_evolution.mutations.base import BaseModelMutation
 from django_evolution.signature import (ConstraintSignature,
                                         IndexSignature)

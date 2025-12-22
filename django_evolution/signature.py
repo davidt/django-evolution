@@ -129,6 +129,7 @@ Version 2:
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from copy import deepcopy
 from importlib import import_module
 
@@ -138,7 +139,6 @@ from django.db import DEFAULT_DB_ALIAS, models
 from django.db.models import CheckConstraint
 from django.utils.translation import gettext as _
 
-from django_evolution.compat.datastructures import OrderedDict
 from django_evolution.compat.db import db_router_allows_schema_upgrade
 from django_evolution.compat.models import (GenericRelation,
                                             get_models,

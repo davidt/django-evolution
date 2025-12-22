@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import io
 import pickle
+from collections import OrderedDict
 
-from django_evolution.compat.datastructures import OrderedDict
 from django_evolution.conf import django_evolution_settings
 
 

@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from functools import partial
 
 from django.db import models
 from django.db.models.base import ModelState
 from django.db.models.fields.related import RECURSIVE_RELATIONSHIP_CONSTANT
 
-from django_evolution.compat.datastructures import OrderedDict
 from django_evolution.compat.models import (
     FieldDoesNotExist,
     get_default_auto_field_cls,
