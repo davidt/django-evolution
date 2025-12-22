@@ -11,8 +11,6 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import module_has_submodule
 
-from django_evolution.compat.models import all_models
-
 
 def get_apps():
     """Return the list of all installed apps with models.
@@ -202,7 +200,7 @@ def unregister_app(app_label):
     # :py:func:`register_app` here.
     apps.unset_installed_apps()
 
-    all_models[app_label].clear()
+    apps.all_models[app_label].clear()
     apps.clear_cache()
 
 
@@ -225,13 +223,13 @@ def register_app_models(app_label, model_infos, reset=False):
         reset (bool, optional):
             If set, the old list will be overwritten with the new list.
     """
-    if app_label not in all_models:
+    if app_label not in apps.all_models:
         # This isn't really needed for Django 1.7+ (which uses defaultdict
         # with OrderedDict), but it's needed for earlier versions, so do it
         # explicitly.
-        all_models[app_label] = OrderedDict()
+        apps.all_models[app_label] = OrderedDict()
 
-    model_dict = all_models[app_label]
+    model_dict = apps.all_models[app_label]
 
     if reset:
         model_dict.clear()
@@ -256,5 +254,5 @@ def unregister_app_model(app_label, model_name):
         model_name (str):
             The name of the model to unregister.
     """
-    del all_models[app_label][model_name]
+    del apps.all_models[app_label][model_name]
     apps.clear_cache()

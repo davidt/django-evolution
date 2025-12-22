@@ -13,12 +13,6 @@ from django.conf import settings
 from django.db import connections
 from django.db.utils import ConnectionHandler, DEFAULT_DB_ALIAS
 
-from django_evolution.compat.models import (all_models,
-                                            get_model_name,
-                                            get_models,
-                                            get_remote_field,
-                                            get_remote_field_model,
-                                            set_model_name)
 from django_evolution.db import EvolutionOperationsMulti
 from django_evolution.signature import (AppSignature, ModelSignature,
                                         ProjectSignature)
@@ -36,6 +30,11 @@ from django_evolution.utils.db import (
     sql_create_app,
     sql_delete,
     truncate_name,
+)
+from django_evolution.utils.models import (
+    get_model_name,
+    get_models,
+    set_model_name,
 )
 from django_evolution.utils.sql import SQLExecutor
 
@@ -193,7 +192,7 @@ def register_models(database_state, models, register_indexes=False,
         # renamed. Go through each of them and figure out what changes need
         # to be made.
         for field in meta.local_many_to_many:
-            through = get_remote_field(field).through
+            through = field.remote_field.through
 
             if not through:
                 continue
@@ -233,10 +232,10 @@ def register_models(database_state, models, register_indexes=False,
             # Change each of the columns for the fields on the
             # ManyToManyField's model to reflect the new model names.
             for through_field in through._meta.local_fields:
-                through_remote_field = get_remote_field(through_field)
+                through_remote_field = through_field.remote_field
 
                 if (through_remote_field and
-                    get_remote_field_model(through_remote_field)):
+                    through_remote_field.model):
                     column = through_field.column
 
                     if (column.startswith((orig_model_name,
@@ -250,7 +249,7 @@ def register_models(database_state, models, register_indexes=False,
 
             # Replace the entry in the models cache for the through table,
             # removing the old name and adding the new one.
-            if through_orig_model_name in all_models[orig_app_label]:
+            if through_orig_model_name in apps.all_models[orig_app_label]:
                 unregister_app_model(orig_app_label, through_orig_model_name)
 
             app_cache[through_new_model_name] = through
@@ -260,7 +259,7 @@ def register_models(database_state, models, register_indexes=False,
                                             through_new_model_name))
 
         # Unregister with the old model name and register the new one.
-        if orig_model_name in all_models[orig_app_label]:
+        if orig_model_name in apps.all_models[orig_app_label]:
             unregister_app_model(orig_app_label, orig_model_name)
 
         register_app_models(new_app_label, [(new_model_name, model)])
@@ -280,7 +279,7 @@ def unregister_test_models():
     global _registered_test_models
 
     for app_label, model_name in _registered_test_models:
-        if model_name in all_models[app_label]:
+        if model_name in apps.all_models[app_label]:
             unregister_app_model(app_label, model_name)
 
     _registered_test_models = []

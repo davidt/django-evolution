@@ -4,19 +4,79 @@ from __future__ import annotations
 
 from collections import defaultdict
 
+from django.apps.registry import apps
 from django.db import router
-
-from django_evolution.compat.models import (get_field_is_hidden,
-                                            get_field_is_many_to_many,
-                                            get_field_is_relation,
-                                            get_model,
-                                            get_models,
-                                            get_remote_field,
-                                            get_remote_field_model,
-                                            get_remote_field_related_model)
 
 
 _rel_tree_cache = None
+
+
+def get_models(app_mod=None, include_auto_created=False):
+    """Return the models belonging to an app.
+
+    Version Changed:
+        3.0:
+        Moved from :py:mod:`django_evolution.compat.models`.
+
+    Args:
+        app_mod (module, optional):
+            The application module.
+
+        include_auto_created (bool, optional):
+            Whether to return auto-created models (such as many-to-many
+            models) in the results.
+
+    Returns:
+        list:
+        The list of modules belonging to the app.
+    """
+    if app_mod is None:
+        return apps.get_models(include_auto_created=include_auto_created)
+
+    for app_config in apps.get_app_configs():
+        if app_config.models_module is app_mod:
+            return [
+                model
+                for model in app_config.get_models(
+                    include_auto_created=include_auto_created)
+                if not model._meta.abstract
+            ]
+
+    return []
+
+
+def set_model_name(model, name):
+    """Set the name of a model.
+
+    Version Changed:
+        3.0:
+        Moved from :py:mod:`django_evolution.compat.models`.
+
+    Args:
+        model (django.db.models.Model):
+            The model to set the new name on.
+
+        name (str):
+            The new model name.
+    """
+    model._meta.model_name = name
+
+
+def get_model_name(model):
+    """Return the model's name.
+
+    Version Changed:
+        3.0:
+        Moved from :py:mod:`django_evolution.compat.models`.
+
+    Args:
+        model (django.db.models.Model):
+            The model for which to return the name.
+
+    Returns:
+        str: The model's name.
+    """
+    return model._meta.model_name
 
 
 def get_database_for_model_name(app_name, model_name):
@@ -37,7 +97,7 @@ def get_database_for_model_name(app_name, model_name):
         unicode:
         The name of the database used for the model.
     """
-    return router.db_for_write(get_model(app_name, model_name))
+    return router.db_for_write(apps.get_model(app_name, model_name))
 
 
 def walk_model_tree(model):
@@ -107,10 +167,10 @@ def get_model_rel_tree():
                                        include_forward_fields=True,
                                        include_reverse_fields=False,
                                        include_hidden_fields=False):
-            if (get_field_is_relation(field) and
-                get_remote_field_related_model(field) is not None):
-                remote_field = get_remote_field(field)
-                remote_field_model = get_remote_field_model(remote_field)
+            if (field.is_relation and
+                field.related_model is not None):
+                remote_field = field.remote_field
+                remote_field_model = remote_field.model
 
                 # Make sure this isn't a "self" relation or similar.
                 if not isinstance(remote_field_model, str):
@@ -220,10 +280,10 @@ def iter_model_fields(model,
 
         if include_reverse_fields and not cur_model._meta.proxy:
             for rel_field in rel_fields:
-                remote_field = get_remote_field(rel_field)
+                remote_field = rel_field.remote_field
 
                 if (include_hidden_fields or
-                    not get_field_is_hidden(remote_field)):
+                    not remote_field.hidden):
                     yield remote_field
 
         if include_forward_fields:
@@ -272,14 +332,13 @@ def iter_non_m2m_reverse_relations(field):
 
         # Exclude any ManyToManyFields, and make sure the referencing fields
         # point directly to the ID on this field.
-        if (not get_field_is_many_to_many(rel_from_field) and
+        if (not rel_from_field.many_to_many and
             ((is_primary_key and rel_from_field.to_fields == [None]) or
              field_name in rel_from_field.to_fields)):
             yield rel
 
             # Now do the same for the fields on the model of the related field.
-            other_rel_fields = iter_non_m2m_reverse_relations(
-                get_remote_field(rel))
+            other_rel_fields = iter_non_m2m_reverse_relations(rel.remote_field)
 
             for rel2 in other_rel_fields:
                 yield rel2

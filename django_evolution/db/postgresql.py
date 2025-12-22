@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import django
 
-from django_evolution.compat.models import get_field_is_relation
 from django_evolution.db.common import BaseEvolutionOperations
 from django_evolution.db.sql_result import AlterTableSQLResult
 from django_evolution.utils.db import truncate_name
@@ -382,7 +381,7 @@ class EvolutionOperations(BaseEvolutionOperations):
         if internal_type == 'ArrayField':
             for field_type in self._iter_field_types(base_field):
                 yield field_type
-        elif get_field_is_relation(base_field):
+        elif base_field.is_relation:
             yield field.rel_db_type(self.connection)
         else:
             try:

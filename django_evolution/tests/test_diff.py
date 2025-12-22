@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
-from django_evolution.compat.models import GenericForeignKey
 from django_evolution.diff import Diff
 from django_evolution.tests.base_test_case import EvolutionTestCase
 from django_evolution.tests.models import BaseTestModel

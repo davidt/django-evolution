@@ -3,7 +3,6 @@ from __future__ import annotations
 from django.contrib.auth.models import User
 from django.test.testcases import TestCase
 
-from django_evolution.compat.models import get_remote_field
 from django_evolution.db.state import DatabaseState, IndexState
 from django_evolution.errors import DatabaseStateError
 from django_evolution.models import Evolution
@@ -67,7 +66,7 @@ class DatabaseStateTests(TestCase):
 
     def test_has_model_with_auto_created(self):
         """Testing DatabaseState.has_model with auto-created model"""
-        model = get_remote_field(User._meta.get_field('groups')).through
+        model = User._meta.get_field('groups').remote_field.through
         self.assertTrue(model._meta.auto_created)
 
         database_state = DatabaseState(db_name='default', scan=False)

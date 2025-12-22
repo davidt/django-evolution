@@ -2,11 +2,6 @@
 
 from __future__ import annotations
 
-from django.core.management import color
-
-from django_evolution.compat.models import (get_rel_target_field,
-                                            get_remote_field,
-                                            get_remote_field_model)
 from django_evolution.db.common import BaseEvolutionOperations
 from django_evolution.db.sql_result import AlterTableSQLResult, SQLResult
 from django_evolution.utils.db import sql_delete_constraints
@@ -105,10 +100,10 @@ class EvolutionOperations(BaseEvolutionOperations):
     def delete_column(self, model, f):
         sql_result = AlterTableSQLResult(self, model)
 
-        remote_field = get_remote_field(f)
+        remote_field = f.remote_field
 
         if remote_field:
-            remote_field_model = get_remote_field_model(remote_field)
+            remote_field_model = remote_field.model
 
             sql_result.add(sql_delete_constraints(
                 self.connection,
@@ -310,9 +305,10 @@ class EvolutionOperations(BaseEvolutionOperations):
             The name of the index.
         """
         if (hasattr(self.connection, 'schema_editor') and
-            get_remote_field(field) and field.db_constraint):
+            field.remote_field and
+            field.db_constraint):
             # Django >= 1.7
-            target_field = get_rel_target_field(field)
+            target_field = field.target_field
 
             return self.connection.schema_editor()._create_index_name(
                 field.model,

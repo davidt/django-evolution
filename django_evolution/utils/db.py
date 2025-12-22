@@ -12,8 +12,8 @@ from django.db import connections, router
 from django.db.backends.utils import names_digest, truncate_name
 from django.db.utils import DEFAULT_DB_ALIAS
 
-from django_evolution.compat.models import get_models, get_remote_field
 from django_evolution.utils.apps import get_app_label
+from django_evolution.utils.models import get_models
 
 
 @contextmanager
@@ -232,7 +232,7 @@ def sql_create_for_many_to_many_field(connection, model, field):
         list:
         The list of SQL statements for creating the table and constraints.
     """
-    through = get_remote_field(field).through
+    through = field.remote_field.through
 
     with collect_sql_schema_editor(connection) as schema_editor:
         schema_editor.create_model(through)
@@ -447,7 +447,7 @@ def sql_add_constraints(connection, model, refs):
                 #
                 rel_meta = rel_class._meta
                 to_column = (
-                    meta.get_field(get_remote_field(f).field_name)
+                    meta.get_field(f.remote_field.field_name)
                     .column
                 )
 

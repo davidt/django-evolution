@@ -5,6 +5,10 @@ from __future__ import annotations
 from collections import OrderedDict
 from unittest import skipUnless
 
+from django.contrib.contenttypes.fields import (
+    GenericForeignKey,
+    GenericRelation,
+)
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import F, Q
@@ -33,8 +37,6 @@ except ImportError:
     Index = None
 
 from django_evolution.compat.models import (
-    GenericForeignKey,
-    GenericRelation,
     get_default_auto_field,
     get_default_auto_field_cls,
 )

@@ -10,9 +10,6 @@ import django
 from django.db import connection as default_connection, models
 
 from django_evolution import support
-from django_evolution.compat.models import (get_remote_field,
-                                            get_remote_field_model,
-                                            get_remote_field_related_model)
 from django_evolution.db.sql_result import AlterTableSQLResult, SQLResult
 from django_evolution.errors import EvolutionNotImplementedError
 from django_evolution.support import supports_index_feature
@@ -273,7 +270,7 @@ class BaseEvolutionOperations(object):
             column_def.append(connection.ops.tablespace_sql(tablespace,
                                                             inline=True))
 
-        remote_field = get_remote_field(field)
+        remote_field = field.remote_field
 
         if remote_field:
             # This is a ForeignKey, or similar. The exact syntax is up to the
@@ -283,7 +280,7 @@ class BaseEvolutionOperations(object):
             #
             # Followed by backend-specific deferrable syntax.
             if not skip_references:
-                related_model = get_remote_field_model(remote_field)
+                related_model = remote_field.model
 
                 column_def += [
                     'REFERENCES',
@@ -520,7 +517,7 @@ class BaseEvolutionOperations(object):
         qn = self.connection.ops.quote_name
         sql_result = self.alter_table_sql_result_cls(self, model)
         table_name = model._meta.db_table
-        remote_field = get_remote_field(field)
+        remote_field = field.remote_field
         can_set_initial = (remote_field is None and
                            initial is not None and
                            self.get_field_type_allows_default(field))
@@ -1925,7 +1922,7 @@ class BaseEvolutionOperations(object):
         # through each and make note of the appropriate references, based
         # on the caller-provided renamed tables/replaced fields.
         for field in model._meta.local_many_to_many:
-            remote_field = get_remote_field(field)
+            remote_field = field.remote_field
             assert remote_field is not None
 
             through = remote_field.through
@@ -1943,7 +1940,7 @@ class BaseEvolutionOperations(object):
                 continue
 
             for through_field in through_meta.local_fields:
-                through_remote_field = get_remote_field(through_field)
+                through_remote_field = through_field.remote_field
 
                 if through_remote_field is None:
                     # This isn't a relation field It's probably the primary
@@ -1964,7 +1961,7 @@ class BaseEvolutionOperations(object):
                 #
                 # If the model isn't pointing to the main model we're
                 # operating on, we can ignore it.
-                if get_remote_field_model(through_remote_field) == model:
+                if through_remote_field.model == model:
                     # Stash this reference away so we know to restore it
                     # later.
                     m2m_refs.append((through, through_field))
@@ -1976,15 +1973,14 @@ class BaseEvolutionOperations(object):
             new_rels = iter_non_m2m_reverse_relations(field_info['new_field'])
 
             for old_rel, new_rel in zip(old_rels, new_rels):
-                rel_to_model = get_remote_field_model(old_rel)
-                rel_from_model = get_remote_field_related_model(old_rel)
+                rel_to_model = old_rel.model
+                rel_from_model = old_rel.related_model
                 old_rel_field = old_rel.field
                 new_rel_field = new_rel.field
 
                 assert old_rel_field.column == new_rel_field.column
-                assert rel_to_model == get_remote_field_model(new_rel)
-                assert (rel_from_model ==
-                        get_remote_field_related_model(new_rel))
+                assert rel_to_model == new_rel.model
+                assert rel_from_model == new_rel.related_model
 
                 replaced_field_refs.append((rel_from_model,
                                             old_rel_field,
@@ -2061,7 +2057,7 @@ class BaseEvolutionOperations(object):
             # If any fields have been renamed, and those fields exist on this
             # intermediary table, update them to point to the new names.
             if renamed_fields:
-                remote_field = get_remote_field(through_field)
+                remote_field = through_field.remote_field
                 new_field_name = renamed_fields.get(remote_field.field_name)
 
                 if new_field_name:

@@ -10,9 +10,9 @@ from __future__ import annotations
 
 from collections import OrderedDict
 
+from django.apps.registry import apps
 from django.db import models
 
-from django_evolution.compat.models import get_model
 from django_evolution.mutations import (AddField,
                                         ChangeField,
                                         ChangeMeta,
@@ -375,7 +375,7 @@ class Diff(object):
             the developer must provide an explicit one,
             :py:class:`NullFieldInitialCallback` will be returned.
         """
-        model = get_model(app_label, model_name)
+        model = apps.get_model(app_label, model_name)
         field = model._meta.get_field(field_name)
 
         if field and (field.has_default() or

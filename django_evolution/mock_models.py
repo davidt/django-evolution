@@ -5,16 +5,12 @@ from __future__ import annotations
 from collections import OrderedDict
 from functools import partial
 
+from django.core.exceptions import FieldDoesNotExist
 from django.db import models
 from django.db.models.base import ModelState
 from django.db.models.fields.related import RECURSIVE_RELATIONSHIP_CONSTANT
 
-from django_evolution.compat.models import (
-    FieldDoesNotExist,
-    get_default_auto_field_cls,
-    get_remote_field,
-    get_remote_field_model,
-)
+from django_evolution.compat.models import get_default_auto_field_cls
 from django_evolution.signature import FieldSignature, ModelSignature
 
 
@@ -100,10 +96,9 @@ def create_field(project_sig, field_name, field_type, field_attrs,
                 .get_app_sig(through_app_name)
                 .get_model_sig(through_model_name)
             )
-        elif hasattr(field, '_get_m2m_attr'):
-            # Django >= 1.2
-            remote_field = get_remote_field(field)
-            remote_field_model = get_remote_field_model(remote_field)
+        else:
+            remote_field = field.remote_field
+            remote_field_model = remote_field.model
 
             to_field_name = remote_field_model._meta.object_name.lower()
 
@@ -164,7 +159,7 @@ def create_field(project_sig, field_name, field_type, field_attrs,
                                 model_sig=through_model_sig,
                                 auto_created=not through_model,
                                 managed=not through_model)
-            get_remote_field(field).through = through
+            field.remote_field.through = through
 
         field.m2m_db_table = partial(field._get_m2m_db_table,
                                      parent_model._meta)

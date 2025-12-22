@@ -134,15 +134,12 @@ from copy import deepcopy
 from importlib import import_module
 
 from django.conf import global_settings
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ImproperlyConfigured
 from django.db import DEFAULT_DB_ALIAS, models
 from django.db.models import CheckConstraint
 from django.utils.translation import gettext as _
 
-from django_evolution.compat.models import (GenericRelation,
-                                            get_models,
-                                            get_remote_field,
-                                            get_remote_field_model)
 from django_evolution.conf import django_evolution_settings
 from django_evolution.consts import UpgradeMethod
 from django_evolution.errors import (InvalidSignatureVersion,
@@ -159,6 +156,7 @@ from django_evolution.utils.apps import (
 from django_evolution.utils.db import db_router_allows_schema_upgrade
 from django_evolution.utils.evolutions import get_app_upgrade_info
 from django_evolution.utils.migrations import MigrationList
+from django_evolution.utils.models import get_models
 
 
 #: The latest signature version.
@@ -2256,10 +2254,10 @@ class FieldSignature(BaseSignature):
             if value != default:
                 field_attrs[attr] = value
 
-        remote_field = get_remote_field(field)
+        remote_field = field.remote_field
 
         if remote_field:
-            remote_field_meta = get_remote_field_model(remote_field)._meta
+            remote_field_meta = remote_field.model._meta
 
             related_model = '%s.%s' % (
                 remote_field_meta.app_label,

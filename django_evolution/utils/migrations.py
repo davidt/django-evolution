@@ -5,6 +5,7 @@ from __future__ import annotations
 from importlib import import_module
 
 import django
+from django.apps.registry import apps
 
 try:
     # Django >= 1.7
@@ -33,7 +34,6 @@ except ImportError:
     emit_post_migrate_signal = None
     emit_pre_migrate_signal = None
 
-from django_evolution.compat.models import get_model
 from django_evolution.errors import (DjangoEvolutionSupportError,
                                      MigrationConflictsError,
                                      MigrationHistoryError)
@@ -969,7 +969,7 @@ def finalize_migrations(post_migrate_state):
                 post_migrate_apps.unregister_model(*model_key)
 
         post_migrate_apps.render_multiple([
-            ModelState.from_model(get_model(*model))
+            ModelState.from_model(apps.get_model(*model))
             for model in model_keys
         ])
 

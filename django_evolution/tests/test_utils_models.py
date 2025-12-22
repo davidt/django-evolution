@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from django.db import DEFAULT_DB_ALIAS, models
 
-from django_evolution.compat.models import get_remote_field
 from django_evolution.db.state import DatabaseState
 from django_evolution.tests.base_test_case import TestCase
 from django_evolution.tests.models import BaseTestModel
@@ -68,7 +67,7 @@ class UtilsTests(TestCase):
         self.assertIn('tests_utilsmodelsanchor', rel_tree)
 
         m2m_field = UtilsModelsTestModel1._meta.get_field('test1_m2m_field')
-        m2m_through = get_remote_field(m2m_field).through
+        m2m_through = m2m_field.remote_field.through
 
         self.assertEqual(
             set(rel_tree['tests_utilsmodelsanchor']),
@@ -102,10 +101,10 @@ class UtilsTests(TestCase):
         self.assertEqual(
             fields,
             {
-                get_remote_field(UtilsModelsTestModel2._meta.get_field(
-                    'test2_fkey_field')),
-                get_remote_field(UtilsModelsTestChildModel._meta.get_field(
-                    'utilsmodelstestmodel1_ptr')),
+                UtilsModelsTestModel2._meta.get_field(
+                    'test2_fkey_field').remote_field,
+                UtilsModelsTestChildModel._meta.get_field(
+                    'utilsmodelstestmodel1_ptr').remote_field,
             })
 
     def test_iter_model_fields_with_include_hidden_fields(self):
@@ -117,17 +116,17 @@ class UtilsTests(TestCase):
 
         test1_m2m_field = \
             UtilsModelsTestModel1._meta.get_field('test1_m2m_field')
-        test1_m2m_field_through = get_remote_field(test1_m2m_field).through
+        test1_m2m_field_through = test1_m2m_field.remote_field.through
 
         self.assertEqual(
             fields,
             {
-                get_remote_field(test1_m2m_field_through._meta.get_field(
-                    'utilsmodelstestmodel1')),
-                get_remote_field(UtilsModelsTestModel2._meta.get_field(
-                    'test2_fkey_field')),
-                get_remote_field(UtilsModelsTestChildModel._meta.get_field(
-                    'utilsmodelstestmodel1_ptr')),
+                test1_m2m_field_through._meta.get_field(
+                    'utilsmodelstestmodel1').remote_field,
+                UtilsModelsTestModel2._meta.get_field(
+                    'test2_fkey_field').remote_field,
+                UtilsModelsTestChildModel._meta.get_field(
+                    'utilsmodelstestmodel1_ptr').remote_field,
             })
 
     def test_iter_model_fields_with_include_parent_models(self):
@@ -153,17 +152,17 @@ class UtilsTests(TestCase):
 
         test1_m2m_field = \
             UtilsModelsTestModel1._meta.get_field('test1_m2m_field')
-        test1_m2m_field_through = get_remote_field(test1_m2m_field).through
+        test1_m2m_field_through = test1_m2m_field.remote_field.through
 
         self.assertEqual(
             rels,
             {
-                get_remote_field(test1_m2m_field_through._meta.get_field(
-                    'utilsmodelstestmodel1')),
-                get_remote_field(UtilsModelsTestModel2._meta.get_field(
-                    'test2_fkey_field')),
-                get_remote_field(UtilsModelsTestChildModel._meta.get_field(
-                    'utilsmodelstestmodel1_ptr')),
+                test1_m2m_field_through._meta.get_field(
+                    'utilsmodelstestmodel1').remote_field,
+                UtilsModelsTestModel2._meta.get_field(
+                    'test2_fkey_field').remote_field,
+                UtilsModelsTestChildModel._meta.get_field(
+                    'utilsmodelstestmodel1_ptr').remote_field,
             })
 
     def test_iter_non_m2m_reverse_relations_with_non_reffed_field(self):
