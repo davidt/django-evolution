@@ -276,18 +276,10 @@ def requires_param(cls_or_func, param_name, label=None):
     else:
         func = cls_or_func
 
-    if hasattr(inspect, 'getfullargspec'):
-        # Python 3.x
-        argspec = inspect.getfullargspec(func)
-        arg_varargs = argspec.varargs
-        arg_names = argspec.args
-        kwarg_names = argspec.kwonlyargs
-    else:
-        # Python 2.x
-        argspec = inspect.getargspec(func)
-        arg_varargs = argspec.varargs
-        arg_names = argspec.args
-        kwarg_names = argspec.keywords
+    argspec = inspect.getfullargspec(func)
+    arg_varargs = argspec.varargs
+    arg_names = argspec.args
+    kwarg_names = argspec.kwonlyargs
 
     if param_name == '*':
         flag = arg_varargs is not None
