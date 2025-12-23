@@ -6,6 +6,8 @@ Version Added:
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from django.db.utils import DEFAULT_DB_ALIAS
 
 from django_evolution.db import EvolutionOperationsMulti
@@ -14,6 +16,15 @@ from django_evolution.errors import SimulationFailure
 from django_evolution.serialization import serialize_to_python
 from django_evolution.signature import ProjectSignature
 from django_evolution.utils.models import get_database_for_model_name
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from typing import Any, NoReturn
+
+    from django_evolution.db.common import BaseEvolutionOperations
+    from django_evolution.mock_models import MockModel
+    from django_evolution.mutators import AppMutator, ModelMutator
+    from django_evolution.signature import AppSignature, FieldSignature
 
 
 class Simulation:
@@ -29,8 +40,15 @@ class Simulation:
         Moved into the :py:mod:`django_evolution.mutations.base` module.
     """
 
-    def __init__(self, mutation, app_label, project_sig, database_state,
-                 legacy_app_label=None, database=DEFAULT_DB_ALIAS):
+    def __init__(
+        self,
+        mutation: BaseMutation,
+        app_label: str,
+        project_sig,
+        database_state: DatabaseState,
+        legacy_app_label: (str | None) = None,
+        database: str = DEFAULT_DB_ALIAS,
+    ) -> None:
         """Initialize the simulation state.
 
         Args:
@@ -69,7 +87,7 @@ class Simulation:
         self.database_state = database_state
         self.database = database
 
-    def get_evolver(self):
+    def get_evolver(self) -> BaseEvolutionOperations:
         """Return an evolver for the database.
 
         Returns:
@@ -79,7 +97,7 @@ class Simulation:
         return EvolutionOperationsMulti(self.database,
                                         self.database_state).get_evolver()
 
-    def get_app_sig(self):
+    def get_app_sig(self) -> AppSignature:
         """Return the current application signature.
 
         Returns:
@@ -107,7 +125,10 @@ class Simulation:
 
         self.fail('The application could not be found in the signature.')
 
-    def get_model_sig(self, model_name):
+    def get_model_sig(
+        self,
+        model_name: str,
+    ) -> ModelSignature:
         """Return the signature for a model with the given name.
 
         Args:
@@ -131,7 +152,11 @@ class Simulation:
         self.fail('The model could not be found in the signature.',
                   model_name=model_name)
 
-    def get_field_sig(self, model_name, field_name):
+    def get_field_sig(
+        self,
+        model_name: str,
+        field_name: str,
+    ) -> FieldSignature:
         """Return the signature for a field with the given name.
 
         Args:
@@ -159,7 +184,11 @@ class Simulation:
                   model_name=model_name,
                   field_name=field_name)
 
-    def fail(self, error, **error_vars):
+    def fail(
+        self,
+        error: str,
+        **error_vars: Any,
+    ) -> NoReturn:
         """Fail the simulation.
 
         This will end up raising a
@@ -207,7 +236,7 @@ class BaseMutation:
     simulation_failure_error = 'Cannot simulate the mutation.'
     error_vars = {}
 
-    def generate_hint(self):
+    def generate_hint(self) -> str:
         """Return a hinted evolution for the mutation.
 
         This will generate a line that will be used in a hinted evolution
@@ -221,7 +250,7 @@ class BaseMutation:
         return '%s(%s)' % (self.__class__.__name__,
                            ', '.join(self.get_hint_params()))
 
-    def get_hint_params(self):
+    def get_hint_params(self) -> Sequence[str]:
         """Return parameters for the mutation's hinted evolution.
 
         Returns:
@@ -231,7 +260,11 @@ class BaseMutation:
         """
         return []
 
-    def generate_dependencies(self, app_label, **kwargs):
+    def generate_dependencies(
+        self,
+        app_label: str,
+        **kwargs,
+    ):
         """Return automatic dependencies for the parent evolution.
 
         This allows a mutation to affect the order in which the parent
@@ -264,7 +297,10 @@ class BaseMutation:
         """
         return {}
 
-    def run_simulation(self, **kwargs):
+    def run_simulation(
+        self,
+        **kwargs,
+    ) -> None:
         """Run a simulation for a mutation.
 
         This will prepare and execute a simulation on this mutation,
@@ -289,7 +325,10 @@ class BaseMutation:
         """
         self.simulate(Simulation(self, **kwargs))
 
-    def simulate(self, simulation):
+    def simulate(
+        self,
+        simulation: Simulation,
+    ) -> None:
         """Perform a simulation of a mutation.
 
         This will attempt to perform a mutation on the database signature,
@@ -311,7 +350,10 @@ class BaseMutation:
         """
         raise NotImplementedError
 
-    def mutate(self, mutator):
+    def mutate(
+        self,
+        mutator: AppMutator,
+    ) -> None:
         """Schedule a database mutation on the mutator.
 
         This will instruct the mutator to perform one or more database
@@ -329,7 +371,13 @@ class BaseMutation:
         """
         raise NotImplementedError
 
-    def is_mutable(self, app_label, project_sig, database_state, database):
+    def is_mutable(
+        self,
+        app_label: str,
+        project_sig,
+        database_state: DatabaseState,
+        database: str,
+    ) -> bool:
         """Return whether the mutation can be applied to the database.
 
         This should check if the database or parts of the signature matches
@@ -354,7 +402,10 @@ class BaseMutation:
         """
         return False
 
-    def serialize_value(self, value):
+    def serialize_value(
+        self,
+        value,
+    ) -> str:
         """Serialize a value for use in a mutation statement.
 
         This will attempt to represent the value as something Python can
@@ -374,7 +425,11 @@ class BaseMutation:
         """
         return serialize_to_python(value)
 
-    def serialize_attr(self, attr_name, attr_value):
+    def serialize_attr(
+        self,
+        attr_name: str,
+        attr_value: Any,
+    ) -> str:
         """Serialize an attribute for use in a mutation statement.
 
         This will create a ``name=value`` string, with the value serialized
@@ -393,7 +448,7 @@ class BaseMutation:
         """
         return '%s=%s' % (attr_name, self.serialize_value(attr_value))
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Return a hash of this mutation.
 
         Returns:
@@ -402,7 +457,10 @@ class BaseMutation:
         """
         return id(self)
 
-    def __eq__(self, other):
+    def __eq__(
+        self,
+        other: Any,
+    ) -> bool:
         """Return whether this mutation equals another.
 
         Two mutations are equal if they're of the same type and generate
@@ -419,7 +477,7 @@ class BaseMutation:
         return (type(self) is type(other) and
                 self.generate_hint() == other.generate_hint())
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return a hinted evolution for the mutation.
 
         Returns:
@@ -428,7 +486,7 @@ class BaseMutation:
         """
         return self.generate_hint()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return a string representation of the mutation.
 
         Returns:
@@ -445,7 +503,11 @@ class BaseUpgradeMethodMutation(BaseMutation):
         2.2
     """
 
-    def is_mutable(self, *args, **kwargs):
+    def is_mutable(
+        self,
+        *args,
+        **kwargs,
+    ) -> bool:
         """Return whether the mutation can be applied to the database.
 
         Args:
@@ -461,7 +523,11 @@ class BaseUpgradeMethodMutation(BaseMutation):
         """
         return True
 
-    def generate_dependencies(self, app_label, **kwargs):
+    def generate_dependencies(
+        self,
+        app_label: str,
+        **kwargs,
+    ):
         """Return automatic dependencies for the parent evolution.
 
         This allows a mutation to affect the order in which the parent
@@ -488,7 +554,10 @@ class BaseUpgradeMethodMutation(BaseMutation):
         """
         raise NotImplementedError
 
-    def mutate(self, mutator):
+    def mutate(
+        self,
+        mutator: AppMutator,
+    ) -> None:
         """Schedule an app mutation on the mutator.
 
         As this mutation just modifies state on the signature, no actual
@@ -513,7 +582,10 @@ class BaseModelMutation(BaseMutation):
         'model_name': 'model_name',
     }, **BaseMutation.error_vars)
 
-    def __init__(self, model_name):
+    def __init__(
+        self,
+        model_name: str,
+    ) -> None:
         """Initialize the mutation.
 
         Args:
@@ -524,14 +596,23 @@ class BaseModelMutation(BaseMutation):
 
         self.model_name = model_name
 
-    def evolver(self, model, database_state, database=None):
+    def evolver(
+        self,
+        model: MockModel,
+        database_state: DatabaseState,
+        database: (str | None) = None,
+    ) -> BaseEvolutionOperations:
         if database is None:
             database = get_database_for_model_name(model.app_label,
                                                    model.model_name)
 
         return EvolutionOperationsMulti(database, database_state).get_evolver()
 
-    def mutate(self, mutator, model):
+    def mutate(
+        self,
+        mutator: ModelMutator,
+        model: MockModel,
+    ):
         """Schedule a model mutation on the mutator.
 
         This will instruct the mutator to perform one or more database
@@ -542,7 +623,7 @@ class BaseModelMutation(BaseMutation):
             mutator (django_evolution.mutators.ModelMutator):
                 The mutator to perform an operation on.
 
-            model (MockModel):
+            model (django_evolution.mock_models.MockModel):
                 The model being mutated.
 
         Raises:

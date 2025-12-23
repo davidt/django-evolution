@@ -21,11 +21,15 @@ from collections import OrderedDict
 from copy import deepcopy
 from enum import Enum
 from importlib import import_module
+from typing import TYPE_CHECKING
 
 from django.db.models import Q
 from django.db.models.expressions import CombinedExpression
 
 from django_evolution.placeholders import BasePlaceholder
+
+if TYPE_CHECKING:
+    from typing import Any, ClassVar
 
 
 _deconstructed_serialization_map = {}
@@ -43,7 +47,10 @@ class BaseSerialization:
     """
 
     @classmethod
-    def serialize_to_signature(cls, value):
+    def serialize_to_signature(
+        cls,
+        value: Any,
+    ) -> Any:
         """Serialize a value to JSON-compatible signature data.
 
         Args:
@@ -57,7 +64,10 @@ class BaseSerialization:
         raise NotImplementedError
 
     @classmethod
-    def serialize_to_python(cls, value):
+    def serialize_to_python(
+        cls,
+        value: Any,
+    ) -> str:
         """Serialize a value to a Python code string.
 
         Args:
@@ -71,7 +81,10 @@ class BaseSerialization:
         raise NotImplementedError
 
     @classmethod
-    def deserialize_from_signature(cls, payload):
+    def deserialize_from_signature(
+        cls,
+        payload: Any,
+    ) -> Any:
         """Deserialize signature data to a value.
 
         Args:
@@ -85,7 +98,12 @@ class BaseSerialization:
         raise NotImplementedError
 
     @classmethod
-    def deserialize_from_deconstructed(cls, type_cls, args, kwargs):
+    def deserialize_from_deconstructed(
+        cls,
+        type_cls: type[Any],
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any],
+    ) -> Any:
         """Deserialize an object from deconstructed object information.
 
         Args:
@@ -119,10 +137,13 @@ class BaseIterableSerialization(BaseSerialization):
     #:
     #: Type:
     #:     type
-    item_type = None
+    item_type: ClassVar[type[Any] | None] = None
 
     @classmethod
-    def serialize_to_signature(cls, value):
+    def serialize_to_signature(
+        cls,
+        value: Any,
+    ) -> Any:
         """Serialize a value to JSON-compatible signature data.
 
         Args:
@@ -133,13 +154,18 @@ class BaseIterableSerialization(BaseSerialization):
             object:
             The resulting signature data.
         """
+        assert cls.item_type is not None
+
         return cls.item_type(
             serialize_to_signature(item)
             for item in value
         )
 
     @classmethod
-    def deserialize_from_signature(cls, payload):
+    def deserialize_from_signature(
+        cls,
+        payload: Any,
+    ) -> Any:
         """Deserialize signature data to a value.
 
         Args:
@@ -150,6 +176,8 @@ class BaseIterableSerialization(BaseSerialization):
             object or type:
             The resulting value.
         """
+        assert cls.item_type is not None
+
         return cls.item_type(
             deserialize_from_signature(item)
             for item in payload
@@ -168,7 +196,10 @@ class PrimitiveSerialization(BaseSerialization):
     """
 
     @classmethod
-    def serialize_to_signature(cls, value):
+    def serialize_to_signature(
+        cls,
+        value: Any,
+    ) -> Any:
         """Serialize a value to JSON-compatible signature data.
 
         Args:
@@ -182,11 +213,27 @@ class PrimitiveSerialization(BaseSerialization):
         return deepcopy(value)
 
     @classmethod
-    def serialize_to_python(cls, value):
+    def serialize_to_python(
+        cls,
+        value: Any,
+    ) -> str:
+        """Serialize a value to a Python code string.
+
+        Args:
+            value (object or type):
+                The value to serialize.
+
+        Returns:
+            str:
+            The resulting Python code.
+        """
         return repr(value)
 
     @classmethod
-    def deserialize_from_signature(cls, payload):
+    def deserialize_from_signature(
+        cls,
+        payload: Any,
+    ) -> Any:
         """Deserialize signature data to a value.
 
         This will just return the value as-is.
@@ -213,7 +260,20 @@ class ClassSerialization(BaseSerialization):
     """
 
     @classmethod
-    def serialize_to_python(cls, value):
+    def serialize_to_python(
+        cls,
+        value: type[Any],
+    ) -> str:
+        """Serialize a value to a Python code string.
+
+        Args:
+            value (type):
+                The value to serialize.
+
+        Returns:
+            str:
+            The resulting Python code.
+        """
         if value.__module__.startswith('django.db.models'):
             prefix = 'models.'
         else:
@@ -233,7 +293,10 @@ class DictSerialization(BaseSerialization):
     """
 
     @classmethod
-    def serialize_to_signature(cls, value):
+    def serialize_to_signature(
+        cls,
+        value: dict[Any, Any],
+    ) -> dict[Any, Any]:
         """Serialize a dictionary to JSON-compatible signature data.
 
         Args:
@@ -250,7 +313,10 @@ class DictSerialization(BaseSerialization):
         }
 
     @classmethod
-    def serialize_to_python(cls, value):
+    def serialize_to_python(
+        cls,
+        value: dict[Any, Any],
+    ) -> str:
         """Serialize a dictionary to a Python code string.
 
         Args:
@@ -274,7 +340,10 @@ class DictSerialization(BaseSerialization):
         )
 
     @classmethod
-    def deserialize_from_signature(cls, payload):
+    def deserialize_from_signature(
+        cls,
+        payload: dict[Any, Any],
+    ) -> dict[Any, Any]:
         """Deserialize dictionary signature data to a value.
 
         Args:

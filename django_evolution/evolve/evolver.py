@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from contextlib import contextmanager
+from typing import TYPE_CHECKING
 
 from django.db import connections
 from django.db.transaction import atomic
@@ -28,6 +29,14 @@ from django_evolution.signals import evolved, evolving, evolving_failed
 from django_evolution.signature import AppSignature, ProjectSignature
 from django_evolution.utils.apps import get_app, get_app_label, get_apps
 from django_evolution.utils.sql import SQLExecutor
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator, Sequence
+    from types import ModuleType
+
+    from django.db.backends.utils import CursorWrapper
+
+    from django_evolution.evolve.base import BaseEvolutionTask
 
 
 class Evolver:
@@ -95,8 +104,13 @@ class Evolver:
             signature. It may be ``None`` until :py:meth:`evolve` is called.
     """
 
-    def __init__(self, hinted=False, verbosity=0, interactive=False,
-                 database_name=DEFAULT_DB_ALIAS):
+    def __init__(
+        self,
+        hinted: bool = False,
+        verbosity: int = 0,
+        interactive: bool = False,
+        database_name: str = DEFAULT_DB_ALIAS,
+    ) -> None:
         """Initialize the evolver.
 
         Args:
@@ -197,7 +211,7 @@ class Evolver:
                                  self.target_project_sig)
 
     @property
-    def tasks(self):
+    def tasks(self) -> Iterable[BaseEvolutionTask]:
         """A list of all tasks that will be performed.
 
         This can only be accessed after all necessary tasks have been queued.
@@ -209,7 +223,7 @@ class Evolver:
 
         return self._tasks_by_id.values()
 
-    def can_simulate(self):
+    def can_simulate(self) -> bool:
         """Return whether all queued tasks can be simulated.
 
         If any tasks cannot be simulated (for instance, a hinted evolution
@@ -227,7 +241,7 @@ class Evolver:
             for task in self.tasks
         )
 
-    def get_evolution_required(self):
+    def get_evolution_required(self) -> bool:
         """Return whether there are any evolutions required.
 
         This can only be called after all tasks have been queued.
@@ -241,7 +255,7 @@ class Evolver:
             for task in self.tasks
         )
 
-    def diff_evolutions(self):
+    def diff_evolutions(self) -> Diff:
         """Return a diff between stored and post-evolution project signatures.
 
         This will run through all queued tasks, preparing them and simulating
@@ -258,7 +272,7 @@ class Evolver:
 
         return Diff(self.project_sig, self.target_project_sig)
 
-    def iter_evolution_content(self):
+    def iter_evolution_content(self) -> Iterator[tuple[BaseEvolutionTask, str]]:
         """Generate the evolution content for all queued tasks.
 
         This will loop through each tasks and yield any evolution content
@@ -276,7 +290,7 @@ class Evolver:
             if content:
                 yield task, content
 
-    def queue_evolve_all_apps(self):
+    def queue_evolve_all_apps(self) -> None:
         """Queue an evolution of all registered Django apps.
 
         This cannot be used if :py:meth:`queue_evolve_app` is also being used.
@@ -292,7 +306,10 @@ class Evolver:
         for app in get_apps():
             self.queue_evolve_app(app)
 
-    def queue_evolve_app(self, app):
+    def queue_evolve_app(
+        self,
+        app: ModuleType,
+    ) -> None:
         """Queue an evolution of a registered Django app.
 
         Args:
@@ -314,7 +331,7 @@ class Evolver:
                 _('"%s" is already being tracked for evolution')
                 % get_app_label(app))
 
-    def queue_purge_old_apps(self):
+    def queue_purge_old_apps(self) -> None:
         """Queue the purging of all old, stale Django apps.
 
         This will purge any apps that exist in the stored project signature
@@ -334,7 +351,10 @@ class Evolver:
         for app_label in self.initial_diff.deleted:
             self.queue_purge_app(app_label)
 
-    def queue_purge_app(self, app_label):
+    def queue_purge_app(
+        self,
+        app_label: str,
+    ) -> None:
         """Queue the purging of a Django app.
 
         Args:
@@ -357,7 +377,10 @@ class Evolver:
                 _('"%s" is already being tracked for purging')
                 % app_label)
 
-    def queue_task(self, task):
+    def queue_task(
+        self,
+        task: BaseEvolutionTask,
+    ) -> None:
         """Queue a task to run during evolution.
 
         This should only be directly called if working with custom tasks.
@@ -391,7 +414,7 @@ class Evolver:
         self._tasks_by_id[task.id] = task
         self._tasks_by_class.setdefault(type(task), []).append(task)
 
-    def evolve(self):
+    def evolve(self) -> None:
         """Perform the evolution.
 
         This will run through all queued tasks and attempt to apply them in
@@ -442,7 +465,7 @@ class Evolver:
 
         evolved.send(sender=self)
 
-    def _prepare_tasks(self):
+    def _prepare_tasks(self) -> None:
         """Prepare all queued tasks for further operations.
 
         Once prepared, no new tasks can be added. This will be done before
@@ -456,7 +479,10 @@ class Evolver:
                                        tasks=tasks,
                                        hinted=self.hinted)
 
-    def sql_executor(self, **kwargs):
+    def sql_executor(
+        self,
+        **kwargs,
+    ) -> SQLExecutor:
         """Return an SQLExecutor for executing SQL.
 
         This is a convenience method for creating an
@@ -477,7 +503,7 @@ class Evolver:
         return SQLExecutor(database=self.database_name, **kwargs)
 
     @contextmanager
-    def transaction(self):
+    def transaction(self) -> Iterator[CursorWrapper]:
         """Execute database operations in a transaction.
 
         This is a convenience method for executing in a transaction using
@@ -489,7 +515,7 @@ class Evolver:
             :py:class:`~django_evolution.utils.sql.SQLExecutor`.
 
         Context:
-            django.db.backends.util.CursorWrapper:
+            django.db.backends.utils.CursorWrapper:
             The cursor used to execute statements.
         """
         with atomic(using=self.database_name):
@@ -500,7 +526,10 @@ class Evolver:
             finally:
                 cursor.close()
 
-    def _save_project_sig(self, new_evolutions):
+    def _save_project_sig(
+        self,
+        new_evolutions: Sequence[Evolution],
+    ) -> None:
         """Save the project signature and any new evolutions.
 
         This will serialize the current modified project signature to the

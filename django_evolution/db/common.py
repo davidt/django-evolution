@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import logging
 from collections import defaultdict
+from typing import TYPE_CHECKING
 
 import django
 from django.db import connection as default_connection, models
@@ -26,6 +27,10 @@ from django_evolution.utils.db import (
     truncate_name,
 )
 from django_evolution.utils.models import iter_non_m2m_reverse_relations
+
+if TYPE_CHECKING:
+    from django_evolution.db.state import DatabaseState
+    from django_evolution.mutators.model_mutator import ModelMutator
 
 
 logger = logging.getLogger(__name__)
@@ -96,7 +101,11 @@ class BaseEvolutionOperations:
 
     alter_table_sql_result_cls = AlterTableSQLResult
 
-    def __init__(self, database_state, connection=default_connection):
+    def __init__(
+        self,
+        database_state: DatabaseState,
+        connection=default_connection,
+    ) -> None:
         """Initialize the evolution operations.
 
         Args:
@@ -310,7 +319,11 @@ class BaseEvolutionOperations:
             'definition_sql_params': column_def_sql_params,
         }
 
-    def generate_table_ops_sql(self, mutator, ops):
+    def generate_table_ops_sql(
+        self,
+        mutator: ModelMutator,
+        ops,
+    ):
         """Generates SQL for a sequence of mutation operations.
 
         This will process each operation one-by-one, generating default SQL,

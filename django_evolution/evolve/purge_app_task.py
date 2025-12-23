@@ -7,12 +7,20 @@ Version Added:
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from django.utils.translation import gettext as _
 
 from django_evolution.errors import EvolutionExecutionError
 from django_evolution.evolve.base import BaseEvolutionTask
 from django_evolution.mutations import DeleteApplication
 from django_evolution.mutators import AppMutator
+
+if TYPE_CHECKING:
+    from django.db.backends.utils import CursorWrapper
+
+    from django_evolution.evolve.evolver import Evolver
+    from django_evolution.utils.sql import SQLExecutor
 
 
 class PurgeAppTask(BaseEvolutionTask):
@@ -23,11 +31,15 @@ class PurgeAppTask(BaseEvolutionTask):
             The app label for the app to purge.
     """
 
-    def __init__(self, evolver, app_label):
+    def __init__(
+        self,
+        evolver: Evolver,
+        app_label: str,
+    ) -> None:
         """Initialize the task.
 
         Args:
-            evolver (Evolver):
+            evolver (django_evolution.evolve.evolver.Evolver):
                 The evolver that will execute the task.
 
             app_label (str):
@@ -38,7 +50,10 @@ class PurgeAppTask(BaseEvolutionTask):
 
         self.app_label = app_label
 
-    def prepare(self, **kwargs):
+    def prepare(
+        self,
+        **kwargs,
+    ) -> None:
         """Prepare state for this task.
 
         This will determine if the app's tables need to be deleted from
@@ -63,7 +78,12 @@ class PurgeAppTask(BaseEvolutionTask):
         self.can_simulate = True
         self.new_evolutions = []
 
-    def execute(self, cursor=None, sql_executor=None, **kwargs):
+    def execute(
+        self,
+        cursor: (CursorWrapper | None) = None,
+        sql_executor: (SQLExecutor | None) = None,
+        **kwargs,
+    ) -> None:
         """Execute the task.
 
         This will delete any tables owned by the application.
@@ -74,6 +94,9 @@ class PurgeAppTask(BaseEvolutionTask):
 
             sql_executor (django_evolution.utils.sql.SQLExecutor, optional):
                 The SQL executor used to run any SQL on the database.
+
+            **kwargs (dict, unused):
+                Additional keyword arguments.
 
         Raises:
             django_evolution.errors.EvolutionExecutionError:
@@ -92,7 +115,7 @@ class PurgeAppTask(BaseEvolutionTask):
                     detailed_error=str(e),
                     last_sql_statement=getattr(e, 'last_sql_statement'))
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return a string description of the task.
 
         Returns:

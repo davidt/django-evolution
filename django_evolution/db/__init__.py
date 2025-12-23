@@ -1,10 +1,28 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from django.conf import settings
+
+if TYPE_CHECKING:
+    from django_evolution.db.common import BaseEvolutionOperations
+    from django_evolution.db.state import DatabaseState
 
 
 class EvolutionOperationsMulti:
-    def __init__(self, db_name, database_state=None):
+
+    ######################
+    # Instance variables #
+    ######################
+
+    #: The evolution operations object for the database.
+    evolver: BaseEvolutionOperations
+
+    def __init__(
+        self,
+        db_name: str,
+        database_state: (DatabaseState | None) = None,
+    ) -> None:
         """Initialize the instance.
 
         Args:
@@ -26,5 +44,11 @@ class EvolutionOperationsMulti:
         self.evolver = module.EvolutionOperations(database_state,
                                                   connection)
 
-    def get_evolver(self):
+    def get_evolver(self) -> BaseEvolutionOperations:
+        """Return the evolver instance.
+
+        Returns:
+            django_evolution.db.common.BaseEvolutionOperations:
+            The evolver instance.
+        """
         return self.evolver

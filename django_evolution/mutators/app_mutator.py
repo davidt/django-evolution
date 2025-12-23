@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import copy
 import logging
+from typing import TYPE_CHECKING
 
 from django_evolution.errors import CannotSimulate
 from django_evolution.mutations import (AddField,
@@ -25,6 +26,17 @@ from django_evolution.mutators.model_mutator import ModelMutator
 from django_evolution.mutators.sql_mutator import SQLMutator
 from django_evolution.mutators.upgrade_method_mutator import \
     UpgradeMethodMutator
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from typing import Any
+
+    from typing_extensions import Self
+
+    from django_evolution.db.state import DatabaseState
+    from django_evolution.evolve.evolver import Evolver
+    from django_evolution.mutations.base import BaseMutation
+    from django_evolution.signature import ProjectSignature
 
 
 logger = logging.getLogger(__name__)
@@ -52,12 +64,17 @@ class AppMutator(BaseMutator):
     """
 
     @classmethod
-    def from_evolver(cls, evolver, app_label, legacy_app_label=None,
-                     update_evolver=True):
+    def from_evolver(
+        cls,
+        evolver: Evolver,
+        app_label: str,
+        legacy_app_label: (str | None) = None,
+        update_evolver: bool = True,
+    ) -> Self:
         """Create an AppMutator based on the state from an Evolver.
 
         Args:
-            evolver (django_evolution.evolve.Evolver):
+            evolver (django_evolution.evolve.evolver.Evolver):
                 The Evolver containing the state for the app mutator.
 
             app_label (str):
@@ -67,6 +84,9 @@ class AppMutator(BaseMutator):
                 The legacy label of the app to evolve. This is based on the
                 module name and is used in the transitioning of pre-Django 1.7
                 signatures.
+
+            update_evolver (bool, optional):
+                Whether to update the evolver's stored signatures.
 
         Returns:
             AppMutator:
@@ -85,8 +105,14 @@ class AppMutator(BaseMutator):
                    database_state=database_state,
                    database=evolver.database_name)
 
-    def __init__(self, app_label, project_sig, database_state,
-                 legacy_app_label=None, database=None):
+    def __init__(
+        self,
+        app_label: str,
+        project_sig: ProjectSignature,
+        database_state: DatabaseState,
+        legacy_app_label: (str | None) = None,
+        database: (str | None) = None,
+    ) -> None:
         """Initialize the mutator.
 
         Args:
@@ -119,13 +145,20 @@ class AppMutator(BaseMutator):
         self._orig_project_sig = copy.deepcopy(self.project_sig)
         self._orig_database_state = self.database_state.clone()
 
-    def run_mutation(self, mutation):
-        """Runs a mutation that applies to this app.
+    def run_mutation(
+        self,
+        mutation: BaseMutation,
+    ) -> None:
+        """Run a mutation that applies to this app.
 
         If the mutation applies to a model, a ModelMutator for that model
         will be given the job of running this mutation. If the prior operation
         operated on the same model, then the previously created ModelMutator
         will be used. Otherwise, a new one will be created.
+
+        Args:
+            mutation (django_evolution.mutations.base.BaseMutation):
+                The mutation to run.
         """
         mutator = None
 
@@ -168,14 +201,26 @@ class AppMutator(BaseMutator):
         else:
             mutator.run_mutation(mutation)
 
-    def run_mutations(self, mutations):
-        """Runs a list of mutations."""
+    def run_mutations(
+        self,
+        mutations: Sequence[BaseMutation],
+    ) -> None:
+        """Run a list of mutations.
+
+        Args:
+            mutations (list of django_evolution.mutations.base.BaseMutation):
+                The mutations to run.
+        """
         mutations = self._preprocess_mutations(mutations)
 
         for mutation in mutations:
             self.run_mutation(mutation)
 
-    def add_sql(self, mutation, sql):
+    def add_sql(
+        self,
+        mutation: BaseMutation,
+        sql,
+    ) -> None:
         """Adds SQL that applies to the application."""
         assert not self._last_model_mutator
 
@@ -215,8 +260,8 @@ class AppMutator(BaseMutator):
 
         return sql
 
-    def _finalize_model_mutator(self):
-        """Finalizes the current ModelMutator, if one exists.
+    def _finalize_model_mutator(self) -> None:
+        """Finalize the current ModelMutator, if one exists.
 
         The ModelMutator's SQL will be generated and added to the resulting
         SQL for this AppMutator.
@@ -228,8 +273,11 @@ class AppMutator(BaseMutator):
             self._mutators.append(self._last_model_mutator)
             self._last_model_mutator = None
 
-    def _preprocess_mutations(self, mutations):
-        """Pre-processes a list of mutations to filter out unnecessary changes.
+    def _preprocess_mutations(
+        self,
+        mutations: Sequence[BaseMutation],
+    ) -> Sequence[BaseMutation]:
+        """Pre-process a list of mutations to filter out unnecessary changes.
 
         This attempts to take a set of mutations and figure out which ones
         are actually necessary to create the resulting signature.
@@ -238,6 +286,14 @@ class AppMutator(BaseMutator):
         one go (basically, adjacent AddFields, DeleteFields, RenameFields, and
         ChangeFields), and then looks in each batch for any changes to fields
         that become unnecessary (due to field deletion).
+
+        Args:
+            mutations (list of django_evolution.mutations.base.BaseMutation):
+                The mutations to process.
+
+        Returns:
+            list of django_evolution.mutations.base.BaseMutation:
+            The processed mutations.
         """
         mutation_batches = self._create_mutation_batches(mutations)
 
@@ -258,8 +314,11 @@ class AppMutator(BaseMutator):
 
         return result_mutations
 
-    def _create_mutation_batches(self, mutations):
-        """Creates batches of mutations that can be pre-processed together.
+    def _create_mutation_batches(
+        self,
+        mutations: Sequence[BaseMutation],
+    ) -> Sequence[tuple[bool, Sequence[BaseMutation]]]:
+        """Create batches of mutations that can be pre-processed together.
 
         Figure out batches of mutations that are pre-processable, and group
         them together. Each batch will be considered as a whole when attempting
@@ -267,6 +326,16 @@ class AppMutator(BaseMutator):
 
         Mutations that are not pre-processable will be left in their own
         non-pre-processable batches.
+
+        Args:
+            mutations (list of django_evolution.mutations.base.BaseMutation):
+                The mutations to process.
+
+        Returns:
+            list:
+            A list of 2-tuples. For each item in the list, the first element is
+            a boolean indicating whether the batch can be pre-processed, and
+            the second is a list of mutations in the batch.
         """
         cur_mutation_batch = (True, [])
         mutation_batches = [cur_mutation_batch]
@@ -282,8 +351,11 @@ class AppMutator(BaseMutator):
 
         return mutation_batches
 
-    def _process_mutation_batch(self, mutation_batch):
-        """Processes and optimizes a batch of mutations.
+    def _process_mutation_batch(
+        self,
+        mutation_batch: tuple[bool, Sequence[BaseMutation]],
+    ) -> Sequence[BaseMutation]:
+        """Process and optimize a batch of mutations.
 
         This will look for any changes to fields that are unnecessary. It
         looks for any field that's deleted in this batch, and gets rid of any
@@ -291,6 +363,14 @@ class AppMutator(BaseMutator):
 
         If the field is both added and deleted in this batch, all mutations
         concerning that field are filtered out.
+
+        Args:
+            mutation_batch (tuple):
+                A batch, as prepared by :py:meth:`_create_mutation_batches`.
+
+        Returns:
+            list of django_evolution.mutations.base.BaseMutation:
+            The optimized list of mutations.
         """
         can_process, mutations = mutation_batch
 
@@ -823,7 +903,11 @@ class AppMutator(BaseMutator):
 
         return mutations
 
-    def _copy_change_attrs(self, source_mutation, dest_mutation):
+    def _copy_change_attrs(
+        self,
+        source_mutation: ChangeField,
+        dest_mutation: ChangeField,
+    ) -> None:
         """Copy attributes for a ChangeField from one mutation to another.
 
         This will copy the field type, initial value, and any arbitrary
@@ -845,11 +929,20 @@ class AppMutator(BaseMutator):
         if source_mutation.initial is not None:
             dest_mutation.initial = source_mutation.initial
 
-    def _rename_dict_key(self, d, old_key, new_key):
+    def _rename_dict_key(
+        self,
+        d: dict[str, Any],
+        old_key: str,
+        new_key: str,
+    ) -> None:
         d[new_key] = d[old_key]
         del d[old_key]
 
-    def _get_mutation_id(self, mutation, field_name=None):
+    def _get_mutation_id(
+        self,
+        mutation: BaseMutation,
+        field_name: (str | None) = None,
+    ) -> tuple[str, str]:
         assert hasattr(mutation, 'model_name')
         assert field_name or hasattr(mutation, 'field_name')
 

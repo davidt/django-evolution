@@ -3,15 +3,25 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from typing import TYPE_CHECKING
 
 from django.apps.registry import apps
 from django.db import router
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+    from types import ModuleType
+
+    from django.db.models import Field, Model
 
 
 _rel_tree_cache = None
 
 
-def get_models(app_mod=None, include_auto_created=False):
+def get_models(
+    app_mod: (ModuleType | None) = None,
+    include_auto_created: bool = False,
+) -> list[type[Model]]:
     """Return the models belonging to an app.
 
     Version Changed:
@@ -28,7 +38,7 @@ def get_models(app_mod=None, include_auto_created=False):
 
     Returns:
         list:
-        The list of modules belonging to the app.
+        The list of models belonging to the app.
     """
     if app_mod is None:
         return apps.get_models(include_auto_created=include_auto_created)
@@ -45,7 +55,10 @@ def get_models(app_mod=None, include_auto_created=False):
     return []
 
 
-def set_model_name(model, name):
+def set_model_name(
+    model: type[Model],
+    name: str,
+) -> None:
     """Set the name of a model.
 
     Version Changed:
@@ -53,8 +66,8 @@ def set_model_name(model, name):
         Moved from :py:mod:`django_evolution.compat.models`.
 
     Args:
-        model (django.db.models.Model):
-            The model to set the new name on.
+        model (type):
+            The model class to set the new name on.
 
         name (str):
             The new model name.
@@ -62,7 +75,9 @@ def set_model_name(model, name):
     model._meta.model_name = name
 
 
-def get_model_name(model):
+def get_model_name(
+    model: type[Model],
+):
     """Return the model's name.
 
     Version Changed:
@@ -70,8 +85,8 @@ def get_model_name(model):
         Moved from :py:mod:`django_evolution.compat.models`.
 
     Args:
-        model (django.db.models.Model):
-            The model for which to return the name.
+        model (type):
+            The model class for which to return the name.
 
     Returns:
         str: The model's name.
@@ -79,7 +94,10 @@ def get_model_name(model):
     return model._meta.model_name
 
 
-def get_database_for_model_name(app_name, model_name):
+def get_database_for_model_name(
+    app_name: str,
+    model_name: str,
+) -> str:
     """Return the database used for a given model.
 
     Given an app name and a model name, this will return the proper
@@ -100,7 +118,9 @@ def get_database_for_model_name(app_name, model_name):
     return router.db_for_write(apps.get_model(app_name, model_name))
 
 
-def walk_model_tree(model):
+def walk_model_tree(
+    model: type[Model],
+) -> Iterator[type[Model]]:
     """Walk through a tree of models.
 
     This will yield the provided model and its parents, in turn yielding
@@ -196,12 +216,14 @@ def clear_model_rel_tree():
     _rel_tree_cache = None
 
 
-def iter_model_fields(model,
-                      include_parent_models=True,
-                      include_forward_fields=True,
-                      include_reverse_fields=False,
-                      include_hidden_fields=False,
-                      seen_models=None):
+def iter_model_fields(
+    model: type[Model],
+    include_parent_models: bool = True,
+    include_forward_fields: bool = True,
+    include_reverse_fields: bool = False,
+    include_hidden_fields: bool = False,
+    seen_models: (set[type[Model]] | None) = None,
+) -> Iterator[Field]:
     """Iterate through all fields on a model using the given criteria.
 
     This is roughly equivalent to Django's internal
@@ -297,7 +319,9 @@ def iter_model_fields(model,
         yield field
 
 
-def iter_non_m2m_reverse_relations(field):
+def iter_non_m2m_reverse_relations(
+    field: Field,
+) -> Iterator[Field]:
     """Iterate through non-M2M reverse relations pointing to a field.
 
     This will exclude any :py:class:`~django.db.models.ManyToManyField`s,

@@ -6,9 +6,14 @@ Version Added:
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from django.utils.translation import gettext as _
 
 from django_evolution.errors import EvolutionException
+
+if TYPE_CHECKING:
+    from typing import ClassVar
 
 
 class BasePlaceholder:
@@ -25,9 +30,14 @@ class BasePlaceholder:
     #:
     #: Type:
     #:     str
-    placeholder_text = None
+    placeholder_text: ClassVar[str | None] = None
 
-    def __init__(self, app_label=None, model_name=None, field_name=None):
+    def __init__(
+        self,
+        app_label: (str | None) = None,
+        model_name: (str | None) = None,
+        field_name: (str | None) = None,
+    ) -> None:
         """Initialize the object.
 
         Args:
@@ -44,7 +54,7 @@ class BasePlaceholder:
         self.model_name = model_name
         self.field_name = field_name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return a string representation of the object.
 
         This is used when outputting the value in a hinted evolution.
@@ -53,9 +63,9 @@ class BasePlaceholder:
             str:
             The placeholder text.
         """
-        return self.placeholder_text
+        return self.placeholder_text or ''
 
-    def __call__(self):
+    def __call__(self) -> None:
         """Handle calls on this object.
 
         This will raise an exception stating that the evolution cannot be
@@ -80,9 +90,9 @@ class NullFieldInitialCallback(BasePlaceholder):
     will fail to evolve.
     """
 
-    placeholder_text = '<<USER VALUE REQUIRED>>'
+    placeholder_text: ClassVar[str | None] = '<<USER VALUE REQUIRED>>'
 
-    def __call__(self):
+    def __call__(self) -> None:
         """Handle calls on this object.
 
         This will raise an exception stating that the evolution cannot be

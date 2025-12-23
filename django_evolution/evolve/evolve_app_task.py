@@ -10,6 +10,7 @@ from __future__ import annotations
 import itertools
 import logging
 from collections import OrderedDict
+from typing import TYPE_CHECKING
 
 from django.utils.translation import gettext as _
 
@@ -48,6 +49,12 @@ from django_evolution.utils.migrations import (
     is_migration_initial,
     record_applied_migrations,
     register_global_custom_migrations)
+from django_evolution.utils.sql import SQLExecutor
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from django_evolution.evolve.evolver import Evolver
 
 
 logger = logging.getLogger(__name__)
@@ -68,7 +75,13 @@ class EvolveAppTask(BaseEvolutionTask):
     """
 
     @classmethod
-    def prepare_tasks(cls, evolver, tasks, hinted=False, **kwargs):
+    def prepare_tasks(
+        cls,
+        evolver: Evolver,
+        tasks: Sequence[BaseEvolutionTask],
+        hinted: bool = False,
+        **kwargs,
+    ) -> None:
         """Prepare a list of tasks.
 
         If migrations are supported, then before preparing any of the tasks,
@@ -86,6 +99,9 @@ class EvolveAppTask(BaseEvolutionTask):
             tasks (list of BaseEvolutionTask):
                 The list of tasks to prepare. These will match the current
                 class.
+
+            hinted (bool):
+                Whether to prepare the task for hinted evolutions.
 
             **kwargs (dict):
                 Keyword arguments to pass to the tasks' `:py:meth:`prepare`
@@ -160,7 +176,12 @@ class EvolveAppTask(BaseEvolutionTask):
         clear_global_custom_migrations()
 
     @classmethod
-    def execute_tasks(cls, evolver, tasks, **kwargs):
+    def execute_tasks(
+        cls,
+        evolver: Evolver,
+        tasks: Sequence[BaseEvolutionTask],
+        **kwargs,
+    ) -> None:
         """Execute a list of tasks.
 
         This is responsible for calling :py:meth:`execute` on each of the
@@ -168,7 +189,7 @@ class EvolveAppTask(BaseEvolutionTask):
         after the tasks.
 
         Args:
-            evolver (Evolver):
+            evolver (django_evolution.evolve.evolver.Evolver):
                 The evolver that's handling the tasks.
 
             tasks (list of BaseEvolutionTask):
@@ -305,7 +326,11 @@ class EvolveAppTask(BaseEvolutionTask):
                     sql=deferred_sql)
 
     @classmethod
-    def _build_migration_executor(cls, evolver, tasks):
+    def _build_migration_executor(
+        cls,
+        evolver: Evolver,
+        tasks: Sequence[EvolveAppTask],
+    ) -> MigrationExecutor | None:
         """Return a MigrationExecutor for loading and executing migrations.
 
         The executor is responsible for loading any migrations from disk and
@@ -317,7 +342,7 @@ class EvolveAppTask(BaseEvolutionTask):
         will return ``None`` instead.
 
         Args:
-            evolver (Evolver):
+            evolver (django_evolution.evolve.evolver.Evolver):
                 The evolver executing the tasks.
 
             tasks (list of EvolveAppTask):
@@ -344,7 +369,12 @@ class EvolveAppTask(BaseEvolutionTask):
         return migration_executor
 
     @classmethod
-    def _build_migrations_info(cls, evolver, migration_executor, tasks):
+    def _build_migrations_info(
+        cls,
+        evolver: Evolver,
+        migration_executor: MigrationExecutor,
+        tasks: Sequence[EvolveAppTask],
+    ):
         """Build information on the migrations to perform.
 
         This will construct three migration plans:
@@ -370,7 +400,7 @@ class EvolveAppTask(BaseEvolutionTask):
         return an empty dictionary.
 
         Args:
-            evolver (Evolver):
+            evolver (django_evolution.evolve.evolver.Evolver):
                 The evolver executing the tasks.
 
             migration_executor (django_evolution.utils.migrations.
@@ -581,8 +611,13 @@ class EvolveAppTask(BaseEvolutionTask):
         return result
 
     @classmethod
-    def _build_evolutions_graph(cls, evolver, migration_executor,
-                                migrations_info, tasks):
+    def _build_evolutions_graph(
+        cls,
+        evolver: Evolver,
+        migration_executor: MigrationExecutor | None,
+        migrations_info,
+        tasks: Sequence[EvolveAppTask],
+    ) -> EvolutionGraph:
         """Return an EvolutionGraph covering all migrations and evolutions.
 
         The resulting graph will reflect the dependency relationships between
@@ -599,7 +634,7 @@ class EvolveAppTask(BaseEvolutionTask):
         specified by migrations and evolutions will alter this order.
 
         Args:
-            evolver (Evolver):
+            evolver (django_evolution.evolve.evolver.Evolver):
                 The evolver executing the tasks.
 
             migration_executor (django_evolution.utils.migrations.
@@ -707,7 +742,12 @@ class EvolveAppTask(BaseEvolutionTask):
         return graph
 
     @classmethod
-    def _build_batches(cls, evolver, graph, hinted):
+    def _build_batches(
+        cls,
+        evolver: Evolver,
+        graph: EvolutionGraph,
+        hinted: bool,
+    ):
         """Return batches of evolution/migration operations to execute.
 
         This takes the order of migrations, evolutions, and model creations
@@ -760,7 +800,7 @@ class EvolveAppTask(BaseEvolutionTask):
             <django_evolution.consvts.UpgradeMethod.MIGRATIONS>`.
 
         Args:
-            evolver (Evolver):
+            evolver (django_evolution.evolve.evolver.Evolver):
                 The evolver executing the tasks.
 
             graph (django_evolution.utils.graph.EvolutionGraph):
@@ -969,24 +1009,30 @@ class EvolveAppTask(BaseEvolutionTask):
         return batches
 
     @classmethod
-    def _create_models(cls, sql_executor, evolver, tasks, sql):
+    def _create_models(
+        cls,
+        sql_executor: SQLExecutor,
+        evolver: Evolver,
+        tasks: Sequence[EvolveAppTask],
+        sql: Sequence[str],
+    ) -> Sequence[str]:
         """Create tables for models in the database.
 
         Args:
             sql_executor (django_evolution.utils.sql.SQLExecutor):
                 The SQL executor used to run any SQL on the database.
 
-            evolver (Evolver):
+            evolver (django_evolution.evolve.evolver.Evolver):
                 The evolver executing the tasks.
 
             tasks (list of EvolveAppTask):
                 The list of tasks containing models to create.
 
-            sql (list):
+            sql (list of str):
                 The list of SQL statements to execute.
 
         Returns:
-            list:
+            list of str:
             The list of SQL statements used to create the model. This is
             used primarily for unit tests.
 
@@ -1049,7 +1095,7 @@ class EvolveAppTask(BaseEvolutionTask):
             sql_executor (django_evolution.utils.sql.SQLExecutor):
                 The SQL executor used to run any SQL on the database.
 
-            evolver (Evolver):
+            evolver (django_evolution.evolve.evolver.Evolver):
                 The evolver executing the tasks.
 
             sql (list):
@@ -1082,7 +1128,7 @@ class EvolveAppTask(BaseEvolutionTask):
         """Initialize the task.
 
         Args:
-            evolver (Evolver):
+            evolver (django_evolution.evolve.evolver.Evolver):
                 The evolver that will execute the task.
 
             app (module):
@@ -1410,7 +1456,8 @@ class EvolveAppTask(BaseEvolutionTask):
                 Whether to create models as part of this execution. Normally,
                 this is handled in :py:meth:`execute_tasks`, but this flag
                 allows for more fine-grained control of table creation in
-                limited circumstances (intended only by :py:class:`Evolver`).
+                limited circumstances (intended only by
+                :py:class:`django_evolution.evolve.evolver.Evolver`).
 
         Raises:
             django_evolution.errors.EvolutionExecutionError:

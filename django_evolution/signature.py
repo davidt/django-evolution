@@ -132,6 +132,7 @@ from __future__ import annotations
 from collections import OrderedDict
 from copy import deepcopy
 from importlib import import_module
+from typing import Literal, TYPE_CHECKING, cast, overload
 
 from django.conf import global_settings
 from django.contrib.contenttypes.fields import GenericRelation
@@ -158,6 +159,15 @@ from django_evolution.utils.evolutions import get_app_upgrade_info
 from django_evolution.utils.migrations import MigrationList
 from django_evolution.utils.models import get_models
 
+if TYPE_CHECKING:
+    from types import ModuleType
+    from typing import Any, TypeAlias
+
+    from typing_extensions import Self
+
+
+SignatureVersion: TypeAlias = Literal[1, 2]
+
 
 #: The latest signature version.
 LATEST_SIGNATURE_VERSION = 2
@@ -167,7 +177,12 @@ class BaseSignature:
     """Base class for a signature."""
 
     @classmethod
-    def deserialize(cls, sig_dict, sig_version, database=DEFAULT_DB_ALIAS):
+    def deserialize(
+        cls,
+        sig_dict,
+        sig_version: SignatureVersion,
+        database: str = DEFAULT_DB_ALIAS,
+    ) -> Self:
         """Deserialize the signature.
 
         Args:
@@ -190,7 +205,10 @@ class BaseSignature:
         """
         raise NotImplementedError
 
-    def diff(self, old_sig):
+    def diff(
+        self,
+        old_sig: BaseSignature,
+    ) -> Any:
         """Diff against an older signature.
 
         The resulting data is dependent on the type of signature.
@@ -205,7 +223,7 @@ class BaseSignature:
         """
         raise NotImplementedError
 
-    def clone(self):
+    def clone(self) -> BaseSignature:
         """Clone the signature.
 
         Returns:
@@ -214,7 +232,10 @@ class BaseSignature:
         """
         raise NotImplementedError
 
-    def serialize(self, sig_version=LATEST_SIGNATURE_VERSION):
+    def serialize(
+        self,
+        sig_version: SignatureVersion = LATEST_SIGNATURE_VERSION,
+    ):
         """Serialize data to a signature dictionary.
 
         Args:
@@ -232,7 +253,10 @@ class BaseSignature:
         """
         raise NotImplementedError
 
-    def __eq__(self, other):
+    def __eq__(
+        self,
+        other: BaseSignature,
+    ) -> bool:
         """Return whether two signatures are equal.
 
         Args:
@@ -246,7 +270,10 @@ class BaseSignature:
         """
         raise NotImplementedError
 
-    def __ne__(self, other):
+    def __ne__(
+        self,
+        other: BaseSignature,
+    ) -> bool:
         """Return whether two signatures are not equal.
 
         Args:
@@ -260,7 +287,7 @@ class BaseSignature:
         """
         return not (self == other)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return a string representation of the signature.
 
         Returns:
@@ -280,7 +307,10 @@ class ProjectSignature(BaseSignature):
     """
 
     @classmethod
-    def from_database(cls, database):
+    def from_database(
+        cls,
+        database: str,
+    ) -> Self:
         """Create a project signature from the database.
 
         This will look up all the applications registered in Django, turning
@@ -304,7 +334,11 @@ class ProjectSignature(BaseSignature):
         return project_sig
 
     @classmethod
-    def deserialize(cls, project_sig_dict, database=DEFAULT_DB_ALIAS):
+    def deserialize(
+        cls,
+        project_sig_dict,
+        database: str = DEFAULT_DB_ALIAS,
+    ) -> Self:
         """Deserialize a serialized project signature.
 
         Args:
@@ -322,7 +356,7 @@ class ProjectSignature(BaseSignature):
             django_evolution.errors.InvalidSignatureVersion:
                 The signature version found in the dictionary is unsupported.
         """
-        sig_version = project_sig_dict['__version__']
+        sig_version = cast(SignatureVersion, project_sig_dict['__version__'])
         validate_sig_version(sig_version)
 
         project_sig = cls()
@@ -345,7 +379,7 @@ class ProjectSignature(BaseSignature):
 
         return project_sig
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the signature."""
         self._app_sigs = OrderedDict()
 
@@ -354,7 +388,11 @@ class ProjectSignature(BaseSignature):
         """The application signatures in the project signature."""
         return self._app_sigs.values()
 
-    def add_app(self, app, database):
+    def add_app(
+        self,
+        app: ModuleType,
+        database: str,
+    ) -> None:
         """Add an application to the project signature.
 
         This will construct an :py:class:`AppSignature` and add it
@@ -369,7 +407,10 @@ class ProjectSignature(BaseSignature):
         """
         self.add_app_sig(AppSignature.from_app(app, database))
 
-    def add_app_sig(self, app_sig):
+    def add_app_sig(
+        self,
+        app_sig: AppSignature,
+    ) -> None:
         """Add an application signature to the project signature.
 
         Args:
@@ -378,7 +419,10 @@ class ProjectSignature(BaseSignature):
         """
         self._app_sigs[app_sig.app_id] = app_sig
 
-    def remove_app_sig(self, app_id):
+    def remove_app_sig(
+        self,
+        app_id: str,
+    ) -> None:
         """Remove an application signature from the project signature.
 
         Args:
@@ -397,7 +441,27 @@ class ProjectSignature(BaseSignature):
                 _('An application signature for "%s" could not be found.')
                 % app_id)
 
-    def get_app_sig(self, app_id, required=False):
+    @overload
+    def get_app_sig(
+        self,
+        app_id: str,
+        required: Literal[True],
+    ) -> AppSignature:
+        ...
+
+    @overload
+    def get_app_sig(
+        self,
+        app_id: str,
+        required: Literal[False] = False,
+    ) -> AppSignature | None:
+        ...
+
+    def get_app_sig(
+        self,
+        app_id: str,
+        required: bool = False,
+    ) -> AppSignature | None:
         """Return an application signature with the given ID.
 
         Args:
@@ -435,7 +499,10 @@ class ProjectSignature(BaseSignature):
 
         return app_sig
 
-    def diff(self, old_project_sig):
+    def diff(
+        self,
+        old_project_sig: ProjectSignature,
+    ):
         """Diff against an older project signature.
 
         This will return a dictionary of changes between two project
@@ -501,7 +568,7 @@ class ProjectSignature(BaseSignature):
             if value
         )
 
-    def clone(self):
+    def clone(self) -> ProjectSignature:
         """Clone the signature.
 
         Returns:
@@ -515,7 +582,10 @@ class ProjectSignature(BaseSignature):
 
         return cloned_sig
 
-    def serialize(self, sig_version=LATEST_SIGNATURE_VERSION):
+    def serialize(
+        self,
+        sig_version: SignatureVersion = LATEST_SIGNATURE_VERSION,
+    ):
         """Serialize project data to a signature dictionary.
 
         Args:
@@ -548,7 +618,10 @@ class ProjectSignature(BaseSignature):
 
         return project_sig_dict
 
-    def __eq__(self, other):
+    def __eq__(
+        self,
+        other: ProjectSignature | None,
+    ) -> bool:
         """Return whether two project signatures are equal.
 
         Args:
@@ -563,7 +636,7 @@ class ProjectSignature(BaseSignature):
         return (other is not None and
                 dict.__eq__(self._app_sigs, other._app_sigs))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return a string representation of the signature.
 
         Returns:
@@ -582,7 +655,11 @@ class AppSignature(BaseSignature):
     """
 
     @classmethod
-    def from_app(cls, app, database):
+    def from_app(
+        cls,
+        app: ModuleType,
+        database: str,
+    ) -> Self:
         """Create an application signature from an application.
 
         This will store data on the application and create a
@@ -617,8 +694,13 @@ class AppSignature(BaseSignature):
         return app_sig
 
     @classmethod
-    def deserialize(cls, app_id, app_sig_dict, sig_version,
-                    database=DEFAULT_DB_ALIAS):
+    def deserialize(
+        cls,
+        app_id: str,
+        app_sig_dict,
+        sig_version: SignatureVersion,
+        database: str = DEFAULT_DB_ALIAS,
+    ) -> Self:
         """Deserialize a serialized application signature.
 
         Args:
@@ -692,8 +774,13 @@ class AppSignature(BaseSignature):
 
         return app_sig
 
-    def __init__(self, app_id, legacy_app_label=None, upgrade_method=None,
-                 applied_migrations=None):
+    def __init__(
+        self,
+        app_id: str,
+        legacy_app_label: (str | None) = None,
+        upgrade_method: (str | None) = None,
+        applied_migrations: (set[str] | None) = None,
+    ) -> None:
         """Initialize the signature.
 
         Args:
@@ -760,7 +847,7 @@ class AppSignature(BaseSignature):
 
         self._applied_migrations = value
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         """Return whether the application signature is empty.
 
         An empty application signature contains no models.
@@ -772,7 +859,10 @@ class AppSignature(BaseSignature):
         """
         return not bool(self._model_sigs)
 
-    def add_model(self, model):
+    def add_model(
+        self,
+        model,
+    ) -> None:
         """Add a model to the application signature.
 
         This will construct a :py:class:`ModelSignature` and add it to this
@@ -784,7 +874,10 @@ class AppSignature(BaseSignature):
         """
         self.add_model_sig(ModelSignature.from_model(model))
 
-    def add_model_sig(self, model_sig):
+    def add_model_sig(
+        self,
+        model_sig: ModelSignature,
+    ) -> None:
         """Add a model signature to the application signature.
 
         Args:
@@ -793,7 +886,10 @@ class AppSignature(BaseSignature):
         """
         self._model_sigs[model_sig.model_name] = model_sig
 
-    def remove_model_sig(self, model_name):
+    def remove_model_sig(
+        self,
+        model_name: str,
+    ) -> None:
         """Remove a model signature from the application signature.
 
         Args:
@@ -811,11 +907,31 @@ class AppSignature(BaseSignature):
                 _('A model signature for "%s" could not be found.')
                 % model_name)
 
-    def clear_model_sigs(self):
+    def clear_model_sigs(self) -> None:
         """Clear all model signatures from the application signature."""
         self._model_sigs.clear()
 
-    def get_model_sig(self, model_name, required=False):
+    @overload
+    def get_model_sig(
+        self,
+        model_name: str,
+        required: Literal[True],
+    ) -> ModelSignature:
+        ...
+
+    @overload
+    def get_model_sig(
+        self,
+        model_name: str,
+        required: Literal[False] = False,
+    ) -> ModelSignature | None:
+        ...
+
+    def get_model_sig(
+        self,
+        model_name: str,
+        required: bool = False,
+    ) -> ModelSignature | None:
         """Return a model signature for the given model name.
 
         Args:
@@ -846,7 +962,10 @@ class AppSignature(BaseSignature):
 
         return model_sig
 
-    def diff(self, old_app_sig):
+    def diff(
+        self,
+        old_app_sig: AppSignature,
+    ):
         """Diff against an older application signature.
 
         This will return a dictionary containing the differences between
@@ -970,7 +1089,7 @@ class AppSignature(BaseSignature):
             if value
         )
 
-    def clone(self):
+    def clone(self) -> AppSignature:
         """Clone the signature.
 
         Returns:
@@ -988,7 +1107,10 @@ class AppSignature(BaseSignature):
 
         return cloned_sig
 
-    def serialize(self, sig_version=LATEST_SIGNATURE_VERSION):
+    def serialize(
+        self,
+        sig_version: SignatureVersion = LATEST_SIGNATURE_VERSION,
+    ):
         """Serialize application data to a signature dictionary.
 
         Args:
@@ -1029,7 +1151,10 @@ class AppSignature(BaseSignature):
 
         return app_sig_dict
 
-    def __eq__(self, other):
+    def __eq__(
+        self,
+        other: AppSignature | None,
+    ) -> bool:
         """Return whether two application signatures are equal.
 
         Args:
@@ -1048,7 +1173,18 @@ class AppSignature(BaseSignature):
                 self.applied_migrations == other.applied_migrations and
                 dict.__eq__(self._model_sigs, other._model_sigs))
 
-    def __repr__(self):
+    def __hash__(self) -> int:
+        """Return a hash of the signature.
+
+        This is required for comparison within a :py:class:`set`.
+
+        Returns:
+            int:
+            The hash of the signature.
+        """
+        return hash(repr(self))
+
+    def __repr__(self) -> str:
         """Return a string representation of the signature.
 
         Returns:
@@ -1069,7 +1205,10 @@ class ModelSignature(BaseSignature):
     """
 
     @classmethod
-    def from_model(cls, model):
+    def from_model(
+        cls,
+        model,
+    ) -> Self:
         """Create a model signature from a model.
 
         This will store data on the model and its ``_meta`` attributes, and
@@ -1117,8 +1256,13 @@ class ModelSignature(BaseSignature):
         return model_sig
 
     @classmethod
-    def deserialize(cls, model_name, model_sig_dict, sig_version,
-                    database=DEFAULT_DB_ALIAS):
+    def deserialize(
+        cls,
+        model_name: str,
+        model_sig_dict,
+        sig_version: SignatureVersion,
+        database: str = DEFAULT_DB_ALIAS,
+    ) -> Self:
         """Deserialize a serialized model signature.
 
         Args:
@@ -1182,9 +1326,17 @@ class ModelSignature(BaseSignature):
 
         return model_sig
 
-    def __init__(self, model_name, table_name, db_tablespace=None,
-                 index_together=[], pk_column=None, unique_together=[],
-                 unique_together_applied=False, db_table_comment=None):
+    def __init__(
+        self,
+        model_name: str,
+        table_name: str,
+        db_tablespace: (str | None) = None,
+        index_together=[],
+        pk_column: (str | None) = None,
+        unique_together=[],
+        unique_together_applied: bool = False,
+        db_table_comment: (str | None) = None,
+    ) -> None:
         """Initialize the signature.
 
         Args:
@@ -1285,7 +1437,10 @@ class ModelSignature(BaseSignature):
         """The field signatures on the model signature."""
         return self._field_sigs.values()
 
-    def add_field(self, field):
+    def add_field(
+        self,
+        field,
+    ) -> None:
         """Add a field to the model signature.
 
         This will construct a :py:class:`FieldSignature` and add it to this
@@ -1297,7 +1452,10 @@ class ModelSignature(BaseSignature):
         """
         self.add_field_sig(FieldSignature.from_field(field))
 
-    def add_field_sig(self, field_sig):
+    def add_field_sig(
+        self,
+        field_sig: FieldSignature,
+    ) -> None:
         """Add a field signature to the model signature.
 
         Args:
@@ -1306,7 +1464,10 @@ class ModelSignature(BaseSignature):
         """
         self._field_sigs[field_sig.field_name] = field_sig
 
-    def remove_field_sig(self, field_name):
+    def remove_field_sig(
+        self,
+        field_name: str,
+    ) -> None:
         """Remove a field signature from the model signature.
 
         Args:
@@ -1324,7 +1485,27 @@ class ModelSignature(BaseSignature):
                 _('A field signature for "%s" could not be found.')
                 % field_name)
 
-    def get_field_sig(self, field_name, required=False):
+    @overload
+    def get_field_sig(
+        self,
+        field_name: str,
+        required: Literal[False] = False,
+    ) -> FieldSignature | None:
+        ...
+
+    @overload
+    def get_field_sig(
+        self,
+        field_name: str,
+        required: Literal[True],
+    ) -> FieldSignature:
+        ...
+
+    def get_field_sig(
+        self,
+        field_name: str,
+        required: bool = False,
+    ) -> FieldSignature | None:
         """Return a field signature for the given field name.
 
         Args:
@@ -1355,7 +1536,10 @@ class ModelSignature(BaseSignature):
 
         return field_sig
 
-    def add_constraint(self, constraint):
+    def add_constraint(
+        self,
+        constraint: models.BaseConstraint,
+    ) -> None:
         """Add an explicit constraint to the models.
 
         This is only used on Django 2.2 or higher. It corresponds to the
@@ -1369,7 +1553,10 @@ class ModelSignature(BaseSignature):
         self.add_constraint_sig(
             ConstraintSignature.from_constraint(constraint))
 
-    def add_constraint_sig(self, constraint_sig):
+    def add_constraint_sig(
+        self,
+        constraint_sig: ConstraintSignature,
+    ) -> None:
         """Add an explicit constraint signature to the models.
 
         This is only used on Django 2.2 or higher. It corresponds to the
@@ -1382,7 +1569,10 @@ class ModelSignature(BaseSignature):
         """
         self.constraint_sigs.append(constraint_sig)
 
-    def add_index(self, index):
+    def add_index(
+        self,
+        index: models.Index,
+    ) -> None:
         """Add an explicit index to the models.
 
         This is only used on Django 1.11 or higher. It corresponds to the
@@ -1395,7 +1585,10 @@ class ModelSignature(BaseSignature):
         """
         self.add_index_sig(IndexSignature.from_index(index))
 
-    def add_index_sig(self, index_sig):
+    def add_index_sig(
+        self,
+        index_sig: IndexSignature,
+    ) -> None:
         """Add an explicit index signature to the models.
 
         This is only used on Django 1.11 or higher. It corresponds to the
@@ -1408,7 +1601,10 @@ class ModelSignature(BaseSignature):
         """
         self.index_sigs.append(index_sig)
 
-    def apply_unique_together(self, unique_together):
+    def apply_unique_together(
+        self,
+        unique_together,
+    ) -> None:
         """Record an applied unique_together change to the model.
 
         This will store the new unique together value and set a flag indicating
@@ -1428,7 +1624,10 @@ class ModelSignature(BaseSignature):
         self.unique_together = unique_together
         self._unique_together_applied = True
 
-    def has_unique_together_changed(self, old_model_sig):
+    def has_unique_together_changed(
+        self,
+        old_model_sig: ModelSignature,
+    ) -> bool:
         """Return whether unique_together has changed between signatures.
 
         ``unique_together`` is considered to have changed under the following
@@ -1452,11 +1651,14 @@ class ModelSignature(BaseSignature):
         new_unique_together = self.unique_together
 
         return (old_unique_together != new_unique_together or
-                ((old_unique_together or new_unique_together) and
+                (bool(old_unique_together or new_unique_together) and
                  old_model_sig._unique_together_applied is not
                  self._unique_together_applied))
 
-    def diff(self, old_model_sig):
+    def diff(
+        self,
+        old_model_sig: ModelSignature,
+    ):
         """Diff against an older model signature.
 
         This will return a dictionary containing the differences in fields
@@ -1557,7 +1759,7 @@ class ModelSignature(BaseSignature):
             if value
         )
 
-    def clone(self):
+    def clone(self) -> ModelSignature:
         """Clone the signature.
 
         Returns:
@@ -1585,7 +1787,10 @@ class ModelSignature(BaseSignature):
 
         return cloned_sig
 
-    def serialize(self, sig_version=LATEST_SIGNATURE_VERSION):
+    def serialize(
+        self,
+        sig_version: SignatureVersion = LATEST_SIGNATURE_VERSION,
+    ):
         """Serialize model data to a signature dictionary.
 
         Args:
@@ -1627,7 +1832,10 @@ class ModelSignature(BaseSignature):
             ),
         }
 
-    def __eq__(self, other):
+    def __eq__(
+        self,
+        other: ModelSignature | None,
+    ) -> bool:
         """Return whether two model signatures are equal.
 
         Args:
@@ -1651,7 +1859,18 @@ class ModelSignature(BaseSignature):
                 dict.__eq__(self._field_sigs, other._field_sigs) and
                 not self.has_unique_together_changed(other))
 
-    def __repr__(self):
+    def __hash__(self) -> int:
+        """Return a hash of the signature.
+
+        This is required for comparison within a :py:class:`set`.
+
+        Returns:
+            int:
+            The hash of the signature.
+        """
+        return hash(repr(self))
+
+    def __repr__(self) -> str:
         """Return a string representation of the signature.
 
         Returns:
@@ -1660,7 +1879,10 @@ class ModelSignature(BaseSignature):
         """
         return '<ModelSignature(model_name=%r)>' % self.model_name
 
-    def _normalize_together(self, together):
+    def _normalize_together(
+        self,
+        together,
+    ):
         """Normalize a <field>_together value.
 
         This is intended to normalize ``index_together`` and
@@ -1703,7 +1925,10 @@ class ConstraintSignature(BaseSignature):
     """
 
     @classmethod
-    def from_constraint(cls, constraint):
+    def from_constraint(
+        cls,
+        constraint: models.BaseConstraint,
+    ) -> Self:
         """Create a constraint signature from a field.
 
         Args:
@@ -1722,8 +1947,12 @@ class ConstraintSignature(BaseSignature):
                    attrs=attrs)
 
     @classmethod
-    def deserialize(cls, constraint_sig_dict, sig_version,
-                    database=DEFAULT_DB_ALIAS):
+    def deserialize(
+        cls,
+        constraint_sig_dict,
+        sig_version: SignatureVersion,
+        database: str = DEFAULT_DB_ALIAS,
+    ) -> Self:
         """Deserialize a serialized constraint signature.
 
         Args:
@@ -1761,7 +1990,10 @@ class ConstraintSignature(BaseSignature):
                    attrs=attrs)
 
     @classmethod
-    def _deserialize_attr_value(cls, sig_value):
+    def _deserialize_attr_value(
+        cls,
+        sig_value,
+    ):
         """Return an attribute value from serialized data.
 
         This will take care to re-construct any deconstructed data that's
@@ -1805,7 +2037,12 @@ class ConstraintSignature(BaseSignature):
 
         return value
 
-    def __init__(self, name, constraint_type, attrs=None):
+    def __init__(
+        self,
+        name,
+        constraint_type: type[models.BaseConstraint],
+        attrs=None,
+    ) -> None:
         """Initialize the signature.
 
         Args:
@@ -1846,7 +2083,7 @@ class ConstraintSignature(BaseSignature):
         self.type = constraint_type
         self.attrs = norm_attrs
 
-    def clone(self):
+    def clone(self) -> ConstraintSignature:
         """Clone the signature.
 
         Returns:
@@ -1857,7 +2094,10 @@ class ConstraintSignature(BaseSignature):
                                    constraint_type=self.type,
                                    attrs=deepcopy(self.attrs))
 
-    def serialize(self, sig_version=LATEST_SIGNATURE_VERSION):
+    def serialize(
+        self,
+        sig_version: SignatureVersion = LATEST_SIGNATURE_VERSION,
+    ):
         """Serialize constraint data to a signature dictionary.
 
         Args:
@@ -1901,7 +2141,10 @@ class ConstraintSignature(BaseSignature):
             'attrs': serialize_to_signature(self.attrs),
         }
 
-    def __eq__(self, other):
+    def __eq__(
+        self,
+        other: ConstraintSignature | None,
+    ) -> bool:
         """Return whether two constraint signatures are equal.
 
         Args:
@@ -1918,7 +2161,7 @@ class ConstraintSignature(BaseSignature):
                 self.type is other.type and
                 dict.__eq__(self.attrs, other.attrs))
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Return a hash of the signature.
 
         This is required for comparison within a :py:class:`set`.
@@ -1929,7 +2172,7 @@ class ConstraintSignature(BaseSignature):
         """
         return hash(repr(self))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return a string representation of the signature.
 
         Returns:
@@ -1939,7 +2182,10 @@ class ConstraintSignature(BaseSignature):
         return ('<ConstraintSignature(name=%r, type=%r, attrs=%r)>'
                 % (self.name, self.type, self.attrs))
 
-    def _serialize_attr_value(self, value):
+    def _serialize_attr_value(
+        self,
+        value,
+    ):
         """Return a serialized version of a constraint attribute value.
 
         If the value has a ``deconstruct`` method, then this will call it
@@ -1994,7 +2240,10 @@ class IndexSignature(BaseSignature):
     """
 
     @classmethod
-    def from_index(cls, index):
+    def from_index(
+        cls,
+        index: models.Index,
+    ) -> Self:
         """Create an index signature from an index.
 
         Args:
@@ -2015,8 +2264,12 @@ class IndexSignature(BaseSignature):
                    name=index.name or None)
 
     @classmethod
-    def deserialize(cls, index_sig_dict, sig_version,
-                    database=DEFAULT_DB_ALIAS):
+    def deserialize(
+        cls,
+        index_sig_dict,
+        sig_version: SignatureVersion,
+        database: str = DEFAULT_DB_ALIAS,
+    ) -> Self:
         """Deserialize a serialized index signature.
 
         Args:
@@ -2050,7 +2303,13 @@ class IndexSignature(BaseSignature):
                    expressions=expressions or None,
                    attrs=attrs or None)
 
-    def __init__(self, fields, name=None, expressions=None, attrs=None):
+    def __init__(
+        self,
+        fields,
+        name: (str | None) = None,
+        expressions=None,
+        attrs=None,
+    ) -> None:
         """Initialize the signature.
 
         Args:
@@ -2086,7 +2345,7 @@ class IndexSignature(BaseSignature):
 
         self.attrs = norm_attrs
 
-    def clone(self):
+    def clone(self) -> IndexSignature:
         """Clone the signature.
 
         Returns:
@@ -2098,7 +2357,10 @@ class IndexSignature(BaseSignature):
                               fields=deepcopy(self.fields),
                               name=self.name)
 
-    def serialize(self, sig_version=LATEST_SIGNATURE_VERSION):
+    def serialize(
+        self,
+        sig_version: SignatureVersion = LATEST_SIGNATURE_VERSION,
+    ):
         """Serialize index data to a signature dictionary.
 
         Args:
@@ -2134,7 +2396,10 @@ class IndexSignature(BaseSignature):
 
         return index_sig_dict
 
-    def __eq__(self, other):
+    def __eq__(
+        self,
+        other: IndexSignature | None,
+    ) -> bool:
         """Return whether two index signatures are equal.
 
         Args:
@@ -2154,7 +2419,7 @@ class IndexSignature(BaseSignature):
                 self.fields == other.fields and
                 dict.__eq__(self.attrs or {}, other.attrs or {}))
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Return a hash of the signature.
 
         This is required for comparison within a :py:class:`set`.
@@ -2165,7 +2430,7 @@ class IndexSignature(BaseSignature):
         """
         return hash(repr(self))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return a string representation of the signature.
 
         Returns:
@@ -2225,7 +2490,10 @@ class FieldSignature(BaseSignature):
     }
 
     @classmethod
-    def from_field(cls, field):
+    def from_field(
+        cls,
+        field: models.Field,
+    ) -> Self:
         """Create a field signature from a field.
 
         Args:
@@ -2272,8 +2540,13 @@ class FieldSignature(BaseSignature):
                    related_model=related_model)
 
     @classmethod
-    def deserialize(cls, field_name, field_sig_dict, sig_version,
-                    database=DEFAULT_DB_ALIAS):
+    def deserialize(
+        cls,
+        field_name: str,
+        field_sig_dict,
+        sig_version: SignatureVersion,
+        database: str = DEFAULT_DB_ALIAS,
+    ) -> Self:
         """Deserialize a serialized field signature.
 
         Args:
@@ -2354,7 +2627,10 @@ class FieldSignature(BaseSignature):
                    related_model=field_sig_dict.get('related_model'))
 
     @classmethod
-    def _iter_attrs_for_field_type(cls, field_type):
+    def _iter_attrs_for_field_type(
+        cls,
+        field_type: type[models.Field],
+    ):
         """Iterate through attribute names for a field type.
 
         The attributes returned are those that impact the schema for a field's
@@ -2372,7 +2648,10 @@ class FieldSignature(BaseSignature):
         return cls._get_defaults_for_field_type(field_type).keys()
 
     @classmethod
-    def _get_defaults_for_field_type(cls, field_type):
+    def _get_defaults_for_field_type(
+        cls,
+        field_type: type[models.Field],
+    ):
         """Return attribute names and defaults for a field type.
 
         The attributes returned are those that impact the schema for a field's
@@ -2415,7 +2694,11 @@ class FieldSignature(BaseSignature):
         self.field_attrs = field_attrs or OrderedDict()
         self.related_model = related_model
 
-    def get_attr_value(self, attr_name, use_default=True):
+    def get_attr_value(
+        self,
+        attr_name: str,
+        use_default: bool = True,
+    ):
         """Return the value for an attribute.
 
         By default, this will return the default value for the attribute if
@@ -2441,7 +2724,10 @@ class FieldSignature(BaseSignature):
 
             return None
 
-    def get_attr_default(self, attr_name):
+    def get_attr_default(
+        self,
+        attr_name: str,
+    ):
         """Return the default value for an attribute.
 
         Args:
@@ -2461,7 +2747,10 @@ class FieldSignature(BaseSignature):
 
         return None
 
-    def is_attr_value_default(self, attr_name):
+    def is_attr_value_default(
+        self,
+        attr_name: str,
+    ) -> bool:
         """Return whether an attribute is set to its default value.
 
         Args:
@@ -2480,7 +2769,10 @@ class FieldSignature(BaseSignature):
 
         return attr_value == self.get_attr_default(attr_name)
 
-    def diff(self, old_field_sig):
+    def diff(
+        self,
+        old_field_sig: FieldSignature,
+    ):
         """Diff against an older field signature.
 
         This will return a list of field names that have changed between
@@ -2536,7 +2828,7 @@ class FieldSignature(BaseSignature):
 
         return sorted(changed_attrs)
 
-    def clone(self):
+    def clone(self) -> FieldSignature:
         """Clone the signature.
 
         Returns:
@@ -2548,7 +2840,10 @@ class FieldSignature(BaseSignature):
                               field_attrs=deepcopy(self.field_attrs),
                               related_model=self.related_model)
 
-    def serialize(self, sig_version=LATEST_SIGNATURE_VERSION):
+    def serialize(
+        self,
+        sig_version: SignatureVersion = LATEST_SIGNATURE_VERSION,
+    ):
         """Serialize field data to a signature dictionary.
 
         Args:
@@ -2591,7 +2886,10 @@ class FieldSignature(BaseSignature):
 
         return field_sig_dict
 
-    def __eq__(self, other):
+    def __eq__(
+        self,
+        other: FieldSignature | None,
+    ) -> bool:
         """Return whether two field signatures are equal.
 
         Args:
@@ -2609,7 +2907,7 @@ class FieldSignature(BaseSignature):
                 dict.__eq__(self.field_attrs, other.field_attrs) and
                 self.related_model == other.related_model)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return a string representation of the signature.
 
         Returns:
@@ -2622,7 +2920,9 @@ class FieldSignature(BaseSignature):
                    self.related_model))
 
 
-def validate_sig_version(sig_version):
+def validate_sig_version(
+    sig_version: int,
+) -> None:
     """Validate that a signature version is supported.
 
     Args:

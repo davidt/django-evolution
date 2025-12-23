@@ -6,12 +6,13 @@ Version Added:
 
 from __future__ import annotations
 
+from django.db.migrations import Migration
+
 from django_evolution.models import Evolution
 from django_evolution.support import supports_migrations
 from django_evolution.utils.apps import get_app_label
 from django_evolution.utils.evolutions import (get_evolution_app_dependencies,
                                                get_evolution_dependencies)
-from django_evolution.utils.migrations import Migration
 from django_evolution.utils.models import get_model_name
 
 

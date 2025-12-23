@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from collections import OrderedDict
+from typing import TYPE_CHECKING
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -14,6 +15,9 @@ from django.utils.translation import gettext_lazy as _
 from django_evolution.compat.pickle import pickle_dumps, pickle_loads
 from django_evolution.signature import ProjectSignature
 
+if TYPE_CHECKING:
+    from django.db.backends.base.base import BaseDatabaseWrapper
+
 
 class VersionManager(models.Manager):
     """Manage Version models.
@@ -22,7 +26,10 @@ class VersionManager(models.Manager):
     model for the database.
     """
 
-    def current_version(self, using=None):
+    def current_version(
+        self,
+        using: (str | None) = None,
+    ) -> Version:
         """Return the Version model for the current schema.
 
         This will find the Version with both the latest timestamp and the
@@ -39,7 +46,8 @@ class VersionManager(models.Manager):
             Version.DoesNotExist: No such version exists.
 
         Returns:
-            Version: The current Version object for the database.
+            Version:
+            The current Version object for the database.
         """
         versions = self.using(using).order_by('-when', '-id')
 
@@ -60,7 +68,11 @@ class SignatureField(models.TextField):
 
     description = _('Signature')
 
-    def contribute_to_class(self, cls, name):
+    def contribute_to_class(
+        self,
+        cls: type[models.Model],
+        name: str,
+    ) -> None:
         """Perform operations when added to a class.
 
         This will listen for when an instance is constructed in order to
@@ -77,7 +89,10 @@ class SignatureField(models.TextField):
 
         post_init.connect(self._post_init, sender=cls)
 
-    def value_to_string(self, obj):
+    def value_to_string(
+        self,
+        obj: models.Model,
+    ) -> str:
         """Return a serialized string value from the field.
 
         Args:
@@ -90,7 +105,10 @@ class SignatureField(models.TextField):
         """
         return self._dumps(self.value_from_object(obj))
 
-    def to_python(self, value):
+    def to_python(
+        self,
+        value: str | ProjectSignature | None,
+    ) -> ProjectSignature:
         """Return a ProjectSignature value from the field contents.
 
         Args:
@@ -128,7 +146,10 @@ class SignatureField(models.TextField):
                     'value': value,
                 })
 
-    def get_prep_value(self, value):
+    def get_prep_value(
+        self,
+        value: str | ProjectSignature | None,
+    ) -> ProjectSignature:
         """Return a prepared Python value to work with.
 
         This simply wraps :py:meth:`to_python`.
@@ -150,7 +171,12 @@ class SignatureField(models.TextField):
         """
         return self.to_python(value)
 
-    def get_db_prep_value(self, value, connection, prepared=False):
+    def get_db_prep_value(
+        self,
+        value: str | ProjectSignature | None,
+        connection: BaseDatabaseWrapper,
+        prepared: bool = False,
+    ) -> str:
         """Return a prepared value for use in database operations.
 
         Args:
@@ -160,7 +186,7 @@ class SignatureField(models.TextField):
                 :py:class:`~django_evolution.signatures.ProjectSignature`
                 instance.
 
-            connection (django.db.backends.base.BaseDatabaseWrapper):
+            connection (django.db.backends.base.base.BaseDatabaseWrapper):
                 The database connection to operate on.
 
             prepared (bool, optional):
@@ -175,7 +201,11 @@ class SignatureField(models.TextField):
 
         return self._dumps(value)
 
-    def _post_init(self, instance, **kwargs):
+    def _post_init(
+        self,
+        instance: models.Model,
+        **kwargs,
+    ) -> None:
         """Handle the construction of a model instance.
 
         This will ensure the value set on the field is a valid
@@ -191,7 +221,10 @@ class SignatureField(models.TextField):
         setattr(instance, self.attname,
                 self.to_python(self.value_from_object(instance)))
 
-    def _dumps(self, data):
+    def _dumps(
+        self,
+        data: str | ProjectSignature,
+    ) -> str:
         """Serialize the project signature to a string.
 
         Args:
@@ -229,7 +262,7 @@ class Version(models.Model):
 
     objects = VersionManager()
 
-    def is_hinted(self):
+    def is_hinted(self) -> bool:
         """Return whether this is a hinted version.
 
         Hinted versions store a signature without any accompanying evolutions.
@@ -241,7 +274,7 @@ class Version(models.Model):
         """
         return not self.evolutions.exists()
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.is_hinted():
             return 'Hinted version, updated on %s' % self.when
 
@@ -259,7 +292,7 @@ class Evolution(models.Model):
     app_label = models.CharField(max_length=200)
     label = models.CharField(max_length=100)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return 'Evolution %s, applied to %s' % (self.label, self.app_label)
 
     class Meta:

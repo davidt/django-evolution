@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from importlib import import_module
+from typing import TYPE_CHECKING
 
 from django.db import connections
 from django.db.utils import DEFAULT_DB_ALIAS
@@ -17,8 +18,18 @@ from django_evolution.utils.apps import get_app_label, get_app_name
 from django_evolution.utils.migrations import (MigrationList,
                                                has_migrations_module)
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from types import ModuleType
+    from typing import Literal
 
-def has_evolutions_module(app):
+    from django_evolution.mutations import BaseMutation
+    from django_evolution.signature import ProjectSignature
+
+
+def has_evolutions_module(
+    app: ModuleType,
+) -> bool:
     """Return whether an app has an evolutions module.
 
     Args:
@@ -33,7 +44,9 @@ def has_evolutions_module(app):
     return get_evolutions_module(app) is not None
 
 
-def get_evolutions_source(app):
+def get_evolutions_source(
+    app: ModuleType,
+) -> Literal['app', 'builtin', 'project']:
     """Return the source for evolutions.
 
     This is used to determine where evolutions are coming from. They can be
@@ -58,7 +71,9 @@ def get_evolutions_source(app):
         return EvolutionsSource.APP
 
 
-def get_evolutions_module_name(app):
+def get_evolutions_module_name(
+    app: ModuleType,
+) -> str:
     """Return the name of the evolutions module for an app.
 
     Version Added:
@@ -85,7 +100,9 @@ def get_evolutions_module_name(app):
     return module_name
 
 
-def get_evolutions_module(app):
+def get_evolutions_module(
+    app: ModuleType,
+) -> ModuleType | None:
     """Return the evolutions module for an app.
 
     Args:
@@ -103,7 +120,10 @@ def get_evolutions_module(app):
         return None
 
 
-def get_evolution_module(app, evolution_label):
+def get_evolution_module(
+    app: ModuleType,
+    evolution_label: str,
+) -> ModuleType | None:
     """Return the module for a given evolution for an app.
 
     Version Added:
@@ -127,7 +147,9 @@ def get_evolution_module(app, evolution_label):
         return None
 
 
-def get_evolutions_path(app):
+def get_evolutions_path(
+    app: ModuleType,
+) -> str | None:
     """Return the evolutions path for an app.
 
     Args:
@@ -147,7 +169,9 @@ def get_evolutions_path(app):
     return None
 
 
-def get_evolution_sequence(app):
+def get_evolution_sequence(
+    app: ModuleType,
+) -> Sequence[str]:
     """Return the list of evolution labels for a Django app.
 
     Args:
@@ -171,7 +195,11 @@ def get_evolution_sequence(app):
     return []
 
 
-def get_evolution_dependencies(app, evolution_label, custom_evolutions=[]):
+def get_evolution_dependencies(
+    app: ModuleType,
+    evolution_label: str,
+    custom_evolutions=[],
+):
     """Return dependencies for an evolution.
 
     Evolutions can depend on other evolutions or migrations, and can be
@@ -305,7 +333,9 @@ def get_evolution_dependencies(app, evolution_label, custom_evolutions=[]):
     return deps
 
 
-def get_evolution_app_dependencies(app):
+def get_evolution_app_dependencies(
+    app: ModuleType,
+):
     """Return dependencies governing all evolutions for an app.
 
     These dependencies are defined in an :file:`evolutions/__init__.py` file,
@@ -352,7 +382,10 @@ def get_evolution_app_dependencies(app):
     }
 
 
-def get_unapplied_evolutions(app, database=DEFAULT_DB_ALIAS):
+def get_unapplied_evolutions(
+    app: ModuleType,
+    database: str = DEFAULT_DB_ALIAS,
+) -> Sequence[str]:
     """Return the list of labels for unapplied evolutions for a Django app.
 
     Args:
@@ -384,7 +417,10 @@ def get_unapplied_evolutions(app, database=DEFAULT_DB_ALIAS):
     ]
 
 
-def get_applied_evolutions(app, database=DEFAULT_DB_ALIAS):
+def get_applied_evolutions(
+    app: ModuleType,
+    database: str = DEFAULT_DB_ALIAS,
+) -> list[str]:
     """Return the list of labels for applied evolutions for a Django app.
 
     Args:
@@ -410,7 +446,11 @@ def get_applied_evolutions(app, database=DEFAULT_DB_ALIAS):
         .values_list('label', flat=True))
 
 
-def get_app_mutations(app, evolution_labels=None, database=DEFAULT_DB_ALIAS):
+def get_app_mutations(
+    app: ModuleType,
+    evolution_labels: (Sequence[str] | None) = None,
+    database: str = DEFAULT_DB_ALIAS,
+):
     """Return the mutations on an app provided by the given evolution names.
 
     Args:
@@ -481,9 +521,14 @@ def get_app_mutations(app, evolution_labels=None, database=DEFAULT_DB_ALIAS):
     return mutations
 
 
-def get_app_pending_mutations(app, evolution_labels=[], mutations=None,
-                              old_project_sig=None, project_sig=None,
-                              database=DEFAULT_DB_ALIAS):
+def get_app_pending_mutations(
+    app: ModuleType,
+    evolution_labels: Sequence[str] = [],
+    mutations: (Sequence[BaseMutation] | None) = None,
+    old_project_sig: (ProjectSignature | None) = None,
+    project_sig: (ProjectSignature | None) = None,
+    database: str = DEFAULT_DB_ALIAS,
+):
     """Return an app's pending mutations provided by the given evolution names.
 
     This is similar to :py:meth:`get_app_mutations`, but filters the list
@@ -566,8 +611,8 @@ def get_app_pending_mutations(app, evolution_labels=[], mutations=None,
         changed_models = {
             model_sig.model_name
             for model_sig in app_sig.model_sigs
-            if old_app_sig.get_model_sig(model_sig.model_name) not in (
-                None, model_sig)
+            if old_app_sig.get_model_sig(model_sig.model_name) not in
+                {None, model_sig}
         }
 
         # Now do the same for models in the old signature, in case the
@@ -584,6 +629,7 @@ def get_app_pending_mutations(app, evolution_labels=[], mutations=None,
         # Changes affecting a model that was newly-introduced are removed,
         # unless the mutation is a RenameModel, in which case we'll need it
         # during the optimization step (and will remove it if necessary then).
+        assert mutations is not None
         mutations = [
             mutation
             for mutation in mutations
@@ -595,8 +641,12 @@ def get_app_pending_mutations(app, evolution_labels=[], mutations=None,
     return mutations
 
 
-def get_app_upgrade_info(app, scan_evolutions=True, simulate_applied=False,
-                         database=None):
+def get_app_upgrade_info(
+    app: ModuleType,
+    scan_evolutions: bool = True,
+    simulate_applied: bool = False,
+    database: str = DEFAULT_DB_ALIAS,
+):
     """Return the upgrade information to use for a given app.
 
     This will determine if the app should be using Django Evolution or

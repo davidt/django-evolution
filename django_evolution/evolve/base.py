@@ -7,6 +7,17 @@ Version Added:
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from django.db.backends.utils import CursorWrapper
+
+    from django_evolution.evolve.evolver import Evolver
+    from django_evolution.mutations.base import BaseMutation
+    from django_evolution.utils.sql import SQLExecutor
+
 
 class BaseEvolutionTask:
     """Base class for a task to perform during evolution.
@@ -23,7 +34,7 @@ class BaseEvolutionTask:
 
             This is set after calling :py:meth:`prepare`.
 
-        evolver (Evolver):
+        evolver (django_evolution.evolve.evolver.Evolver):
             The evolver that will execute the task.
 
         id (str):
@@ -41,7 +52,12 @@ class BaseEvolutionTask:
     """
 
     @classmethod
-    def prepare_tasks(cls, evolver, tasks, **kwargs):
+    def prepare_tasks(
+        cls,
+        evolver: Evolver,
+        tasks: Sequence[BaseEvolutionTask],
+        **kwargs,
+    ) -> None:
         """Prepare a list of tasks.
 
         This is responsible for calling :py:meth:`prepare` on each of the
@@ -53,7 +69,7 @@ class BaseEvolutionTask:
         :py:class:`Evolver` instances at work within a process.
 
         Args:
-            evolver (Evolver):
+            evolver (django_evolution.evolve.evolver.Evolver):
                 The evolver that's handling the tasks.
 
             tasks (list of BaseEvolutionTask):
@@ -68,7 +84,12 @@ class BaseEvolutionTask:
             task.prepare(**kwargs)
 
     @classmethod
-    def execute_tasks(cls, evolver, tasks, **kwargs):
+    def execute_tasks(
+        cls,
+        evolver: Evolver,
+        tasks: Sequence[BaseEvolutionTask],
+        **kwargs,
+    ) -> None:
         """Execute a list of tasks.
 
         This is responsible for calling :py:meth:`execute` on each of the
@@ -82,7 +103,7 @@ class BaseEvolutionTask:
         This may depend on state from :py:meth:`prepare_tasks`.
 
         Args:
-            evolver (Evolver):
+            evolver (django_evolution.evolve.evolver.Evolver):
                 The evolver that's handling the tasks.
 
             tasks (list of BaseEvolutionTask):
@@ -97,14 +118,18 @@ class BaseEvolutionTask:
             for task in tasks:
                 task.execute(sql_executor=sql_executor, **kwargs)
 
-    def __init__(self, task_id, evolver):
+    def __init__(
+        self,
+        task_id: str,
+        evolver: Evolver,
+    ) -> None:
         """Initialize the task.
 
         Args:
             task_id (str):
                 The unique ID for the task.
 
-            evolver (Evolver):
+            evolver (django_evolution.evolve.evolver.Evolver):
                 The evolver that will execute the task.
         """
         self.id = task_id
@@ -115,7 +140,11 @@ class BaseEvolutionTask:
         self.new_evolutions = []
         self.sql = []
 
-    def is_mutation_mutable(self, mutation, **kwargs):
+    def is_mutation_mutable(
+        self,
+        mutation: BaseMutation,
+        **kwargs,
+    ) -> bool:
         """Return whether a mutation is mutable.
 
         This is a handy wrapper around :py:meth:`BaseMutation.is_mutable
@@ -143,7 +172,11 @@ class BaseEvolutionTask:
                                    database=evolver.database_name,
                                    **kwargs)
 
-    def prepare(self, hinted, **kwargs):
+    def prepare(
+        self,
+        hinted: bool,
+        **kwargs,
+    ) -> None:
         """Prepare state for this task.
 
         This is responsible for determining whether the task applies to the
@@ -163,7 +196,12 @@ class BaseEvolutionTask:
         """
         raise NotImplementedError
 
-    def execute(self, cursor=None, sql_executor=None, **kwargs):
+    def execute(
+        self,
+        cursor: (CursorWrapper | None) = None,
+        sql_executor: (SQLExecutor | None) = None,
+        **kwargs,
+    ) -> None:
         """Execute the task.
 
         This will make any changes necessary to the database.
@@ -173,7 +211,7 @@ class BaseEvolutionTask:
             ``cursor`` is now deprecated in favor of ``sql_executor``.
 
         Args:
-            cursor (django.db.backends.util.CursorWrapper, optional):
+            cursor (django.db.backends.utils.CursorWrapper, optional):
                 The legacy database cursor used to execute queries.
 
             sql_executor (django_evolution.utils.sql.SQLExecutor, optional):
@@ -188,7 +226,7 @@ class BaseEvolutionTask:
         """
         raise NotImplementedError
 
-    def get_evolution_content(self):
+    def get_evolution_content(self) -> str:
         """Return the content for an evolution file for this task.
 
         Returns:
@@ -197,7 +235,7 @@ class BaseEvolutionTask:
         """
         raise NotImplementedError
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return a string representation of the task.
 
         Returns:
@@ -206,7 +244,7 @@ class BaseEvolutionTask:
         """
         return '<%s(id=%s)>' % (type(self).__name__, self.id)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return a string description of the task.
 
         Returns:

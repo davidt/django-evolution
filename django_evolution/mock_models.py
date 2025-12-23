@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from functools import partial
+from typing import TYPE_CHECKING
 
 from django.core.exceptions import FieldDoesNotExist
 from django.db import models
@@ -13,9 +14,21 @@ from django.db.models.fields.related import RECURSIVE_RELATIONSHIP_CONSTANT
 from django_evolution.compat.models import get_default_auto_field_cls
 from django_evolution.signature import FieldSignature, ModelSignature
 
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+    from typing import Any
 
-def create_field(project_sig, field_name, field_type, field_attrs,
-                 parent_model, related_model=None):
+    from django_evolution.signature import ProjectSignature
+
+
+def create_field(
+    project_sig: ProjectSignature,
+    field_name: str,
+    field_type: type[models.Field],
+    field_attrs: Mapping[str, Any],
+    parent_model: type[models.Model] | None,
+    related_model: (str | None) = None,
+) -> models.Field:
     """Create a Django field instance for the given signature data.
 
     This creates a field in a way that's compatible with a variety of versions
@@ -23,6 +36,9 @@ def create_field(project_sig, field_name, field_type, field_attrs,
     and creates an instance that can be used like any field found on a model.
 
     Args:
+        project_sig (django_evolution.signature.ProjectSignature):
+            The project signature.
+
         field_name (str):
             The name of the field.
 
@@ -93,11 +109,12 @@ def create_field(project_sig, field_name, field_type, field_attrs,
             through_app_name, through_model_name = through_model.split('.')
             through_model_sig = (
                 project_sig
-                .get_app_sig(through_app_name)
-                .get_model_sig(through_model_name)
+                .get_app_sig(through_app_name, required=True)
+                .get_model_sig(through_model_name, required=True)
             )
         else:
             remote_field = field.remote_field
+            assert remote_field is not None
             remote_field_model = remote_field.model
 
             to_field_name = remote_field_model._meta.object_name.lower()

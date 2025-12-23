@@ -3,11 +3,20 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable, Sequence
+from typing import Any, TYPE_CHECKING
 
 from django.db import connections
+from django.db.backends.utils import CursorWrapper
 from django.db.transaction import atomic, TransactionManagementError
 
 from django_evolution.db import EvolutionOperationsMulti
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+    from typing import TypeAlias
+
+    from typing_extensions import Self
 
 
 logger = logging.getLogger(__name__)
@@ -24,7 +33,10 @@ class BaseGroupedSQL:
             A list of SQL statements, as allowed by :py:func:`run_sql`.
     """
 
-    def __init__(self, sql):
+    def __init__(
+        self,
+        sql: Sequence[SQLStatement],
+    ) -> None:
         """Initialize the group.
 
         Args:
@@ -32,6 +44,52 @@ class BaseGroupedSQL:
                 A list of SQL statements, as allowed by :py:func:`run_sql`.
         """
         self.sql = sql
+
+
+#: Type for a prepared SQL statement.
+#:
+#: Version Added:
+#:     3.0
+#:
+#: Type:
+#:     tuple:
+#:
+#:     Tuple:
+#:         0 (str):
+#:             The SQL statement.
+#:
+#:         1 (tuple):
+#:             Parameters for the statement. This may be empty.
+#:
+#          2 (bool):
+#:             Whether this statement should be run in a transaction.
+#:
+#          3 (bool):
+#:             Whether this statement's transaction should be the start of a
+#:             brand new, independent transaction (rather than using a previous
+#:             one).
+PreparedSQLStatement: TypeAlias = tuple[
+    str,
+    tuple[Any, ...] | None,
+    bool,
+    bool,
+]
+
+
+#: Type for an SQL statement.
+#:
+#: This can be a string, a tuple (consisting of a format string and arguments
+#: to format into it), a subclass of :py:class:`BaseGroupedSQL`, or a callable
+#: that returns a list of prepared statements.
+#:
+#: Version Added:
+#:     3.0
+SQLStatement: TypeAlias = (
+    str |
+    tuple[Any, ...] |
+    BaseGroupedSQL |
+    Callable[[CursorWrapper], Sequence[PreparedSQLStatement]]
+)
 
 
 class NewTransactionSQL(BaseGroupedSQL):
@@ -58,7 +116,21 @@ class SQLExecutor:
         2.1
     """
 
-    def __init__(self, database, check_constraints=True):
+    ######################
+    # Instance variables #
+    ######################
+
+    #: The database cursor.
+    _cursor: CursorWrapper | None
+
+    #: The evolver backend.
+    _evolver_backend: EvolutionOperationsMulti | None
+
+    def __init__(
+        self,
+        database: str,
+        check_constraints: bool = True,
+    ) -> None:
         """Initialize the executor.
 
         Args:
@@ -79,7 +151,7 @@ class SQLExecutor:
         self._evolver_backend = None
         self._latest_transaction = None
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         """Enter the context manager.
 
         This will prepare internal state for execution, and optionally disable
@@ -110,7 +182,7 @@ class SQLExecutor:
 
         return self
 
-    def __exit__(self, *args, **kwargs):
+    def __exit__(self, *args, **kwargs) -> None:
         """Exit the context manager.
 
         This will commit any transaction that may be in progress, close the
@@ -126,13 +198,14 @@ class SQLExecutor:
         """
         self.finish_transaction()
 
+        assert self._cursor is not None
         self._cursor.close()
         self._cursor = None
 
         if self._constraints_disabled:
             self._connection.enable_constraint_checking()
 
-    def new_transaction(self):
+    def new_transaction(self) -> None:
         """Start a new transaction.
 
         This will commit any prior transaction, if one exists, and then start
@@ -144,7 +217,7 @@ class SQLExecutor:
         transaction.__enter__()
         self._latest_transaction = transaction
 
-    def ensure_transaction(self):
+    def ensure_transaction(self) -> None:
         """Ensure a transaction has started.
 
         If no existing transaction has started, this will start a new one.
@@ -152,7 +225,7 @@ class SQLExecutor:
         if not self._latest_transaction:
             self.new_transaction()
 
-    def finish_transaction(self):
+    def finish_transaction(self) -> None:
         """Finish and commit a transaction."""
         transaction = self._latest_transaction
 
@@ -160,7 +233,12 @@ class SQLExecutor:
             transaction.__exit__(None, None, None)
             self._latest_transaction = None
 
-    def run_sql(self, sql, capture=False, execute=False):
+    def run_sql(
+        self,
+        sql: Sequence[SQLStatement],
+        capture: bool = False,
+        execute: bool = False,
+    ) -> Sequence[str]:
         """Run (execute and/or capture) a list of SQL statements.
 
         Args:
@@ -186,12 +264,14 @@ class SQLExecutor:
                 Could not execute a batch of SQL statements inside of an
                 existing transaction.
         """
+        assert self._evolver_backend is not None
         qp = self._evolver_backend.quote_sql_param
         cursor = self._cursor
+        assert cursor is not None
 
         statement = None
         params = None
-        out_sql = []
+        out_sql: list[str] = []
 
         try:
             batches = self._prepare_transaction_batches(
@@ -248,7 +328,10 @@ class SQLExecutor:
 
         return out_sql
 
-    def _prepare_sql(self, sql):
+    def _prepare_sql(
+        self,
+        sql: Sequence[SQLStatement],
+    ) -> Iterator[PreparedSQLStatement]:
         """Prepare batches of SQL statements for execution.
 
         This will take the SQL statements that have been scheduled to be run
@@ -257,25 +340,15 @@ class SQLExecutor:
         All comments and blank lines will be filtered out.
 
         Args:
-            sql (object):
-                A list of SQL statements. Each entry might be a string, a
-                tuple consisting of a format string and formatting arguments,
-                or a subclass of :py:class:`BaseGroupedSQL`, or a callable
-                that returns a list of the above.
+            sql (list of SQLStatement):
+                A list of SQL statements.
 
         Yields:
-            tuple:
-            A tuple containing a statement to execute, in order. This will be
-            a tuple containing:
-
-            1. The SQL statement as a string
-            2. A tuple of parameters for the SQL statements (which may be
-               empty)
-            3. Whether this statement should be run in a transaction.
-            4. Whether this statement's transaction should be the start of a
-               brand new, independent transaction (rather than using a
-               previous one).
+            PreparedSQLStatement:
+            A tuple containing a statement to execute, in order
         """
+        assert self._cursor is not None
+        assert self._evolver_backend is not None
         normalize_value = self._evolver_backend.normalize_value
 
         for statements in sql:
@@ -324,7 +397,10 @@ class SQLExecutor:
                         # first statement in a batch to flag a new transaction.
                         new_transaction = False
 
-    def _prepare_transaction_batches(self, prepared_sql):
+    def _prepare_transaction_batches(
+        self,
+        prepared_sql: Sequence[PreparedSQLStatement],
+    ) -> Iterator[tuple[Sequence[PreparedSQLStatement], bool]]:
         """Prepare batches of SQL statements to run together.
 
         This takes in prepared SQL statements and generates batches of
@@ -350,12 +426,15 @@ class SQLExecutor:
              new_transaction) in prepared_sql:
             if new_transaction or use_transaction is not last_use_transaction:
                 if batch:
+                    assert last_use_transaction is not None
                     yield batch, last_use_transaction
 
                 batch = []
                 last_use_transaction = use_transaction
 
+            assert batch is not None
             batch.append((statement, params))
 
         if batch:
+            assert last_use_transaction is not None
             yield batch, last_use_transaction

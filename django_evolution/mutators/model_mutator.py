@@ -7,6 +7,7 @@ Version Added:
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 from django_evolution.db import EvolutionOperationsMulti
 from django_evolution.errors import EvolutionBaselineMissingError
@@ -14,6 +15,22 @@ from django_evolution.mock_models import MockModel
 from django_evolution.mutations import BaseModelMutation
 from django_evolution.mutators.base import BaseAppStateMutator
 from django_evolution.utils.models import get_database_for_model_name
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+    from typing import Any
+
+    from django.db import models
+
+    from django_evolution.mutations import (
+        ChangeField,
+        ChangeMeta,
+        DeleteField,
+        DeleteModel,
+        SQLMutation,
+    )
+    from django_evolution.mutators.app_mutator import AppMutator
+    from django_evolution.signature import ModelSignature
 
 
 logger = logging.getLogger(__name__)
@@ -45,32 +62,19 @@ class ModelMutator(BaseAppStateMutator):
         module.
     """
 
-    def __init__(self, app_mutator, model_name):
+    def __init__(
+        self,
+        app_mutator: AppMutator,
+        model_name: str,
+    ) -> None:
         """Initialize the mutator.
 
         Args:
-            app_mutator (AppMutator):
+            app_mutator (django_evolution.mutators.app_mutator.AppMutator):
                 The app mutator that owns this model mutator.
 
             model_name (str):
                 The name of the model being evolved.
-
-            app_label (str):
-                The label of the app to evolve.
-
-            legacy_app_label (str):
-                The legacy label of the app to evolve. This is based on the
-                module name and is used in the transitioning of pre-Django 1.7
-                signatures.
-
-            project_sig (django_evolution.signature.ProjectSignature):
-                The project signature being evolved.
-
-            database_state (django_evolution.db.state.DatabaseState):
-                The database state information to manipulate.
-
-            database (str, optional):
-                The name of the database being evolved.
         """
         super().__init__(app_mutator=app_mutator)
 
@@ -87,7 +91,7 @@ class ModelMutator(BaseAppStateMutator):
         self.evolver = evolution_ops.get_evolver()
 
     @property
-    def model_sig(self):
+    def model_sig(self) -> ModelSignature:
         """The model signature that this mutator is working with.
 
         Type:
@@ -120,7 +124,7 @@ class ModelMutator(BaseAppStateMutator):
 
         return model_sig
 
-    def create_model(self):
+    def create_model(self) -> MockModel:
         """Create a mock model instance with the stored information.
 
         This is typically used when calling a mutation's mutate() function
@@ -156,7 +160,13 @@ class ModelMutator(BaseAppStateMutator):
             'initial': initial,
         })
 
-    def change_column_type(self, mutation, old_field, new_field, new_attrs):
+    def change_column_type(
+        self,
+        mutation: ChangeField,
+        old_field: models.Field,
+        new_field: models.Field,
+        new_attrs: Mapping[str, Any],
+    ) -> None:
         """Add a pending Change Column Type operation.
 
         This will cause :py:meth:`to_sql` to include SQL for changing a field
@@ -187,11 +197,28 @@ class ModelMutator(BaseAppStateMutator):
             'new_attrs': new_attrs,
         })
 
-    def change_column(self, mutation, field, new_attrs):
-        """Adds a pending Change Column operation.
+    def change_column(
+        self,
+        mutation: ChangeField,
+        field: models.Field,
+        new_attrs: Mapping[str, Any],
+    ) -> None:
+        """Add a pending Change Column operation.
 
         This will cause to_sql() to include SQL for changing one or more
         attributes for the given column.
+
+        Args:
+            mutation (django_evolution.mutations.ChangeField):
+                The mutation that triggered this column type change.
+
+            field (django.db.models.Field):
+                The field on the model.
+
+            new_attrs (dict):
+                New attributes set in the
+                :py:class:`~django_evolution.mutations.change_field.
+                ChangeField`.
         """
         assert not self.finalized
 
@@ -202,11 +229,22 @@ class ModelMutator(BaseAppStateMutator):
             'new_attrs': new_attrs,
         })
 
-    def delete_column(self, mutation, field):
-        """Adds a pending Delete Column operation.
+    def delete_column(
+        self,
+        mutation: DeleteField,
+        field: models.Field,
+    ) -> None:
+        """Add a pending Delete Column operation.
 
         This will cause to_sql() to include SQL for deleting the given
         column.
+
+        Args:
+            mutation (django_evolution.mutations.DeleteField):
+                The mutation that triggered this column deletion.
+
+            field (django.db.models.Field):
+                The field on the model.
         """
         assert not self.finalized
 
@@ -216,10 +254,17 @@ class ModelMutator(BaseAppStateMutator):
             'field': field,
         })
 
-    def delete_model(self, mutation):
-        """Adds a pending Delete Model operation.
+    def delete_model(
+        self,
+        mutation: DeleteModel,
+    ) -> None:
+        """Add a pending Delete Model operation.
 
         This will cause to_sql() to include SQL for deleting the model.
+
+        Args:
+            mutation (django_evolution.mutations.DeleteModel):
+                The mutation that triggered this model deletion.
         """
         assert not self.finalized
 
@@ -228,11 +273,26 @@ class ModelMutator(BaseAppStateMutator):
             'mutation': mutation,
         })
 
-    def change_meta(self, mutation, prop_name, new_value):
-        """Adds a pending Change Meta operation.
+    def change_meta(
+        self,
+        mutation: ChangeMeta,
+        prop_name: str,
+        new_value: Any,
+    ) -> None:
+        """Add a pending Change Meta operation.
 
         This will cause to_sql() to include SQL for changing a supported
         attribute in the model's Meta class.
+
+        Args:
+            mutation (django_evolution.mutations.ChangeMeta):
+                The mutation that triggered this metadata change.
+
+            prop_name (str):
+                The name of the property being changed.
+
+            new_value (object):
+                The new value being assigned.
         """
         assert not self.finalized
 
@@ -278,11 +338,22 @@ class ModelMutator(BaseAppStateMutator):
             'new_value': new_value,
         })
 
-    def add_sql(self, mutation, sql):
-        """Adds an operation for executing custom SQL.
+    def add_sql(
+        self,
+        mutation: SQLMutation,
+        sql: str,
+    ) -> None:
+        """Add an operation for executing custom SQL.
 
         This will cause to_sql() to include the provided SQL statements.
         The SQL should be a list of a statements.
+
+        Args:
+            mutation (django_evolution.mutations.SQLMutation):
+                The mutation that triggered change.
+
+            sql (str):
+                The SQL to execute.
         """
         assert not self.finalized
 
@@ -292,7 +363,10 @@ class ModelMutator(BaseAppStateMutator):
             'sql': sql,
         })
 
-    def run_mutation(self, mutation):
+    def run_mutation(
+        self,
+        mutation: BaseModelMutation,
+    ) -> None:
         """Run the specified mutation.
 
         The mutation will be provided with a temporary mock instance of a
@@ -336,8 +410,11 @@ class ModelMutator(BaseAppStateMutator):
 
         return self.evolver.generate_table_ops_sql(self, self._ops)
 
-    def finish_op(self, op):
-        """Finishes handling an operation.
+    def finish_op(
+        self,
+        op,
+    ) -> None:
+        """Finish handling an operation.
 
         This is called by the evolution operations backend when it is done
         with an operation.

@@ -9,6 +9,7 @@ Version Changed:
 from __future__ import annotations
 
 from collections import OrderedDict
+from typing import TYPE_CHECKING
 
 from django.apps.registry import apps
 from django.db import models
@@ -21,6 +22,9 @@ from django_evolution.mutations import (AddField,
                                         RenameAppLabel)
 from django_evolution.placeholders import NullFieldInitialCallback
 from django_evolution.signature import ProjectSignature
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
 class Diff:
@@ -53,7 +57,11 @@ class Diff:
         }
     """
 
-    def __init__(self, original_project_sig, target_project_sig):
+    def __init__(
+        self,
+        original_project_sig: ProjectSignature,
+        target_project_sig: ProjectSignature,
+    ) -> None:
         """Initialize the object.
 
         Args:
@@ -78,7 +86,10 @@ class Diff:
 
         self._mutations = None
 
-    def is_empty(self, ignore_apps=True):
+    def is_empty(
+        self,
+        ignore_apps: bool = True,
+    ) -> bool:
         """Return whether the diff is empty.
 
         This is used to determine if both signatures are effectively equal. If
@@ -99,7 +110,7 @@ class Diff:
         else:
             return not self.deleted and not self.changed
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return a string description of the diff.
 
         This will describe the changes found in the diff, for human
@@ -351,7 +362,12 @@ class Diff:
 
         return mutations
 
-    def _get_initial_value(self, app_label, model_name, field_name):
+    def _get_initial_value(
+        self,
+        app_label: str,
+        model_name: str,
+        field_name: str,
+    ) -> Any:
         """Return an initial value for a field.
 
         If a default has been provided on the field definition or the field
