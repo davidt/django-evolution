@@ -44,7 +44,7 @@ def get_evolutions_source(app):
             The app module.
 
     Returns:
-        unicode:
+        str:
         The evolution source. This is an entry from
         :py:class:`~django_evolution.consts.EvolutionsSource`.
     """
@@ -69,7 +69,7 @@ def get_evolutions_module_name(app):
             The app.
 
     Returns:
-        unicode:
+        str:
         The name of the evolutions module for the app. This is not guaranteed
         to be importable.
     """
@@ -113,7 +113,7 @@ def get_evolution_module(app, evolution_label):
         app (module):
             The app.
 
-        evolution_label (unicode):
+        evolution_label (str):
             The label of the evolution.
 
     Returns:
@@ -155,7 +155,7 @@ def get_evolution_sequence(app):
             The app to return evolutions for.
 
     Returns:
-        list of unicode:
+        list of str:
         The list of evolution labels.
     """
     app_name = get_app_name(app)
@@ -196,7 +196,7 @@ def get_evolution_dependencies(app, evolution_label, custom_evolutions=[]):
         app (module):
             The app the evolution is for.
 
-        evolution_label (unicode):
+        evolution_label (str):
             The label identifying the evolution for the app.
 
         custom_evolutions (list of dict, optional):
@@ -207,7 +207,7 @@ def get_evolution_dependencies(app, evolution_label, custom_evolutions=[]):
             Each item is a dictionary containing:
 
             Keys:
-                label (unicode):
+                label (str):
                     The evolution label (which ``evolution_label`` will be
                     compared against).
 
@@ -359,12 +359,12 @@ def get_unapplied_evolutions(app, database=DEFAULT_DB_ALIAS):
         app (module):
             The app to return evolutions for.
 
-        database (unicode, optional):
+        database (str, optional):
             The name of the database containing the
             :py:class:`~django_evolution.models.Evolution` entries.
 
     Returns:
-        list of unicode:
+        list of str:
         The labels of evolutions that have not yet been applied.
     """
     # Avoids a nasty circular import. Util modules should always be
@@ -392,12 +392,12 @@ def get_applied_evolutions(app, database=DEFAULT_DB_ALIAS):
         app (module):
             The app to return evolutions for.
 
-        database (unicode, optional):
+        database (str, optional):
             The name of the database containing the
             :py:class:`~django_evolution.models.Evolution` entries.
 
     Returns:
-        list of unicode:
+        list of str:
         The labels of evolutions that have been applied.
     """
     # Avoids a nasty circular import. Util modules should always be
@@ -419,13 +419,13 @@ def get_app_mutations(app, evolution_labels=None, database=DEFAULT_DB_ALIAS):
         app (module):
             The app the evolutions belong to.
 
-        evolution_labels (list of unicode, optional):
+        evolution_labels (list of str, optional):
             The labels of the evolutions to return mutations for.
 
             If ``None``, this will factor in all evolution labels for the
             app.
 
-        database (unicode, optional):
+        database (str, optional):
             The name of the database the evolutions cover.
 
     Returns:
@@ -496,7 +496,7 @@ def get_app_pending_mutations(app, evolution_labels=[], mutations=None,
         app (module):
             The app the evolutions belong to.
 
-        evolution_labels (list of unicode, optional):
+        evolution_labels (list of str, optional):
             The labels of the evolutions to return mutations for.
 
             If ``None``, this will factor in all evolution labels for the
@@ -515,7 +515,7 @@ def get_app_pending_mutations(app, evolution_labels=[], mutations=None,
             If provided, this will be used instead of generating a new one
             from the current database state.
 
-        database (unicode, optional):
+        database (str, optional):
             The name of the database the evolutions cover.
 
     Returns:
@@ -635,7 +635,7 @@ def get_app_upgrade_info(app, scan_evolutions=True, simulate_applied=False,
 
             This is ignored if passing ``scan_evolutions=False``.
 
-        database (unicode, optional):
+        database (str, optional):
             The database to use for accessing stored evolution and migration
             information.
 
@@ -656,7 +656,7 @@ def get_app_upgrade_info(app, scan_evolutions=True, simulate_applied=False,
         ``has_migrations`` (:py:class:`bool`):
             Whether there are any migrations for this app.
 
-        ``upgrade_method`` (:py:class:`unicode`):
+        ``upgrade_method`` (:py:class:`str`):
             The upgrade method. This will be a value from
             :py:class:`~django_evolution.consts.UpgradeMethod`, or ``None``
             if a clear determination could not be made.

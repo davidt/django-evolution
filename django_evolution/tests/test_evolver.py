@@ -2110,7 +2110,7 @@ class EvolveAppTaskTests(MigrationsTestsMixin, BaseEvolverTestCase):
                 ``sql_mapping_name``:
                     The SQL mapping name to compare generated SQL against.
 
-            expected_new_models_sql (unicode, optional):
+            expected_new_models_sql (str, optional):
                 The SQL mapping name representing the SQL used to create
                 new models.
 
@@ -2316,10 +2316,10 @@ class EvolveAppTaskTests(MigrationsTestsMixin, BaseEvolverTestCase):
             sender (django_evolution.evolve.Evolver):
                 The sender of the signal.
 
-            app_label (unicode):
+            app_label (str):
                 The app label the models are associated with.
 
-            model_names (list of unicode):
+            model_names (list of str):
                 The list of model names that are being created.
 
             **kwargs (dict):
@@ -2341,10 +2341,10 @@ class EvolveAppTaskTests(MigrationsTestsMixin, BaseEvolverTestCase):
             sender (django_evolution.evolve.Evolver):
                 The sender of the signal.
 
-            app_label (unicode):
+            app_label (str):
                 The app label the models are associated with.
 
-            model_names (list of unicode):
+            model_names (list of str):
                 The list of model names that were created.
 
             **kwargs (dict):

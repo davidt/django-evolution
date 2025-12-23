@@ -37,7 +37,7 @@ class Simulation:
             mutation (BaseMutation):
                 The mutation this simulation applies to.
 
-            app_label (unicode):
+            app_label (str):
                 The name of the application this simulation applies to.
 
             project_sig (dict):
@@ -47,12 +47,12 @@ class Simulation:
             database_state (django_evolution.db.state.DatabaseState):
                 The database state for the simulation to look up and modify.
 
-            legacy_app_label (unicode, optional):
+            legacy_app_label (str, optional):
                 The legacy label of the app this simulation applies to.
                 This is based on the module name and is used in the
                 transitioning of pre-Django 1.7 signatures.
 
-            database (unicode, optional):
+            database (str, optional):
                 The registered database name in Django to simulate operating
                 on.
         """
@@ -111,7 +111,7 @@ class Simulation:
         """Return the signature for a model with the given name.
 
         Args:
-            model_name (unicode):
+            model_name (str):
                 The name of the model to fetch a signature for.
 
         Returns:
@@ -135,10 +135,10 @@ class Simulation:
         """Return the signature for a field with the given name.
 
         Args:
-            model_name (unicode):
+            model_name (str):
                 The name of the model containing the field.
 
-            field_name (unicode):
+            field_name (str):
                 The name of the field to fetch a signature for.
 
         Returns:
@@ -168,7 +168,7 @@ class Simulation:
         provided message.
 
         Args:
-            error (unicode):
+            error (str):
                 The error message for this particular failure.
 
             **error_vars (dict):
@@ -215,7 +215,7 @@ class BaseMutation:
         :py:meth:`get_hint_params`.
 
         Returns:
-            unicode:
+            str:
             A hinted evolution statement for this mutation.
         """
         return '%s(%s)' % (self.__class__.__name__,
@@ -225,7 +225,7 @@ class BaseMutation:
         """Return parameters for the mutation's hinted evolution.
 
         Returns:
-            list of unicode:
+            list of str:
             A list of parameter strings to pass to the mutation's constructor
             in a hinted evolution.
         """
@@ -245,7 +245,7 @@ class BaseMutation:
             2.1
 
         Args:
-            app_label (unicode):
+            app_label (str):
                 The label of the app containing this mutation.
 
             **kwargs (dict):
@@ -336,7 +336,7 @@ class BaseMutation:
         the attributes provided to the mutation.
 
         Args:
-            app_label (unicode):
+            app_label (str):
                 The label for the Django application to be mutated.
 
             project_sig (dict):
@@ -345,7 +345,7 @@ class BaseMutation:
             database_state (django_evolution.db.state.DatabaseState):
                 The database's schema signature.
 
-            database (unicode):
+            database (str):
                 The name of the database the operation would be performed on.
 
         Returns:
@@ -369,7 +369,7 @@ class BaseMutation:
                 The value to serialize.
 
         Returns:
-            unicode:
+            str:
             The serialized string.
         """
         return serialize_to_python(value)
@@ -381,14 +381,14 @@ class BaseMutation:
         using :py:meth:`serialize_value`.
 
         Args:
-            attr_name (unicode):
+            attr_name (str):
                 The attribute's name.
 
             attr_value (object):
                 The attribute's value.
 
         Returns:
-            unicode:
+            str:
             The serialized attribute string.
         """
         return '%s=%s' % (attr_name, self.serialize_value(attr_value))
@@ -423,7 +423,7 @@ class BaseMutation:
         """Return a hinted evolution for the mutation.
 
         Returns:
-            unicode:
+            str:
             The hinted evolution.
         """
         return self.generate_hint()
@@ -432,7 +432,7 @@ class BaseMutation:
         """Return a string representation of the mutation.
 
         Returns:
-            unicode:
+            str:
             A string representation of the mutation.
         """
         return '<%s>' % self
@@ -470,7 +470,7 @@ class BaseUpgradeMethodMutation(BaseMutation):
         This must be implemented by subclasses.
 
         Args:
-            app_label (unicode):
+            app_label (str):
                 The label of the app containing this mutation.
 
             **kwargs (dict):
@@ -517,7 +517,7 @@ class BaseModelMutation(BaseMutation):
         """Initialize the mutation.
 
         Args:
-            model_name (unicode):
+            model_name (str):
                 The name of the model being mutated.
         """
         super().__init__()
@@ -558,7 +558,7 @@ class BaseModelMutation(BaseMutation):
         This will if the database matches that of the model.
 
         Args:
-            app_label (unicode):
+            app_label (str):
                 The label for the Django application to be mutated.
 
             project_sig (dict, unused):
@@ -567,7 +567,7 @@ class BaseModelMutation(BaseMutation):
             database_state (django_evolution.db.state.DatabaseState, unused):
                 The database state.
 
-            database (unicode):
+            database (str):
                 The name of the database the operation would be performed on.
 
         Returns:
@@ -602,10 +602,10 @@ class BaseModelFieldMutation(BaseModelMutation):
         """Initialize the mutation.
 
         Args:
-            model_name (unicode):
+            model_name (str):
                 The name of the model containing the field.
 
-            field_name (unicode):
+            field_name (str):
                 The name of the field to mutate.
         """
         super().__init__(model_name)

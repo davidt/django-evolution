@@ -93,11 +93,11 @@ def convert_table_name(connection, name):
         connection (object):
             The database connection.
 
-        name (unicode):
+        name (str):
             The table name to convert.
 
     Returns:
-        unicode:
+        str:
         The converted table name.
     """
     return connection.introspection.identifier_converter(name)
@@ -118,7 +118,7 @@ def sql_create_models(models, tables=None, db_name=None,
         models (list of type):
             The list of :py:class:`~django.db.models.Model` subclasses.
 
-        tables (list of unicode, optional):
+        tables (list of str, optional):
             A list of existing table names from the database. If not provided,
             this will be introspected from the database.
 
@@ -330,7 +330,7 @@ def sql_delete_index(connection, model, index_name):
         model (django.db.models.Model):
             The database model to delete an index on.
 
-        index_name (unicode):
+        index_name (str):
             The name of the index to delete.
 
     Returns:
@@ -577,10 +577,10 @@ def db_router_allows_schema_upgrade(database, app_label, model_cls):
     This is a convenience wrapper around :py:func:`db_router_allows_migrate`.
 
     Args:
-        database (unicode):
+        database (str):
             The name of the database.
 
-        app_label (unicode):
+        app_label (str):
             The application label.
 
         model_cls (type):

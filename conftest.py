@@ -174,7 +174,7 @@ def pytest_report_header(config):
             The pytest configuration object.
 
     Returns:
-        list of unicode:
+        list of str:
         The report header entries to log.
     """
     from tests.settings import DATABASES, TEST_DB_CHOICE

@@ -23,7 +23,7 @@ def create_field(project_sig, field_name, field_type, field_attrs,
     and creates an instance that can be used like any field found on a model.
 
     Args:
-        field_name (unicode):
+        field_name (str):
             The name of the field.
 
         field_type (cls):
@@ -37,7 +37,7 @@ def create_field(project_sig, field_name, field_type, field_attrs,
             The parent model that would own this field. This must be a
             subclass of :py:class:`django.db.models.Model`.
 
-        related_model (unicode, optional):
+        related_model (str, optional):
             The full class path to a model this relates to. This requires
             a :py:class:`django.db.models.ForeignKey` field type.
 
@@ -188,10 +188,10 @@ class MockMeta:
             project_sig (django_evolution.signature.ProjectSignature):
                 The project's schema signature.
 
-            app_name (unicode):
+            app_name (str):
                 The name of the Django application owning the model.
 
-            model_name (unicode):
+            model_name (str):
                 The name of the model.
 
             model_sig (dict):
@@ -327,7 +327,7 @@ class MockMeta:
         on the attribute being accessed.
 
         Args:
-            name (unicode):
+            name (str):
                 The attribute name.
 
         Returns:
@@ -343,7 +343,7 @@ class MockMeta:
         """Return a field with the given name.
 
         Args:
-            name (unicode):
+            name (str):
                 The name of the field.
 
         Returns:
@@ -371,7 +371,7 @@ class MockMeta:
         data hard-coded.
 
         Args:
-            name (unicode):
+            name (str):
                 The name of the field.
 
         Returns:
@@ -407,10 +407,10 @@ class MockModel:
             project_sig (django_evolution.signature.ProjectSignature):
                 The project's schema signature.
 
-            app_name (unicode):
+            app_name (str):
                 The name of the Django app that owns the model.
 
-            model_name (unicode):
+            model_name (str):
                 The name of the model.
 
             model_sig (dict):
@@ -429,7 +429,7 @@ class MockModel:
                 create models that only contain a primary key field and no
                 others, for use when dealing with circular relationships.
 
-            db_name (unicode, optional):
+            db_name (str, optional):
                 The name of the database where the model would be read from or
                 written to.
         """
@@ -453,7 +453,7 @@ class MockModel:
         """Return a string representation of the model.
 
         Returns:
-            unicode:
+            str:
             A string representation of the model.
         """
         return '<MockModel for %s.%s>' % (self.app_name, self.model_name)

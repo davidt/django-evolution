@@ -63,7 +63,7 @@ class EvolveAppTask(BaseEvolutionTask):
         app (module):
             The app module to evolve.
 
-        app_label (unicode):
+        app_label (str):
             The app label for the app to evolve.
     """
 
@@ -734,7 +734,7 @@ class EvolveAppTask(BaseEvolutionTask):
             A dictionary mapping a :py:class:`EvolveAppTask` instance to
             a dictionary of information containing:
 
-            ``evolutions`` (list of unicode, optional):
+            ``evolutions`` (list of str, optional):
                 A list of evolution labels being added for that task.
 
             ``mutations`` (list of :py:class:`~django_evolution.mutations.BaseMutation, optional):
@@ -743,7 +743,7 @@ class EvolveAppTask(BaseEvolutionTask):
             ``sql`` (list):
                 The optimized SQL generated from the mutations.
 
-        ``type`` (unicode):
+        ``type`` (str):
             This will be set to :py:attr:`UpgradeMethod.EVOLUTIONS
             <django_evolution.consts.UpgradeMethod.EVOLUTIONS>`.
 
@@ -755,7 +755,7 @@ class EvolveAppTask(BaseEvolutionTask):
         ``migration_targets`` (list of tuple):
             The migration targets for the batch.
 
-        ``type`` (unicode):
+        ``type`` (str):
             This will be set to :py:attr:`UpgradeMethod.MIGRATIONS
             <django_evolution.consvts.UpgradeMethod.MIGRATIONS>`.
 
@@ -1159,7 +1159,7 @@ class EvolveAppTask(BaseEvolutionTask):
             ``sql`` (list):
                 The optimized list of SQL statements to execute.
 
-            ``upgrade_method`` (unicode):
+            ``upgrade_method`` (str):
                 The resulting upgrade method for the app, after applying all
                 mutations.
 
@@ -1462,7 +1462,7 @@ class EvolveAppTask(BaseEvolutionTask):
         """Return the content for an evolution file for this task.
 
         Returns:
-            unicode:
+            str:
             The evolution content.
         """
         if not self._mutations:
@@ -1517,7 +1517,7 @@ class EvolveAppTask(BaseEvolutionTask):
         """Return a string description of the task.
 
         Returns:
-            unicode:
+            str:
             The string description.
         """
         return 'Evolve application "%s"' % self.app_label

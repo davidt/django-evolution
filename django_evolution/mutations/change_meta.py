@@ -38,10 +38,10 @@ class ChangeMeta(BaseModelMutation):
         """Initialize the mutation.
 
         Args:
-            model_name (unicode):
+            model_name (str):
                 The name of the model to change meta properties on.
 
-            prop_name (unicode):
+            prop_name (str):
                 The name of the property to change.
 
             new_value (object):
@@ -63,7 +63,7 @@ class ChangeMeta(BaseModelMutation):
         """Return parameters for the mutation's hinted evolution.
 
         Returns:
-            list of unicode:
+            list of str:
             A list of parameter strings to pass to the mutation's constructor
             in a hinted evolution.
         """

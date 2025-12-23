@@ -53,13 +53,13 @@ class ModelMutator(BaseAppStateMutator):
             app_mutator (AppMutator):
                 The app mutator that owns this model mutator.
 
-            model_name (unicode):
+            model_name (str):
                 The name of the model being evolved.
 
-            app_label (unicode):
+            app_label (str):
                 The label of the app to evolve.
 
-            legacy_app_label (unicode):
+            legacy_app_label (str):
                 The legacy label of the app to evolve. This is based on the
                 module name and is used in the transitioning of pre-Django 1.7
                 signatures.
@@ -70,7 +70,7 @@ class ModelMutator(BaseAppStateMutator):
             database_state (django_evolution.db.state.DatabaseState):
                 The database state information to manipulate.
 
-            database (unicode, optional):
+            database (str, optional):
                 The name of the database being evolved.
         """
         super().__init__(app_mutator=app_mutator)

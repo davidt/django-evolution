@@ -106,7 +106,7 @@ class Diff:
         consumption.
 
         Returns:
-            unicode:
+            str:
             The string representation of the diff.
         """
         lines = [
@@ -360,13 +360,13 @@ class Diff:
         used in an evolution, but will indicate that user input is required.
 
         Args:
-            app_label (unicode):
+            app_label (str):
                 The label of the application owning the model.
 
-            model_name (unicode):
+            model_name (str):
                 The name of the model owning the field.
 
-            field_name (unicode):
+            field_name (str):
                 The name of the field to return an initial value for.
 
         Returns:

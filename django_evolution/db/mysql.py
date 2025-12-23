@@ -266,10 +266,10 @@ class EvolutionOperations(BaseEvolutionOperations):
             model (django.db.models.Model):
                 The model representing the table to rename.
 
-            old_db_table (unicode):
+            old_db_table (str):
                 The old table name.
 
-            new_db_table (unicode):
+            new_db_table (str):
                 The new table name.
 
         Returns:
@@ -326,7 +326,7 @@ class EvolutionOperations(BaseEvolutionOperations):
         introspection on that release.
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table.
 
         Returns:

@@ -28,7 +28,7 @@ class MoveToDjangoMigrations(BaseUpgradeMethodMutation):
         """Initialize the mutation.
 
         Args:
-            mark_applied (unicode, optional):
+            mark_applied (str, optional):
                 The list of migrations to mark as applied. Each of these
                 should have been covered by the initial table or subsequent
                 evolutions. By default, this covers the ``0001_initial``
@@ -52,7 +52,7 @@ class MoveToDjangoMigrations(BaseUpgradeMethodMutation):
             2.1
 
         Args:
-            app_label (unicode):
+            app_label (str):
                 The label of the app containing this mutation.
 
             **kwargs (dict):

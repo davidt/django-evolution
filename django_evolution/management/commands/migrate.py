@@ -35,7 +35,7 @@ class Command(BaseCommand):
         process.
 
         Args:
-            *args (list of unicode):
+            *args (list of str):
                 Positional arguments passed on the command line.
 
             **options (dict):

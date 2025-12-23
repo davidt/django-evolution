@@ -34,10 +34,10 @@ class ChangeField(BaseModelFieldMutation):
         """Initialize the mutation.
 
         Args:
-            model_name (unicode):
+            model_name (str):
                 The name of the model containing the field to change.
 
-            field_name (unicode):
+            field_name (str):
                 The name of the field to change.
 
             field_type (type, optional):
@@ -63,7 +63,7 @@ class ChangeField(BaseModelFieldMutation):
         """Return parameters for the mutation's hinted evolution.
 
         Returns:
-            list of unicode:
+            list of str:
             A list of parameter strings to pass to the mutation's constructor
             in a hinted evolution.
         """

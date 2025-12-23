@@ -49,7 +49,7 @@ class RenameAppLabel(BaseMutation):
         """Return whether the mutation can be applied to the database.
 
         Args:
-            app_label (unicode):
+            app_label (str):
                 The label for the Django application to be mutated.
 
             project_sig (dict, unused):
@@ -58,7 +58,7 @@ class RenameAppLabel(BaseMutation):
             database_state (django_evolution.db.state.DatabaseState, unused):
                 The database state.
 
-            database (unicode):
+            database (str):
                 The name of the database the operation would be performed on.
 
         Returns:

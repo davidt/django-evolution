@@ -65,7 +65,7 @@ class BaseSerialization:
                 The value to serialize.
 
         Returns:
-            unicode:
+            str:
             The resulting Python code.
         """
         raise NotImplementedError
@@ -258,7 +258,7 @@ class DictSerialization(BaseSerialization):
                 The dictionary to serialize.
 
         Returns:
-            unicode:
+            str:
             The resulting Python code.
         """
         if isinstance(value, OrderedDict):
@@ -327,7 +327,7 @@ class EnumSerialization(BaseSerialization):
                 The enum value to serialize.
 
         Returns:
-            unicode:
+            str:
             The resulting Python code.
         """
         cls = type(value)
@@ -386,7 +386,7 @@ class ListSerialization(BaseIterableSerialization):
                 The list to serialize.
 
         Returns:
-            unicode:
+            str:
             The resulting Python code.
         """
         return '[%s]' % ', '.join(
@@ -413,7 +413,7 @@ class TupleSerialization(BaseIterableSerialization):
                 The tuple to serialize.
 
         Returns:
-            unicode:
+            str:
             The resulting Python code.
         """
         if len(value) == 1:
@@ -447,7 +447,7 @@ class SetSerialization(BaseIterableSerialization):
                 The set to serialize.
 
         Returns:
-            unicode:
+            str:
             The resulting Python code.
         """
         return '{%s}' % ', '.join(
@@ -471,12 +471,12 @@ class StringSerialization(PrimitiveSerialization):
         """Serialize a string to JSON-compatible string.
 
         Args:
-            value (bytes or unicode):
+            value (bytes or str):
                 The string to serialize. If a byte string, it's expected to
                 contain UTF-8 data.
 
         Returns:
-            unicode:
+            str:
             The resulting string.
         """
         if isinstance(value, bytes):
@@ -489,12 +489,12 @@ class StringSerialization(PrimitiveSerialization):
         """Serialize a string to a Python code string.
 
         Args:
-            value (bytes or unicode):
+            value (bytes or str):
                 The string to serialize. If a byte string, it's expected to
                 contain UTF-8 data.
 
         Returns:
-            unicode:
+            str:
             The resulting Python code.
         """
         if isinstance(value, bytes):
@@ -550,7 +550,7 @@ class DeconstructedSerialization(BaseSerialization):
                 The object to serialize.
 
         Returns:
-            unicode:
+            str:
             The resulting Python code.
         """
         cls_path, args, kwargs = cls._deconstruct_object(value)
@@ -688,7 +688,7 @@ class PlaceholderSerialization(BaseSerialization):
                 The object to serialize.
 
         Returns:
-            unicode:
+            str:
             The resulting Python code.
         """
         return repr(value)
@@ -719,7 +719,7 @@ class CombinedExpressionSerialization(DeconstructedSerialization):
                 The object to serialize.
 
         Returns:
-            unicode:
+            str:
             The resulting Python code.
         """
         return '%s %s %s' % (
@@ -812,7 +812,7 @@ class QSerialization(DeconstructedSerialization):
                 The object to serialize.
 
         Returns:
-            unicode:
+            str:
             The resulting Python code.
         """
         q = value
@@ -1012,7 +1012,7 @@ def serialize_to_python(value):
             The value to serialize.
 
     Returns:
-        unicode:
+        str:
         The resulting Python code string.
     """
     serialization_cls = _get_serializer_for_value(value, serializing=True)

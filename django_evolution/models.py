@@ -31,7 +31,7 @@ class VersionManager(models.Manager):
         find the wrong entry if two had the same exact timestamp.
 
         Args:
-            using (unicode):
+            using (str):
                 The database alias name to use for the query. Defaults
                 to ``None``, the default database.
 
@@ -85,7 +85,7 @@ class SignatureField(models.TextField):
                 The model instance.
 
         Returns:
-            unicode:
+            str:
             The serialized string contents.
         """
         return self._dumps(self.value_from_object(obj))
@@ -167,7 +167,7 @@ class SignatureField(models.TextField):
                 Whether the value is already prepared for Python.
 
         Returns:
-            unicode:
+            str:
             The value prepared for database operations.
         """
         if not prepared:
@@ -202,7 +202,7 @@ class SignatureField(models.TextField):
                 instance.
 
         Returns:
-            unicode:
+            str:
             The project signature stored in the field.
 
         Raises:

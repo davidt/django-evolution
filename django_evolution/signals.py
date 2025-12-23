@@ -25,7 +25,7 @@ evolving_failed = Signal()
 #:     Added the ``evolutions`` argument.
 #:
 #: Args:
-#:     app_label (unicode):
+#:     app_label (str):
 #:         The label of the application being applied.
 #:
 #:     task (django_evolution.evolve.EvolveAppTask):
@@ -42,7 +42,7 @@ applying_evolution = Signal()
 #:     Added the ``evolutions`` argument.
 #:
 #: Args:
-#:     app_label (unicode):
+#:     app_label (str):
 #:         The label of the application being applied.
 #:
 #:     task (django_evolution.evolve.EvolveAppTask):
@@ -73,10 +73,10 @@ applied_migration = Signal()
 #:     in-between two :py:data:`creating_models`.
 #:
 #: Args:
-#:     app_label (unicode):
+#:     app_label (str):
 #:         The app label for the models being created.
 #:
-#:     model_names (list of unicode):
+#:     model_names (list of str):
 #:         The list of models being created.
 creating_models = Signal()
 
@@ -90,6 +90,6 @@ creating_models = Signal()
 #:     migration (django.db.migrations.migration.Migration):
 #:         The migration that was applied.
 #:
-#:     model_names (list of unicode):
+#:     model_names (list of str):
 #:         The list of models that were created.
 created_models = Signal()

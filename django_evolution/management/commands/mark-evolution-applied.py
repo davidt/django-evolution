@@ -73,7 +73,7 @@ class Command(BaseCommand):
         This will validate the arguments and mark the evolutions as applied.
 
         Args:
-            evolution_labels (list of unicode):
+            evolution_labels (list of str):
                 The evolution labels to mark as applied.
 
             options (dict):

@@ -62,7 +62,7 @@ class SQLExecutor:
         """Initialize the executor.
 
         Args:
-            database (unicode):
+            database (str):
                 The registered database name where queries will be executed.
 
             check_constraints (bool, optional):
@@ -177,7 +177,7 @@ class SQLExecutor:
                 Whether to execute any executed SQL statements and return them.
 
         Returns:
-            list of unicode:
+            list of str:
             The list of SQL statements executed, if passing
             ``capture=True``. Otherwise, this will just be an empty list.
 

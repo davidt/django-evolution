@@ -8,7 +8,7 @@ class EvolutionOperationsMulti:
         """Initialize the instance.
 
         Args:
-            db_name (unicode):
+            db_name (str):
                 The name of the database.
 
             database_state (django_evolution.db.state.DatabaseState):

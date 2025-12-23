@@ -19,7 +19,7 @@ class PurgeAppTask(BaseEvolutionTask):
     """A task for purging an application's tables from the database.
 
     Attributes:
-        app_label (unicode):
+        app_label (str):
             The app label for the app to purge.
     """
 
@@ -30,7 +30,7 @@ class PurgeAppTask(BaseEvolutionTask):
             evolver (Evolver):
                 The evolver that will execute the task.
 
-            app_label (unicode):
+            app_label (str):
                 The app label for the app to purge.
         """
         super().__init__(task_id='purge-app:%s' % app_label,
@@ -96,7 +96,7 @@ class PurgeAppTask(BaseEvolutionTask):
         """Return a string description of the task.
 
         Returns:
-            unicode:
+            str:
             The string description.
         """
         return 'Purge application "%s"' % self.app_label

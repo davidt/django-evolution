@@ -56,10 +56,10 @@ class DjangoCompatUnpickler(pickle._Unpickler):
         some Django versions.
 
         Args:
-            module (unicode):
+            module (str):
                 The module path.
 
-            name (unicode):
+            name (str):
                 The class name.
 
         Returns:
@@ -95,7 +95,7 @@ def pickle_dumps(obj):
             The object to dump.
 
     Returns:
-        unicode:
+        str:
         The Unicode pickled representation of the object, safe for storing
         in the database.
     """

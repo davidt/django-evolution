@@ -259,11 +259,11 @@ class Command(BaseCommand):
         standard terminal width, helping provide more readable output.
 
         Args:
-            text (unicode):
+            text (str):
                 The text to wrap.
 
         Returns:
-            unicode:
+            str:
             The wrapped text.
         """
         return '\n'.join(

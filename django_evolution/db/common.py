@@ -76,7 +76,7 @@ class BaseEvolutionOperations:
     #:     2.2
     #:
     #: Type:
-    #:     unicode
+    #:     str
     default_tablespace = None
 
     #: Whether a column type change operation also sets new attributes.
@@ -160,7 +160,7 @@ class BaseEvolutionOperations:
             2.2
 
         Returns:
-            unicode:
+            str:
             The SQL for marking a reference as deferrable.
         """
         return self.connection.ops.deferrable_sql()
@@ -226,7 +226,7 @@ class BaseEvolutionOperations:
             dict:
             The schema information. This has the following keys:
 
-            ``db_type`` (:py:class:`unicode`):
+            ``db_type`` (:py:class:`str`):
                 The database-specific column type.
 
             ``definition`` (list):
@@ -238,7 +238,7 @@ class BaseEvolutionOperations:
                 The list of SQL parameters to pass to the executor. These
                 will be safely handled by the database backend.
 
-            ``name`` (:py:class:`unicode`):
+            ``name`` (:py:class:`str`):
                 The name of the column.
         """
         connection = self.connection
@@ -406,10 +406,10 @@ class BaseEvolutionOperations:
             model (django.db.models.Model):
                 The model representing the table to rename.
 
-            old_db_table (unicode):
+            old_db_table (str):
                 The old table name.
 
-            new_db_table (unicode):
+            new_db_table (str):
                 The new table name.
 
         Returns:
@@ -435,10 +435,10 @@ class BaseEvolutionOperations:
             model (django.db.models.Model):
                 The model representing the table to rename.
 
-            old_db_table (unicode):
+            old_db_table (str):
                 The old table name.
 
-            new_db_table (unicode):
+            new_db_table (str):
                 The new table name.
 
         Returns:
@@ -723,14 +723,14 @@ class BaseEvolutionOperations:
         """Return a newly-generated constraint name.
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table.
 
-            column (unicode):
+            column (str):
                 The name of the column.
 
         Returns:
-            unicode:
+            str:
             The new constraint name.
         """
         return truncate_name('%s_%s_key' % (table_name, column),
@@ -808,7 +808,7 @@ class BaseEvolutionOperations:
             mutation (django_evolution.mutations.BaseModelMutation):
                 The mutation applying this change.
 
-            field_name (unicode):
+            field_name (str):
                 The name of the field on the model.
 
             new_attrs (dict):
@@ -1392,10 +1392,10 @@ class BaseEvolutionOperations:
             model (django.db.models.Model):
                 The model being changed.
 
-            old_comment (unicode):
+            old_comment (str):
                 The old comment.
 
-            new_comment (unicode):
+            new_comment (str):
                 The new comment.
 
         Returns:
@@ -1728,7 +1728,7 @@ class BaseEvolutionOperations:
             model (django.db.models.Model):
                 The model to fetch fields from.
 
-            field_names (list of unicode):
+            field_names (list of str):
                 The list of field names to fetch.
 
             allow_sort_prefixes (bool, optional):
@@ -1764,7 +1764,7 @@ class BaseEvolutionOperations:
             2.2
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table.
 
         Returns:
@@ -1815,7 +1815,7 @@ class BaseEvolutionOperations:
         by :py:meth:`get_constraints_for_table`.
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table.
 
         Returns:

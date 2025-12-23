@@ -28,7 +28,7 @@ def _build_requires_support_decorator(flag, skip_message):
         flag (bool):
             The support flag to check.
 
-        skip_message (unicode):
+        skip_message (str):
             The skip message. This should have ``%(django_version)s`` in the
             message somewhere.
 
@@ -152,7 +152,7 @@ def requires_attr(cls, attr_name):
         cls (type):
             The class to check.
 
-        attr_name (unicode):
+        attr_name (str):
             The name of the attribute to require on the class.
 
     Raises:
@@ -173,7 +173,7 @@ def requires_model_field(field_name):
         2.2
 
     Args:
-        field_name (unicode):
+        field_name (str):
             The name of the field to require.
 
     Raises:
@@ -197,10 +197,10 @@ def requires_change_meta_field(meta_field_name, db_name=DEFAULT_DB_ALIAS):
         2.3
 
     Args:
-        meta_field_name (unicode):
+        meta_field_name (str):
             The name of the meta field that the database backend must support.
 
-        db_name (unicode, optional):
+        db_name (str, optional):
             The name of the database to test against.
 
     Returns:
@@ -229,7 +229,7 @@ def requires_index_feature(feature_name):
         2.2
 
     Args:
-        feature_name (unicode):
+        feature_name (str):
             The name of the Index feature to require.
 
     Raises:
@@ -253,10 +253,10 @@ def requires_param(cls_or_func, param_name, label=None):
         cls_or_func (type or callable):
             The class or function requiring the parameter.
 
-        param_name (unicode):
+        param_name (str):
             The name of the parameter on the function.
 
-        label (unicode, optional):
+        label (str, optional):
             An explicit label to show instead of the parameter name in the
             skip message.
 

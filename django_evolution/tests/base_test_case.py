@@ -132,7 +132,7 @@ class TestCase(DjangoTestCase):
         """Ensure an app's models and evolutions aren't in the database.
 
         Args:
-            app_labels (list of unicode, optional):
+            app_labels (list of str, optional):
                 An explicit list of app labels to delete. This defaults
                 to the built-in list of test app labels.
         """
@@ -185,7 +185,7 @@ class TestCase(DjangoTestCase):
                 The list of evolutions to store. Each item is a tuple in
                 ``(app_label, label)`` form.
 
-            database (unicode, optional):
+            database (str, optional):
                 The name of the database to save these on.
         """
         Evolution.objects.using(database).bulk_create([
@@ -207,7 +207,7 @@ class TestCase(DjangoTestCase):
                 The list of migration targets to store. Each item is a tuple
                 in ``(app_label, label)`` form.
 
-            database (unicode, optional):
+            database (str, optional):
                 The name of the database to save these on.
         """
         assert supports_migrations
@@ -222,19 +222,19 @@ class TestCase(DjangoTestCase):
         """Return the SQL for the given mapping name and database.
 
         Args:
-            name (unicode):
+            name (str):
                 The registered name in the list of SQL mappings for this test
                 suite and database.
 
-            sql_mappings_key (unicode, optional):
+            sql_mappings_key (str, optional):
                 The key identifying the SQL mappings. This defaults to
                 :py:attr:`sql_mapping_key`.
 
-            db_name (unicode, optional):
+            db_name (str, optional):
                 The name of the database to return SQL mappings for.
 
         Returns:
-            list of unicode:
+            list of str:
             The resulting list of SQL statements.
 
         Raises:
@@ -297,7 +297,7 @@ class TestCase(DjangoTestCase):
                 associated with. If not provided, all evolutions in the
                 database will be used.
 
-            database (unicode, optional):
+            database (str, optional):
                 The name of the database to query evolutions against. This
                 is only used if ``version`` is not provided.
 
@@ -325,7 +325,7 @@ class TestCase(DjangoTestCase):
                 migrations. Each item is a tuple in ``(app_label, name)``
                 form.
 
-            database (unicode, optional):
+            database (str, optional):
                 The name of the database to query appliedm migrations against.
 
         Raises:
@@ -357,18 +357,18 @@ class TestCase(DjangoTestCase):
         test output.
 
         Args:
-            sql (list of unicode):
+            sql (list of str):
                 The list of generated SQL statements.
 
-            sql_mapping_name (unicode):
+            sql_mapping_name (str):
                 The mapping name in the database-specific test data to compare
                 against.
 
-            sql_mappings_key (unicode, optional):
+            sql_mappings_key (str, optional):
                 The key identifying the SQL mappings. This defaults to
                 :py:attr:`sql_mapping_key`.
 
-            database (unicode, optional):
+            database (str, optional):
                 An explicit database name to use for resolving
                 ``sql_mapping_name``.
 
@@ -494,7 +494,7 @@ class TestCase(DjangoTestCase):
             q2 (django.db.models.Q):
                 The second Q object.
 
-            msg (unicode, optional):
+            msg (str, optional):
                 An optional message to show if assertion fails.
 
         Raises:
@@ -633,7 +633,7 @@ class EvolutionTestCase(TestCase):
         By default, this won't do anything.
 
         Args:
-            db_name (unicode):
+            db_name (str):
                 The name of the database to create models on.
         """
         pass
@@ -652,7 +652,7 @@ class EvolutionTestCase(TestCase):
                 The base :py:class:`~django.db.models.Model` to register and
                 write to the database that the test will then mutate.
 
-            name (unicode, optional):
+            name (str, optional):
                 The name to register for the model. This defaults to
                 :py:attr:`default_model_name`.
 
@@ -666,7 +666,7 @@ class EvolutionTestCase(TestCase):
                 writing ``base_model``. ``base_model`` may form relations to
                 these models.
 
-            db_name (unicode, optional):
+            db_name (str, optional):
                 The name of the database to write the models to. This
                 defaults to :py:attr:`default_database_name`.
         """
@@ -700,10 +700,10 @@ class EvolutionTestCase(TestCase):
                 The destination :py:class:`~django.db.models.Model`
                 representing the expected result of an evolution.
 
-            model_name (unicode):
+            model_name (str):
                 The name to register for the model.
 
-            db_name (unicode, optional):
+            db_name (str, optional):
                 The name of the database to write the models to. This
                 defaults to :py:attr:`default_database_name`.
 
@@ -762,20 +762,20 @@ class EvolutionTestCase(TestCase):
                 The combined series of evolutions (list of mutations) to apply
                 to the base model.
 
-            diff_text (unicode, optional):
+            diff_text (str, optional):
                 The expected generated text describing a diff that must
                 match, if provided.
 
-            expected_hint (unicode, optional):
+            expected_hint (str, optional):
                 The expected generated hint text that must match, if provided.
 
-            sql_name (unicode, optional):
+            sql_name (str, optional):
                 The name of the registered SQL content for the database being
                 tested.
 
                 This must be provided if ``perform_mutations`` is ``True`.
 
-            model_name (unicode, optional):
+            model_name (str, optional):
                 The name of the model to register. This defaults to
                 :py:attr:`default_model_name`.
 
@@ -811,7 +811,7 @@ class EvolutionTestCase(TestCase):
             perform_mutations (bool, optional):
                 Whether to apply the mutations and compare results.
 
-            db_name (unicode, optional):
+            db_name (str, optional):
                 The name of the database to apply evolutions to. This
                 defaults to :py:attr:`default_database_name`.
 
@@ -878,11 +878,11 @@ class EvolutionTestCase(TestCase):
                 The expected project signature at the end of the evolution.
                 This is generated by :py:meth:`make_end_signatures`.
 
-            diff_text (unicode, optional):
+            diff_text (str, optional):
                 The expected generated text describing a diff that must
                 match, if provided.
 
-            expected_hint (unicode, optional):
+            expected_hint (str, optional):
                 The expected generated hint text that must match, if provided.
 
             expect_empty (bool, optional):
@@ -928,7 +928,7 @@ class EvolutionTestCase(TestCase):
             ignore_apps (bool, optional):
                 Whether to ignore changes to the list of applications.
 
-            db_name (unicode, optional):
+            db_name (str, optional):
                 The name of the database to perform the simulations against.
 
         Returns:
@@ -978,7 +978,7 @@ class EvolutionTestCase(TestCase):
                 The expected ending signature. This is generated by
                 :py:meth:`make_end_signatures`.
 
-            sql_name (unicode, optional):
+            sql_name (str, optional):
                 The name of the registered SQL content for the database being
                 tested. If not provided, the SQL won't be compared.
 
@@ -986,7 +986,7 @@ class EvolutionTestCase(TestCase):
                 Whether to re-scan the list of table indexes after applying
                 the mutations.
 
-            db_name (unicode, optional):
+            db_name (str, optional):
                 The name of the database to apply the evolutions against.
 
             create_test_data_func (callable, optional):
@@ -1046,11 +1046,11 @@ class EvolutionTestCase(TestCase):
             model (type):
                 The main :py:class:`~django.db.models.Model` to register.
 
-            name (unicode):
+            name (str):
                 The name to use when for the model when registering. This
                 doesn't have to match the model's actual name.
 
-            db_name (unicode, optional):
+            db_name (str, optional):
                 The name of the database to register this model on.
 
             **kwargs (dict):
@@ -1085,7 +1085,7 @@ class EvolutionTestCase(TestCase):
                 The main :py:class:`~django.db.models.Model` to include
                 in the signature.
 
-            name (unicode):
+            name (str):
                 The name to use when for the model. This doesn't have to match
                 the model's actual name.
 

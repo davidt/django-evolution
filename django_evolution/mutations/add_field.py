@@ -33,10 +33,10 @@ class AddField(BaseModelFieldMutation):
         """Initialize the mutation.
 
         Args:
-            model_name (unicode):
+            model_name (str):
                 The name of the model to add the field to.
 
-            field_name (unicode):
+            field_name (str):
                 The name of the new field.
 
             field_type (cls):
@@ -59,7 +59,7 @@ class AddField(BaseModelFieldMutation):
         """Return parameters for the mutation's hinted evolution.
 
         Returns:
-            list of unicode:
+            list of str:
             A list of parameter strings to pass to the mutation's constructor
             in a hinted evolution.
         """

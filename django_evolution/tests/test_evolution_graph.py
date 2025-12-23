@@ -702,7 +702,7 @@ class EvolutionGraphTests(MigrationsTestsMixin, TestCase):
             node (django_evolution.utils.graph.Node):
                 The graph node to check.
 
-            key (unicode):
+            key (str):
                 The expected node key.
 
             insert_index (int, optional):

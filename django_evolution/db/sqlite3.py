@@ -44,7 +44,7 @@ class SQLiteAlterTableSQLResult(AlterTableSQLResult):
         a single table rebuild.
 
         Returns:
-            list of unicode:
+            list of str:
             The list of SQL statements to run for the rebuild.
         """
         evolver = self.evolver
@@ -382,7 +382,7 @@ class EvolutionOperations(BaseEvolutionOperations):
             2.2
 
         Returns:
-            unicode:
+            str:
             The SQL for marking a reference as deferrable.
         """
         return 'DEFERRABLE INITIALLY DEFERRED'
@@ -394,10 +394,10 @@ class EvolutionOperations(BaseEvolutionOperations):
             model (django_evolution.mock_models.MockModel):
                 The model representing the table to rename.
 
-            old_db_table (unicode):
+            old_db_table (str):
                 The old table name.
 
-            new_db_table (unicode):
+            new_db_table (str):
                 The new table name.
 
         Returns:
@@ -827,7 +827,7 @@ class EvolutionOperations(BaseEvolutionOperations):
                 The :py:class:`~django.db.models.Model` class representing
                 the table to drop unique constraints on.
 
-            index_name (unicode):
+            index_name (str):
                 The name of the unique constraint index to drop.
 
         Returns:
@@ -864,7 +864,7 @@ class EvolutionOperations(BaseEvolutionOperations):
         introspection on that release.
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table.
 
         Returns:
@@ -902,10 +902,10 @@ class EvolutionOperations(BaseEvolutionOperations):
         """Return whether a column on a table is referenced by another table.
 
         Args:
-            reffed_table_name (unicode):
+            reffed_table_name (str):
                 The name of the table that may be referenced.
 
-            reffed_col_name (unicode):
+            reffed_col_name (str):
                 The name of the column that may be referenced.
 
         Returns:
@@ -953,10 +953,10 @@ class EvolutionOperations(BaseEvolutionOperations):
             field (django.db.models.Field):
                 The field representing the column to change.
 
-            attr_name (unicode):
+            attr_name (str):
                 The name of the attribute to change.
 
-            new_attr_value (unicode):
+            new_attr_value (str):
                 The new attribute value.
 
             initial (object, optional):

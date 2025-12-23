@@ -33,7 +33,7 @@ class BaseRemovedInDjangoEvolutionWarning(DeprecationWarning):
         a useful message and a custom stack level.
 
         Args:
-            message (unicode):
+            message (str):
                 The message to show in the deprecation warning.
 
             stacklevel (int, optional):

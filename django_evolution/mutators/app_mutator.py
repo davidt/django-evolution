@@ -57,10 +57,10 @@ class AppMutator(BaseMutator):
             evolver (django_evolution.evolve.Evolver):
                 The Evolver containing the state for the app mutator.
 
-            app_label (unicode):
+            app_label (str):
                 The label of the app to evolve.
 
-            legacy_app_label (unicode, optional):
+            legacy_app_label (str, optional):
                 The legacy label of the app to evolve. This is based on the
                 module name and is used in the transitioning of pre-Django 1.7
                 signatures.
@@ -87,7 +87,7 @@ class AppMutator(BaseMutator):
         """Initialize the mutator.
 
         Args:
-            app_label (unicode):
+            app_label (str):
                 The label of the app to evolve.
 
             project_sig (django_evolution.signature.ProjectSignature):
@@ -96,12 +96,12 @@ class AppMutator(BaseMutator):
             database_state (django_evolution.db.state.DatabaseState):
                 The database state information to manipulate.
 
-            legacy_app_label (unicode, optional):
+            legacy_app_label (str, optional):
                 The legacy label of the app to evolve. This is based on the
                 module name and is used in the transitioning of pre-Django 1.7
                 signatures.
 
-            database (unicode, optional):
+            database (str, optional):
                 The name of the database being evolved.
         """
         super().__init__()

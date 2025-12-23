@@ -36,10 +36,10 @@ class SQLMutation(BaseMutation):
         """Initialize the mutation.
 
         Args:
-            tag (unicode):
+            tag (str):
                 A unique tag identifying this SQL operation.
 
-            sql (unicode):
+            sql (str):
                 The SQL to execute.
 
             update_func (callable, optional):
@@ -56,7 +56,7 @@ class SQLMutation(BaseMutation):
         """Return parameters for the mutation's hinted evolution.
 
         Returns:
-            list of unicode:
+            list of str:
             A list of parameter strings to pass to the mutation's constructor
             in a hinted evolution.
         """

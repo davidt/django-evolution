@@ -26,7 +26,7 @@ class BaseEvolutionTask:
         evolver (Evolver):
             The evolver that will execute the task.
 
-        id (unicode):
+        id (str):
             The unique ID for the task.
 
         new_evolutions (list of django_evolution.models.Evolution):
@@ -101,7 +101,7 @@ class BaseEvolutionTask:
         """Initialize the task.
 
         Args:
-            task_id (unicode):
+            task_id (str):
                 The unique ID for the task.
 
             evolver (Evolver):
@@ -192,7 +192,7 @@ class BaseEvolutionTask:
         """Return the content for an evolution file for this task.
 
         Returns:
-            unicode:
+            str:
             The evolution content.
         """
         raise NotImplementedError
@@ -201,7 +201,7 @@ class BaseEvolutionTask:
         """Return a string representation of the task.
 
         Returns:
-            unicode:
+            str:
             The string representation.
         """
         return '<%s(id=%s)>' % (type(self).__name__, self.id)
@@ -210,7 +210,7 @@ class BaseEvolutionTask:
         """Return a string description of the task.
 
         Returns:
-            unicode:
+            str:
             The string description.
         """
         raise NotImplementedError

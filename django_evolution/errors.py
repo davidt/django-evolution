@@ -20,15 +20,15 @@ class EvolutionExecutionError(EvolutionException):
     SQL statement executed, are available in the exception as attributes.
 
     Attributes:
-        app_label (unicode):
+        app_label (str):
             The label of the app that failed evolution. This may be ``None``.
 
-        detailed_error (unicode):
+        detailed_error (str):
             Detailed error information from the failure that triggered this
             exception. This might be another exception's error message, or
             it may be ``None``.
 
-        last_sql_statement (unicode):
+        last_sql_statement (str):
             The last SQL statement that was executed. This may be ``None``.
     """
 
@@ -37,17 +37,17 @@ class EvolutionExecutionError(EvolutionException):
         """Initialize the error.
 
         Args:
-            msg (unicode):
+            msg (str):
                 The error message.
 
-            app_label (unicode, optional):
+            app_label (str, optional):
                 The label of the app that failed evolution.
 
-            detailed_error (unicode, optional):
+            detailed_error (str, optional):
                 Detailed error information from the failure that triggered this
                 exception. This might be another exception's error message.
 
-            last_sql_statement (unicode, optional):
+            last_sql_statement (str, optional):
                 The last SQL statement that was executed.
         """
         super().__init__(msg)

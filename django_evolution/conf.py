@@ -132,7 +132,7 @@ class DjangoEvolutionSettings:
         """Set a deprecated setting.
 
         Args:
-            key (unicode):
+            key (str):
                 The deprecated setting name.
 
             value (object):
@@ -163,7 +163,7 @@ def _on_setting_changed(setting, value, **kwargs):
         2.2
 
     Args:
-        setting (unicode):
+        setting (str):
             The name of the setting.
 
         value (object):

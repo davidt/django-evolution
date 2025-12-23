@@ -52,7 +52,7 @@ class DeleteAppTests(EvolutionTestCase):
         """Create test data for the base model.
 
         Args:
-            db_name (unicode):
+            db_name (str):
                 The name of the database to create models on.
         """
         anchor1 = AppDeleteAnchor1.objects.using(db_name).create(value=100)

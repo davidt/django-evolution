@@ -18,10 +18,10 @@ class IndexState:
         """Initialize the index state.
 
         Args:
-            name (unicode, optional):
+            name (str, optional):
                 The name of the index.
 
-            columns (list of unicode, optional):
+            columns (list of str, optional):
                 A list of columns that the index is comprised of.
 
             unique (bool, optional):
@@ -62,7 +62,7 @@ class IndexState:
         """Return a string representation of the index state.
 
         Returns:
-            unicode:
+            str:
             A string representation of the index.
         """
         return '<IndexState(name=%r, columns=%r, unique=%r)>' % (
@@ -80,7 +80,7 @@ class DatabaseState:
         """Initialize the state.
 
         Args:
-            db_name (unicode):
+            db_name (str):
                 The name of the database.
 
             scan (bool, optional):
@@ -115,7 +115,7 @@ class DatabaseState:
         This will add an empty entry for the table to the state.
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table.
         """
         self._tables[self._norm_table_name(table_name)] = {
@@ -130,7 +130,7 @@ class DatabaseState:
         Rather, state for the table is being tracked.
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table to look up.
 
         Returns:
@@ -167,13 +167,13 @@ class DatabaseState:
         This requires the table to be tracked first.
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table.
 
-            index_name (unicode):
+            index_name (str):
                 The name of the index.
 
-            columns (list of unicode):
+            columns (list of str):
                 A list of column names the index is comprised of.
 
             unique (bool, optional):
@@ -221,10 +221,10 @@ class DatabaseState:
         both exist and match the ``unique`` flag.
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table.
 
-            index_name (unicode):
+            index_name (str):
                 The name of the index.
 
             unique (bool, optional):
@@ -262,10 +262,10 @@ class DatabaseState:
         """Return the index state for a given name.
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table.
 
-            index_name (unicode):
+            index_name (str):
                 The name of the index.
 
             unique (bool, optional):
@@ -291,10 +291,10 @@ class DatabaseState:
         """Find and return an index matching the given columns and flags.
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table.
 
-            columns (list of unicode):
+            columns (list of str):
                 The list of columns the index is comprised of.
 
             unique (bool, optional):
@@ -318,7 +318,7 @@ class DatabaseState:
         """Clear all recorded indexes for a table.
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table.
         """
         table_name = self._norm_table_name(table_name)
@@ -335,7 +335,7 @@ class DatabaseState:
         """Iterate through all indexes for a table.
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table.
 
         Yields:
@@ -395,7 +395,7 @@ class DatabaseState:
             2.2
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table the indexes are associated with.
 
             unique (bool):

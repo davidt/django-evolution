@@ -81,7 +81,7 @@ def supports_index_feature(attr_name):
     """Return whether Index supports a specific attribute.
 
     Args:
-        attr_name (unicode):
+        attr_name (str):
             The name of the attribute.
 
     Returns:

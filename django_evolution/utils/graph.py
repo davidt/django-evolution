@@ -26,7 +26,7 @@ class NodeNotFoundError(Exception):
         """Initialize the error.
 
         Args:
-            key (unicode):
+            key (str):
                 The key corresponding to the missing node.
         """
         super().__init__(
@@ -52,7 +52,7 @@ class Node:
             An index defining when this was added to the graph, relative to
             other nodes.
 
-        key (unicode):
+        key (str):
             The key identifying this node.
 
         required_by (set of Node):
@@ -66,7 +66,7 @@ class Node:
         """Initialize the node.
 
         Args:
-            key (unicode):
+            key (str):
                 The key identifying this node.
 
             insert_index (int):
@@ -97,7 +97,7 @@ class Node:
         """Return a string representation of this node.
 
         Returns:
-            unicode:
+            str:
             The string representation.
         """
         return '<Node: %s>' % self.key
@@ -131,7 +131,7 @@ class DependencyGraph:
         the key has not already been recorded.
 
         Args:
-            key (unicode):
+            key (str):
                 The key uniquely identifying this node.
 
             state (dict, optional):
@@ -164,10 +164,10 @@ class DependencyGraph:
         the nodes when calling :py:meth:`finalize`.
 
         Args:
-            node_key (unicode):
+            node_key (str):
                 The key of the node that depends on another node.
 
-            dep_node_key (unicode):
+            dep_node_key (str):
                 The key of the node that ``node_key`` depends on.
         """
         assert not self._finalized
@@ -232,7 +232,7 @@ class DependencyGraph:
         """Return a node with a corresponding key.
 
         Args:
-            key (unicode):
+            key (str):
                 The key associated with the node.
 
         Returns:
@@ -522,7 +522,7 @@ class EvolutionGraph(DependencyGraph):
             app (module):
                 The app module the evolutions apply to.
 
-            evolution_labels (list of unicode):
+            evolution_labels (list of str):
                 The list of evolutions labels to mark as applied.
         """
         app_label = get_app_label(app)
@@ -769,14 +769,14 @@ class EvolutionGraph(DependencyGraph):
         graph.
 
         Args:
-            app_label (unicode):
+            app_label (str):
                 The app label that owns the model.
 
             model (django.db.models.Model):
                 The model the key will represent.
 
         Returns:
-            unicode:
+            str:
             The key for the create model node.
         """
         return 'create-model:%s:%s' % (app_label, get_model_name(model))
@@ -795,7 +795,7 @@ class EvolutionGraph(DependencyGraph):
                 ``(app_label, evolution_label)`` form.
 
         Returns:
-            unicode:
+            str:
             The key for the evolution node.
 
         Raises:
@@ -829,7 +829,7 @@ class EvolutionGraph(DependencyGraph):
                 ``(app_label, migration_name)`` form.
 
         Returns:
-            unicode:
+            str:
             The key for the migration node.
 
         Raises:

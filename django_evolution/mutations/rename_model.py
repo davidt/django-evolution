@@ -26,13 +26,13 @@ class RenameModel(BaseModelMutation):
         """Initialize the mutation.
 
         Args:
-            old_model_name (unicode):
+            old_model_name (str):
                 The old (existing) name of the model to rename.
 
-            new_model_name (unicode):
+            new_model_name (str):
                 The new name for the model.
 
-            db_table (unicode):
+            db_table (str):
                 The table name in the database for this model.
         """
         super().__init__(old_model_name)
@@ -45,7 +45,7 @@ class RenameModel(BaseModelMutation):
         """Return parameters for the mutation's hinted evolution.
 
         Returns:
-            list of unicode:
+            list of str:
             A list of parameter strings to pass to the mutation's constructor
             in a hinted evolution.
         """

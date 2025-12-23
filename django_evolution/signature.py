@@ -177,7 +177,7 @@ class BaseSignature:
             sig_version (int):
                 The stored signature version.
 
-            database (unicode, optional):
+            database (str, optional):
                 The name of the database.
 
         Returns:
@@ -264,7 +264,7 @@ class BaseSignature:
         """Return a string representation of the signature.
 
         Returns:
-            unicode:
+            str:
             A string representation of the signature.
         """
         raise NotImplementedError
@@ -288,7 +288,7 @@ class ProjectSignature(BaseSignature):
         project signature.
 
         Args:
-            database (unicode):
+            database (str):
                 The name of the database.
 
         Returns:
@@ -311,7 +311,7 @@ class ProjectSignature(BaseSignature):
             project_sig_dict (dict):
                 The dictionary containing project signature data.
 
-            database (unicode, optional):
+            database (str, optional):
                 The name of the database.
 
         Returns:
@@ -364,7 +364,7 @@ class ProjectSignature(BaseSignature):
             app (module):
                 The application module to create the signature from.
 
-            database (unicode):
+            database (str):
                 The database name.
         """
         self.add_app_sig(AppSignature.from_app(app, database))
@@ -382,7 +382,7 @@ class ProjectSignature(BaseSignature):
         """Remove an application signature from the project signature.
 
         Args:
-            app_id (unicode):
+            app_id (str):
                 The ID of the application signature to remove.
 
         Raises:
@@ -401,7 +401,7 @@ class ProjectSignature(BaseSignature):
         """Return an application signature with the given ID.
 
         Args:
-            app_id (unicode):
+            app_id (str):
                 The ID of the application signature. This may be a modern
                 app label, or a legacy app label.
 
@@ -567,7 +567,7 @@ class ProjectSignature(BaseSignature):
         """Return a string representation of the signature.
 
         Returns:
-            unicode:
+            str:
             A string representation of the signature.
         """
         return ('<ProjectSignature(apps=%r)>'
@@ -592,7 +592,7 @@ class AppSignature(BaseSignature):
             app (module):
                 The application module to create the signature from.
 
-            database (unicode):
+            database (str):
                 The name of the database.
 
         Returns:
@@ -622,7 +622,7 @@ class AppSignature(BaseSignature):
         """Deserialize a serialized application signature.
 
         Args:
-            app_id (unicode):
+            app_id (str):
                 The application ID.
 
             app_sig_dict (dict):
@@ -631,7 +631,7 @@ class AppSignature(BaseSignature):
             sig_version (int):
                 The version of the serialized signature data.
 
-            database (unicode, optional):
+            database (str, optional):
                 The name of the database.
 
         Returns:
@@ -697,22 +697,22 @@ class AppSignature(BaseSignature):
         """Initialize the signature.
 
         Args:
-            app_id (unicode):
+            app_id (str):
                 The ID of the application. This will be the application label.
                 On modern versions of Django, this may differ from the
                 legacy app label.
 
-            legacy_app_label (unicode, optional):
+            legacy_app_label (str, optional):
                 The legacy label for the application. This is based on the
                 module name.
 
-            upgrade_method (unicode, optional):
+            upgrade_method (str, optional):
                 The upgrade method used for this application. This must be
                 a value from
                 :py:class:`~django_evolution.evolve.UpgradeMethod`, or
                 ``None``.
 
-            applied_migrations (set of unicode, optional):
+            applied_migrations (set of str, optional):
                 The migration names that are applied as of this signature.
         """
         self.app_id = app_id
@@ -733,7 +733,7 @@ class AppSignature(BaseSignature):
         """The set of migration names applied to the app.
 
         Type:
-            set of unicode
+            set of str
         """
         return self._applied_migrations
 
@@ -797,7 +797,7 @@ class AppSignature(BaseSignature):
         """Remove a model signature from the application signature.
 
         Args:
-            model_name (unicode):
+            model_name (str):
                 The name of the model.
 
         Raises:
@@ -819,7 +819,7 @@ class AppSignature(BaseSignature):
         """Return a model signature for the given model name.
 
         Args:
-            model_name (unicode):
+            model_name (str):
                 The name of the model.
 
             required (bool, optional):
@@ -1052,7 +1052,7 @@ class AppSignature(BaseSignature):
         """Return a string representation of the signature.
 
         Returns:
-            unicode:
+            str:
             A string representation of the signature.
         """
         return ('<AppSignature(app_id=%r, legacy_app_label=%r,'
@@ -1122,7 +1122,7 @@ class ModelSignature(BaseSignature):
         """Deserialize a serialized model signature.
 
         Args:
-            model_name (unicode):
+            model_name (str):
                 The model name.
 
             model_sig_dict (dict):
@@ -1131,7 +1131,7 @@ class ModelSignature(BaseSignature):
             sig_version (int):
                 The version of the serialized signature data.
 
-            database (unicode, optional):
+            database (str, optional):
                 The name of the database.
 
         Returns:
@@ -1188,19 +1188,19 @@ class ModelSignature(BaseSignature):
         """Initialize the signature.
 
         Args:
-            model_name (unicode):
+            model_name (str):
                 The name of the model.
 
-            table_name (unicode):
+            table_name (str):
                 The name of the table in the database.
 
-            db_tablespace (unicode, optional):
+            db_tablespace (str, optional):
                 The tablespace for the model. This is database-specific.
 
             index_together (list of tuple, optional):
                 A list of fields that are indexed together.
 
-            pk_column (unicode, optional):
+            pk_column (str, optional):
                 The column for the primary key.
 
             unique_together (list of tuple, optional):
@@ -1310,7 +1310,7 @@ class ModelSignature(BaseSignature):
         """Remove a field signature from the model signature.
 
         Args:
-            field_name (unicode):
+            field_name (str):
                 The name of the field.
 
         Raises:
@@ -1328,7 +1328,7 @@ class ModelSignature(BaseSignature):
         """Return a field signature for the given field name.
 
         Args:
-            field_name (unicode):
+            field_name (str):
                 The name of the field.
 
             required (bool, optional):
@@ -1655,7 +1655,7 @@ class ModelSignature(BaseSignature):
         """Return a string representation of the signature.
 
         Returns:
-            unicode:
+            str:
             A string representation of the signature.
         """
         return '<ModelSignature(model_name=%r)>' % self.model_name
@@ -1733,7 +1733,7 @@ class ConstraintSignature(BaseSignature):
             sig_version (int):
                 The version of the serialized signature data.
 
-            database (unicode, optional):
+            database (str, optional):
                 The name of the database.
 
         Returns:
@@ -1809,7 +1809,7 @@ class ConstraintSignature(BaseSignature):
         """Initialize the signature.
 
         Args:
-            name (unicode):
+            name (str):
                 The name of the constraint.
 
             constraint_type (cls):
@@ -1933,7 +1933,7 @@ class ConstraintSignature(BaseSignature):
         """Return a string representation of the signature.
 
         Returns:
-            unicode:
+            str:
             A string representation of the signature.
         """
         return ('<ConstraintSignature(name=%r, type=%r, attrs=%r)>'
@@ -2026,7 +2026,7 @@ class IndexSignature(BaseSignature):
             sig_version (int):
                 The version of the serialized signature data.
 
-            database (unicode, optional):
+            database (str, optional):
                 The name of the database.
 
         Returns:
@@ -2054,10 +2054,10 @@ class IndexSignature(BaseSignature):
         """Initialize the signature.
 
         Args:
-            fields (list of unicode):
+            fields (list of str):
                 The list of field names the index is comprised of.
 
-            name (unicode, optional):
+            name (str, optional):
                 The optional name of the index.
 
             expressions (list, optional):
@@ -2169,7 +2169,7 @@ class IndexSignature(BaseSignature):
         """Return a string representation of the signature.
 
         Returns:
-            unicode:
+            str:
             A string representation of the signature.
         """
         return (
@@ -2277,7 +2277,7 @@ class FieldSignature(BaseSignature):
         """Deserialize a serialized field signature.
 
         Args:
-            field_name (unicode):
+            field_name (str):
                 The name of the field.
 
             field_sig_dict (dict):
@@ -2286,7 +2286,7 @@ class FieldSignature(BaseSignature):
             sig_version (int):
                 The version of the serialized signature data.
 
-            database (unicode, optional):
+            database (str, optional):
                 The name of the database.
 
         Returns:
@@ -2366,7 +2366,7 @@ class FieldSignature(BaseSignature):
                 :py:class:`django.db.models.Field`.
 
         Yield:
-            unicode:
+            str:
             An attribute for a field type.
         """
         return cls._get_defaults_for_field_type(field_type).keys()
@@ -2397,7 +2397,7 @@ class FieldSignature(BaseSignature):
         """Initialize the signature.
 
         Args:
-            field_name (unicode):
+            field_name (str):
                 The name of the field.
 
             field_type (cls):
@@ -2407,7 +2407,7 @@ class FieldSignature(BaseSignature):
             field_attrs (dict, optional):
                 Attributes to set on the field.
 
-            related_model (unicode, optional):
+            related_model (str, optional):
                 The full path to a related model.
         """
         self.field_name = field_name
@@ -2422,7 +2422,7 @@ class FieldSignature(BaseSignature):
         it's not explicitly set.
 
         Args:
-            attr_name (unicode):
+            attr_name (str):
                 The name of the attribute.
 
             use_default (bool, optional):
@@ -2445,7 +2445,7 @@ class FieldSignature(BaseSignature):
         """Return the default value for an attribute.
 
         Args:
-            attr_name (unicode):
+            attr_name (str):
                 The attribute name.
 
         Returns:
@@ -2465,7 +2465,7 @@ class FieldSignature(BaseSignature):
         """Return whether an attribute is set to its default value.
 
         Args:
-            attr_name (unicode):
+            attr_name (str):
                 The attribute name.
 
         Returns:
@@ -2613,7 +2613,7 @@ class FieldSignature(BaseSignature):
         """Return a string representation of the signature.
 
         Returns:
-            unicode:
+            str:
             A string representation of the signature.
         """
         return ('<FieldSignature(field_name=%r, field_type=%r,'

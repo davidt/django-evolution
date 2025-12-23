@@ -81,7 +81,7 @@ class BaseAppStateMutator(BaseMutator):
         may change.
 
         Type:
-            unicode
+            str
         """
         return self.app_mutator.app_label
 
@@ -92,7 +92,7 @@ class BaseAppStateMutator(BaseMutator):
         This always updates the parent app mutator's app label.
 
         Args:
-            value (unicode):
+            value (str):
                 The new app label.
         """
         self.app_mutator.app_label = value
@@ -105,7 +105,7 @@ class BaseAppStateMutator(BaseMutator):
         as that may change.
 
         Type:
-            unicode
+            str
         """
         return self.app_mutator.legacy_app_label
 

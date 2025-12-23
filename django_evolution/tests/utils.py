@@ -343,7 +343,7 @@ def create_test_project_sig(models, app_label='tests', version=1):
         models (list of django.db.models.Model):
             The list of models for the project signature.
 
-        app_label (unicode, optional):
+        app_label (str, optional):
             The application label that will contain the models.
 
         version (int, optional):
@@ -385,15 +385,15 @@ def execute_test_sql(sql, database=DEFAULT_DB_ALIAS):
     :py:class:`~django_evolution.utils.sql.BaseGroupedSQL` subclass.
 
     Args:
-        sql (unicode or list):
+        sql (str or list):
             The SQL to execute. This must be a value accepted by
             :py:meth:`~django_evolution.utils.sql.SQLExecutor.run_sql`.
 
-        database (unicode, optional):
+        database (str, optional):
             The name of the database to use.
 
     Returns:
-        list of unicode:
+        list of str:
         The SQL statements that were executed.
     """
     try:
@@ -434,10 +434,10 @@ def ensure_test_db(model_entries=[], end_model_entries=None,
             Each entry is a tuple containing the model class and the name to
             register for it.
 
-        app_label (unicode, optional):
+        app_label (str, optional):
             The application label for the models to register.
 
-        database (unicode, optional):
+        database (str, optional):
             The name of the database to execute on.
     """
     # Set up the initial state of the app cache.
@@ -473,11 +473,11 @@ def get_sql_mappings(mapping_key, db_name):
     against.
 
     Args:
-        mapping_key (unicode):
+        mapping_key (str):
             The mapping key in the module. This must correspond to a SQL
             statements dictionary.
 
-        db_name (unicode):
+        db_name (str):
             The name of the database.
 
     Returns:
@@ -521,11 +521,11 @@ def get_default_tablespace(db_name):
         2.2
 
     Args:
-        db_name (unicode):
+        db_name (str):
             The name of the database.
 
     Returns:
-        unicode:
+        str:
         The default tablespace for the database, or ``None``.
     """
     evolver = EvolutionOperationsMulti(db_name).get_evolver()
@@ -545,10 +545,10 @@ def generate_index_name(connection, table, col_names, field_names=None,
         connection (django.db.backends.base.base.BaseDatabaseWrapper):
             The database connection.
 
-        table (unicode):
+        table (str):
             The name of the table the index refers to.
 
-        col_names (unicode or list of unicode):
+        col_names (str or list of str):
             The column name, or list of column names, for the index.
 
             This is used for Postgres (when not using ``index_together``),
@@ -573,7 +573,7 @@ def generate_index_name(connection, table, col_names, field_names=None,
             :py:class:`django.db.models.Options.indexes` entry.
 
     Returns:
-        unicode:
+        str:
         The resulting index name for the given criteria.
     """
     if not isinstance(col_names, list):
@@ -644,20 +644,20 @@ def generate_constraint_name(connection, r_col, col, r_table, table):
         connection (django.db.backends.base.base.BaseDatabaseWrapper):
             The database connection.
 
-        r_col (unicode):
+        r_col (str):
             The column name for the source of the relation.
 
-        col (unicode):
+        col (str):
             The column name for the "to" end of the relation.
 
-        r_table (unicode):
+        r_table (str):
             The table name for the source of the relation.
 
-        table (unicode):
+        table (str):
             The table name for the "to" end of the relation.
 
     Returns:
-        unicode:
+        str:
         The expected name for a constraint.
     """
     # Django 1.11 changed how index names are generated and then
@@ -710,14 +710,14 @@ def generate_unique_constraint_name(connection, table, col_names):
         connection (django.db.backends.base.base.BaseDatabaseWrapper):
             The database connection.
 
-        table (unicode):
+        table (str):
             The table name.
 
-        col_names (list of unicode):
+        col_names (list of str):
             The list of column names for the constraint.
 
     Returns:
-        unicode:
+        str:
         The expected constraint name for this version of Django.
     """
     # Django 1.11 changed how index names are generated and then
@@ -769,14 +769,14 @@ def _generate_index_unique_name_hash(connection, table, col_names):
         connection (django.db.backends.base.base.BaseDatabaseWrapper):
             The database connection.
 
-        table (unicode):
+        table (str):
             The name of the table.
 
-        col_names (list of unicode):
+        col_names (list of str):
             The list of column names for the index.
 
     Returns:
-        unicode:
+        str:
         A hash for the unique part of an index.
     """
     assert isinstance(col_names, list)

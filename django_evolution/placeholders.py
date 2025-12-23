@@ -24,20 +24,20 @@ class BasePlaceholder:
     #: The text used in the placeholder.
     #:
     #: Type:
-    #:     unicode
+    #:     str
     placeholder_text = None
 
     def __init__(self, app_label=None, model_name=None, field_name=None):
         """Initialize the object.
 
         Args:
-            app_label (unicode, optional):
+            app_label (str, optional):
                 The label of the application owning the model.
 
-            model_name (unicode, optional):
+            model_name (str, optional):
                 The name of the model owning the field.
 
-            field_name (unicode, optional):
+            field_name (str, optional):
                 The name of the field to return an initial value for.
         """
         self.app_label = app_label
@@ -50,7 +50,7 @@ class BasePlaceholder:
         This is used when outputting the value in a hinted evolution.
 
         Returns:
-            unicode:
+            str:
             The placeholder text.
         """
         return self.placeholder_text

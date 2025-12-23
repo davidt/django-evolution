@@ -73,10 +73,10 @@ class MigrationList:
             2.1
 
         Args:
-            app_label (unicode):
+            app_label (str):
                 The app label common to each migration name.
 
-            migration_names (list of unicode):
+            migration_names (list of str):
                 The list of migration names.
 
         Returns:
@@ -100,7 +100,7 @@ class MigrationList:
             connection (django.db.backends.base.BaseDatabaseWrapper):
                 The database connection used to query for migrations.
 
-            app_label (unicode, optional):
+            app_label (str, optional):
                 An app label to filter migrations by.
 
         Returns:
@@ -130,10 +130,10 @@ class MigrationList:
         """Return whether the list contains an entry for a migration.
 
         Args:
-            app_label (unicode):
+            app_label (str):
                 The label for the application that was migrated.
 
-            name (unicode):
+            name (str):
                 The name of the migration.
 
         Returns:
@@ -192,10 +192,10 @@ class MigrationList:
         """Add information on a migration to the list.
 
         Args:
-            app_label (unicode):
+            app_label (str):
                 The label for the application that was migrated.
 
-            name (unicode):
+            name (str):
                 The name of the migration.
 
             migration (django.db.migrations.Migration, optional):
@@ -258,7 +258,7 @@ class MigrationList:
         Results are sorted alphabetically.
 
         Returns:
-            list of unicode:
+            list of str:
             The sorted list of app labels with associated migrations.
         """
         return sorted(self._by_app_label.keys())
@@ -327,10 +327,10 @@ class MigrationList:
             info:
             A dictionary containing the following keys:
 
-            ``app_label`` (:py:class:`unicode`):
+            ``app_label`` (:py:class:`str`):
                 The app label for the migration.
 
-            ``name`` (:py:class:`unicode`):
+            ``name`` (:py:class:`str`):
                 The name of the migration.
 
             ``migration`` (:py:class:`django.db.migrations.Migration`):
@@ -384,7 +384,7 @@ class MigrationList:
         """Return a string representation of this list.
 
         Returns:
-            unicode:
+            str:
             The string representation.
         """
         return '<MigrationList%s>' % list(self)
@@ -594,7 +594,7 @@ class MigrationExecutor(DjangoMigrationExecutor):
         signals.
 
         Args:
-            action (unicode):
+            action (str):
                 The action reflecting the progress update.
 
             migration (django.db.migrations.Migration, optional):
@@ -713,10 +713,10 @@ def unrecord_applied_migrations(connection, app_label, migration_names=None):
         connection (django.db.backends.base.BaseDatabaseWrapper):
             The connection used to unrecord applied migrations.
 
-        app_label (unicode):
+        app_label (str):
             The app label that the migrations pertain to.
 
-        migration_names (list of unicode, optional):
+        migration_names (list of str, optional):
             The list of migration names to unrecord. If not provided, all
             migrations for the app will be unrecorded.
     """
@@ -741,7 +741,7 @@ def filter_migration_targets(targets, app_labels=None, exclude=None):
         targets (list of tuple):
             The migration targets to be executed.
 
-        app_labels (set of unicode, optional):
+        app_labels (set of str, optional):
             The app labels to limit the targets to.
 
         exclude (set, optional):
@@ -940,7 +940,7 @@ def emit_pre_migrate_or_sync(verbosity, interactive, database_name,
             Whether handlers of the signal can prompt on the terminal for
             input.
 
-        database_name (unicode):
+        database_name (str):
             The name of the database being migrated.
 
         create_models (list of django.db.models.Model):
@@ -987,7 +987,7 @@ def emit_post_migrate_or_sync(verbosity, interactive, database_name,
             Whether handlers of the signal can prompt on the terminal for
             input.
 
-        database_name (unicode):
+        database_name (str):
             The name of the database that was migrated.
 
         created_models (list of django.db.models.Model):

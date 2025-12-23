@@ -212,7 +212,7 @@ class EvolutionOperations(BaseEvolutionOperations):
         introspection on that release.
 
         Args:
-            table_name (unicode):
+            table_name (str):
                 The name of the table.
 
         Returns:
@@ -368,7 +368,7 @@ class EvolutionOperations(BaseEvolutionOperations):
                 The field to iterate through.
 
         Yields:
-            unicode:
+            str:
             Each field type.
         """
         try:

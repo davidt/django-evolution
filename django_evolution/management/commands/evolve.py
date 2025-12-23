@@ -103,7 +103,7 @@ class Command(BaseCommand):
         process.
 
         Args:
-            app_labels (list of unicode):
+            app_labels (list of str):
                 The app labels to evolve.
 
             options (dict):
@@ -203,7 +203,7 @@ class Command(BaseCommand):
         queue up the purging of stale applications if requested.
 
         Args:
-            app_labels (list of unicode):
+            app_labels (list of str):
                 The list of app labels to evolve. If this is empty, all
                 registered apps will be evolved.
         """
@@ -540,7 +540,7 @@ class Command(BaseCommand):
         console or to generated evolution files (if using ``--write``).
 
         Args:
-            evolution_label (unicode, optional):
+            evolution_label (str, optional):
                 The label used as a base for any generated filenames.
                 If provided, the filenames will be written to the appropriate
                 evolution directories, with a ``.py`` appended.
@@ -606,11 +606,11 @@ class Command(BaseCommand):
         standard terminal width, helping provide more readable output.
 
         Args:
-            text (unicode):
+            text (str):
                 The text to wrap.
 
         Returns:
-            unicode:
+            str:
             The wrapped text.
         """
         return '\n'.join(

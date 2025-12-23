@@ -87,14 +87,14 @@ def get_database_for_model_name(app_name, model_name):
     will go through any custom routers that understand that type of model.
 
     Args:
-        app_name (unicode):
+        app_name (str):
             The name of the app owning the model.
 
-        model_name (unicode):
+        model_name (str):
             The name of the model.
 
     Returns:
-        unicode:
+        str:
         The name of the database used for the model.
     """
     return router.db_for_write(apps.get_model(app_name, model_name))

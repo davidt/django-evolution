@@ -56,7 +56,7 @@ class Evolver:
         connection (django.db.backends.base.base.BaseDatabaseWrapper):
             The database connection object being used for the evolver.
 
-        database_name (unicode):
+        database_name (str):
             The name of the database being evolved.
 
         database_state (django_evolution.db.state.DatabaseState):
@@ -114,7 +114,7 @@ class Evolver:
                 way that allows interactivity on the command line. This is
                 passed along to signal emissions.
 
-            database_name (unicode, optional):
+            database_name (str, optional):
                 The name of the database to evolve.
 
         Raises:
@@ -338,7 +338,7 @@ class Evolver:
         """Queue the purging of a Django app.
 
         Args:
-            app_label (unicode):
+            app_label (str):
                 The label of the app to purge.
 
         Raises:

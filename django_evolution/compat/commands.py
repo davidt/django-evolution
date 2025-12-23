@@ -134,7 +134,7 @@ class BaseCommand(DjangoBaseCommand):
         with, even if the options were created in :py:meth:`add_arguments`.
 
         Args:
-            name (unicode):
+            name (str):
                 The attribute name.
 
         Returns:
