@@ -15,6 +15,9 @@ from django_evolution.utils.apps import get_app, get_app_label, get_apps
 from django_evolution.utils.evolutions import get_evolution_sequence
 
 
+logger = logging.getLogger(__name__)
+
+
 _django_evolution_app = None
 
 
@@ -146,6 +149,6 @@ if django_evolution_settings.ENABLED:
     elif hasattr(signals, 'post_migrate'):
         signals.post_migrate.connect(_on_post_migrate)
     else:
-        logging.error('Django Evolution cannot automatically install '
-                      'baselines or evolve on Django %s',
-                      django.get_version())
+        logger.error('Django Evolution cannot automatically install '
+                     'baselines or evolve on Django %s',
+                     django.get_version())

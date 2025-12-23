@@ -204,7 +204,7 @@ class SQLExecutor:
 
                 for batch, use_transaction in batches:
                     if not use_transaction:
-                        logging.error(
+                        logger.error(
                             'Unable to execute the following SQL inside of a '
                             'transaction: %r',
                             batch)

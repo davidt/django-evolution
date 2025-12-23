@@ -27,6 +27,9 @@ from django_evolution.mutators.upgrade_method_mutator import \
     UpgradeMethodMutator
 
 
+logger = logging.getLogger(__name__)
+
+
 class AppMutator(BaseMutator):
     """Tracks and runs mutations for an app.
 
@@ -247,7 +250,7 @@ class AppMutator(BaseMutator):
                 result_mutations.extend(
                     self._process_mutation_batch(mutation_batch))
         except CannotSimulate:
-            logging.warning(
+            logger.warning(
                 'Unable to pre-process mutations for optimization. '
                 '%s contains a mutation that cannot be smimulated.',
                 self.app_label)

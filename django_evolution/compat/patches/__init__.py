@@ -37,7 +37,7 @@ def apply_patches():
             try:
                 needs_patch = patch.needs_patch()
             except Exception as e:
-                logging.exception(
+                logger.exception(
                     'Error checking if Django Evolution compatibility patch '
                     '"%s" needs to apply: %s',
                     patch_name, e)
@@ -47,7 +47,7 @@ def apply_patches():
                 try:
                     patch.apply_patch()
                 except Exception as e:
-                    logging.exception(
+                    logger.exception(
                         'Error applying Django Evolution compatibility  '
                         'patch "%s": %s',
                         patch_name, e)

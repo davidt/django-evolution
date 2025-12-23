@@ -38,6 +38,9 @@ from django_evolution.utils.models import (
 from django_evolution.utils.sql import SQLExecutor
 
 
+logger = logging.getLogger(__name__)
+
+
 test_connections = ConnectionHandler(settings.TEST_DATABASES)
 
 _sql_mapping_cache = {}
@@ -403,7 +406,7 @@ def execute_test_sql(sql, database=DEFAULT_DB_ALIAS):
                                     capture=True,
                                     execute=True)
     except Exception as e:
-        logging.exception('Error executing SQL %s: %s', sql, e)
+        logger.exception('Error executing SQL %s: %s', sql, e)
         raise
 
 

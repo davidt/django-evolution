@@ -28,6 +28,9 @@ from django_evolution.utils.db import (
 from django_evolution.utils.models import iter_non_m2m_reverse_relations
 
 
+logger = logging.getLogger(__name__)
+
+
 class BaseEvolutionOperations:
     """Base class for evolution operations for a database backend."""
 
@@ -893,10 +896,10 @@ class BaseEvolutionOperations:
                                   **change_call['kwargs'])
                 assert not sql_result or isinstance(sql_result, SQLResult)
             except Exception as e:
-                logging.critical(
+                logger.critical(
                     'Error running database evolver function %s: %s',
                     func.__name__, e,
-                    exc_info=1)
+                    exc_info=True)
                 raise
 
             attrs_sql_result.add(sql_result)
