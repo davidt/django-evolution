@@ -278,11 +278,11 @@ def get_evolution_dependencies(app, evolution_label, custom_evolutions=[]):
         mutations = getattr(module, 'MUTATIONS', [])
     else:
         deps = {
-            _key: set(custom_evolution.get(_key, []))
-            for _key in ('after_evolutions',
-                         'after_migrations',
-                         'before_evolutions',
-                         'before_migrations')
+            key: set(custom_evolution.get(key, []))
+            for key in ('after_evolutions',
+                        'after_migrations',
+                        'before_evolutions',
+                        'before_migrations')
         }
         mutations = custom_evolution['mutations']
 

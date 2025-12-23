@@ -87,8 +87,8 @@ class Command(BaseCommand):
 
         # Check if more than one action is specified.
         num_enabled_actions = sum(
-            int(_action)
-            for _action in (action_list, action_show, action_delete)
+            int(action)
+            for action in (action_list, action_show, action_delete)
         )
 
         if num_enabled_actions > 1:
@@ -161,8 +161,8 @@ class Command(BaseCommand):
 
         if interactive:
             evolution_labels = [
-                '%s.%s' % (_app_label, _label)
-                for _app_label, _label in (
+                '%s.%s' % (app_label, label)
+                for app_label, label in (
                     version.evolutions.values_list('app_label', 'label')
                 )
             ]
@@ -181,8 +181,8 @@ class Command(BaseCommand):
                     'from the database:',
 
                     '\n'.join(
-                        '* %s' % _evolution_label
-                        for _evolution_label in evolution_labels
+                        '* %s' % evolution_label
+                        for evolution_label in evolution_labels
                     ),
                 ]
 
@@ -234,8 +234,8 @@ class Command(BaseCommand):
 
             if evolution_ids:
                 evolution_labels = [
-                    evolutions_to_labels[_evolution_id]
-                    for _evolution_id in evolution_ids
+                    evolutions_to_labels[evolution_id]
+                    for evolution_id in evolution_ids
                 ]
             else:
                 evolution_labels = ''

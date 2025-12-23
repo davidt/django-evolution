@@ -54,8 +54,8 @@ class DjangoEvolutionSettingsTests(TestCase):
 
         self.assertEqual(len(record), 2)
         messages = sorted(
-            _record.message.args[0]
-            for _record in record
+            record.message.args[0]
+            for record in record
         )
 
         self.assertEqual(

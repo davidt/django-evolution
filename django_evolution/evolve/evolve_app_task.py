@@ -926,13 +926,13 @@ class EvolveAppTask(BaseEvolutionTask):
                         # list of mutations for all evolutions in this task
                         # in the correct order.
                         mutations_map = {
-                            _info['label']: _info['mutations']
-                            for _info in batch_task._evolutions
+                            info['label']: info['mutations']
+                            for info in batch_task._evolutions
                         }
 
                         pending_mutations = list(itertools.chain.from_iterable(
-                            mutations_map[_label]
-                            for _label in batch_task_info['evolutions']
+                            mutations_map[label]
+                            for label in batch_task_info['evolutions']
                         ))
                     elif hinted:
                         # This is a hinted mutation, so grab the mutations

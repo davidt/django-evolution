@@ -141,15 +141,15 @@ class SQLiteAlterTableSQLResult(AlterTableSQLResult):
 
         # Remove any Generic Fields.
         old_fields = [
-            _field
-            for _field in model._meta.local_fields
-            if _field.db_type(connection=connection) is not None
+            field
+            for field in model._meta.local_fields
+            if field.db_type(connection=connection) is not None
         ]
 
         new_fields = [
-            replaced_fields.get(_field.column, _field)
-            for _field in old_fields + added_fields
-            if _field.column not in deleted_columns
+            replaced_fields.get(field.column, field)
+            for field in old_fields + added_fields
+            if field.column not in deleted_columns
         ]
 
         field_values = OrderedDict()

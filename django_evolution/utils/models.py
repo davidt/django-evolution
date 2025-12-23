@@ -120,8 +120,7 @@ def walk_model_tree(model):
     yield model
 
     for parent in model._meta.parents:
-        for _model in walk_model_tree(parent):
-            yield _model
+        yield from walk_model_tree(parent)
 
 
 def get_model_rel_tree():

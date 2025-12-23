@@ -724,9 +724,9 @@ class EvolutionGraphTests(MigrationsTestsMixin, TestCase):
         """
         self.assertEqual(node.key, key)
         self.assertEqual(node.state, state)
-        self.assertEqual({_node.key for _node in node.dependencies},
+        self.assertEqual({node.key for node in node.dependencies},
                          dependencies)
-        self.assertEqual({_node.key for _node in node.required_by},
+        self.assertEqual({node.key for node in node.required_by},
                          required_by)
 
         if insert_index is not None:

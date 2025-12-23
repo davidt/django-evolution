@@ -1472,37 +1472,37 @@ class BaseEvolutionOperations:
             old_constraints = []
 
         old_constraints = [
-            _make_constraint(_constraint_data)
-            for _constraint_data in old_constraints
-            if _is_constraint_supported(_constraint_data)
+            _make_constraint(constraint_data)
+            for constraint_data in old_constraints
+            if _is_constraint_supported(constraint_data)
         ]
 
         new_constraints = [
-            _make_constraint(_constraint_data)
-            for _constraint_data in new_constraints
-            if _is_constraint_supported(_constraint_data)
+            _make_constraint(constraint_data)
+            for constraint_data in new_constraints
+            if _is_constraint_supported(constraint_data)
         ]
 
         old_constraints_map = {
-            _constraint.name: _constraint
-            for _constraint in old_constraints
+            constraint.name: constraint
+            for constraint in old_constraints
         }
 
         new_constraints_map = {
-            _constraint.name: _constraint
-            for _constraint in new_constraints
+            constraint.name: constraint
+            for constraint in new_constraints
         }
 
         to_add = [
-            _constraint
-            for _constraint in new_constraints
-            if _constraint != old_constraints_map.get(_constraint.name)
+            constraint
+            for constraint in new_constraints
+            if constraint != old_constraints_map.get(constraint.name)
         ]
 
         to_remove = [
-            _constraint
-            for _constraint in old_constraints
-            if _constraint != new_constraints_map.get(_constraint.name)
+            constraint
+            for constraint in old_constraints
+            if constraint != new_constraints_map.get(constraint.name)
         ]
 
         if not to_remove and not to_add:
@@ -2177,8 +2177,8 @@ class BaseEvolutionOperations:
             index_args = ()
 
         index_kwargs = {
-            _attr_name: _value
-            for _attr_name, _value in (
+            attr_name: value
+            for attr_name, value in (
                 ('fields', fields),
                 ('name', name),
                 ('condition', condition),
@@ -2186,7 +2186,7 @@ class BaseEvolutionOperations:
                 ('include', include),
                 ('opclasses', opclasses),
             )
-            if _value is not None and supports_index_feature(_attr_name)
+            if value is not None and supports_index_feature(attr_name)
         }
 
         return models.Index(*index_args, **index_kwargs)

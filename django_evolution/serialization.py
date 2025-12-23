@@ -134,8 +134,8 @@ class BaseIterableSerialization(BaseSerialization):
             The resulting signature data.
         """
         return cls.item_type(
-            serialize_to_signature(_item)
-            for _item in value
+            serialize_to_signature(item)
+            for item in value
         )
 
     @classmethod
@@ -151,8 +151,8 @@ class BaseIterableSerialization(BaseSerialization):
             The resulting value.
         """
         return cls.item_type(
-            deserialize_from_signature(_item)
-            for _item in payload
+            deserialize_from_signature(item)
+            for item in payload
         )
 
 
@@ -390,8 +390,8 @@ class ListSerialization(BaseIterableSerialization):
             The resulting Python code.
         """
         return '[%s]' % ', '.join(
-            serialize_to_python(_item)
-            for _item in value
+            serialize_to_python(item)
+            for item in value
         )
 
 
@@ -423,8 +423,8 @@ class TupleSerialization(BaseIterableSerialization):
 
         return '(%s%s)' % (
             ', '.join(
-                serialize_to_python(_item)
-                for _item in value
+                serialize_to_python(item)
+                for item in value
             ),
             suffix)
 
@@ -451,8 +451,8 @@ class SetSerialization(BaseIterableSerialization):
             The resulting Python code.
         """
         return '{%s}' % ', '.join(
-            serialize_to_python(_item)
-            for _item in sorted(value)
+            serialize_to_python(item)
+            for item in sorted(value)
         )
 
 
@@ -563,8 +563,8 @@ class DeconstructedSerialization(BaseSerialization):
 
         if args:
             all_args += [
-                serialize_to_python(_arg)
-                for _arg in args
+                serialize_to_python(arg)
+                for arg in args
             ]
 
         if kwargs:
@@ -781,8 +781,8 @@ class QSerialization(DeconstructedSerialization):
                                         'django.db.models')
 
         args = [
-            serialize_to_signature(_child)
-            for _child in q.children
+            serialize_to_signature(child)
+            for child in q.children
         ]
 
         kwargs = {}
