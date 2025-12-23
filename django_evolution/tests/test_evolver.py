@@ -638,7 +638,7 @@ class EvolveAppTaskTests(MigrationsTestsMixin, BaseEvolverTestCase):
                                                 primary_key=True)),
                         ('field1', models.IntegerField()),
                         ('field2', models.CharField(max_length=10)),
-                    ]
+                    ],
                 ),
             ]
 
@@ -748,7 +748,7 @@ class EvolveAppTaskTests(MigrationsTestsMixin, BaseEvolverTestCase):
                                                 primary_key=True)),
                         ('field1', models.IntegerField()),
                         ('field2', models.CharField(max_length=10)),
-                    ]
+                    ],
                 ),
             ]
 
@@ -1153,7 +1153,7 @@ class EvolveAppTaskTests(MigrationsTestsMixin, BaseEvolverTestCase):
                                                 primary_key=True)),
                         ('field1', models.IntegerField()),
                         ('field2', models.CharField(max_length=10)),
-                    ]
+                    ],
                 ),
             ]
 
@@ -1260,7 +1260,7 @@ class EvolveAppTaskTests(MigrationsTestsMixin, BaseEvolverTestCase):
                                                 primary_key=True)),
                         ('field1', models.IntegerField()),
                         ('field2', models.CharField(max_length=10)),
-                    ]
+                    ],
                 ),
             ]
 

@@ -68,7 +68,7 @@ class EvolutionGraphTests(MigrationsTestsMixin, TestCase):
             insert_index=1,
             key='create-model:django_evolution:evolution',
             dependencies={
-                'evolution:django_evolution:__first__'
+                'evolution:django_evolution:__first__',
             },
             required_by={
                 'create-model:django_evolution:version',
@@ -85,7 +85,7 @@ class EvolutionGraphTests(MigrationsTestsMixin, TestCase):
             insert_index=2,
             key='create-model:django_evolution:version',
             dependencies={
-                'create-model:django_evolution:evolution'
+                'create-model:django_evolution:evolution',
             },
             required_by={
                 'evolution:django_evolution:my_evolution1',
@@ -102,7 +102,7 @@ class EvolutionGraphTests(MigrationsTestsMixin, TestCase):
             insert_index=3,
             key='evolution:django_evolution:my_evolution1',
             dependencies={
-                'create-model:django_evolution:version'
+                'create-model:django_evolution:version',
             },
             required_by={
                 'evolution:django_evolution:my_evolution2',
@@ -119,7 +119,7 @@ class EvolutionGraphTests(MigrationsTestsMixin, TestCase):
             insert_index=4,
             key='evolution:django_evolution:my_evolution2',
             dependencies={
-                'evolution:django_evolution:my_evolution1'
+                'evolution:django_evolution:my_evolution1',
             },
             required_by={
                 'evolution:django_evolution:__last__',
@@ -136,7 +136,7 @@ class EvolutionGraphTests(MigrationsTestsMixin, TestCase):
             insert_index=5,
             key='evolution:django_evolution:__last__',
             dependencies={
-                'evolution:django_evolution:my_evolution2'
+                'evolution:django_evolution:my_evolution2',
             },
             state={
                 'anchor': True,

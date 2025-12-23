@@ -75,11 +75,11 @@ class SQLMutationTests(EvolutionTestCase):
             model_sig = app_sig['TestModel']
             model_sig['fields']['added_field1'] = {
                 'field_type': models.IntegerField,
-                'null': True
+                'null': True,
             }
             model_sig['fields']['added_field2'] = {
                 'field_type': models.IntegerField,
-                'null': True
+                'null': True,
             }
 
         # Modern simulation function.

@@ -244,7 +244,7 @@ class SQLiteAlterTableSQLResult(AlterTableSQLResult):
                 ),
                 qn(table_name),
             ),
-            tuple(field_initials)
+            tuple(field_initials),
         ))
 
         # Step 3: Drop the old table, making room for us to recreate the
@@ -341,7 +341,7 @@ class SQLiteAlterTableSQLResult(AlterTableSQLResult):
                             # here before we commit the transaction if
                             # anything goes wrong.
                             'PRAGMA integrity_check;',
-                        ]
+                        ],
                     ),
                     NoTransactionSQL(['VACUUM;']),
                 ]
@@ -465,7 +465,7 @@ class EvolutionOperations(BaseEvolutionOperations):
                 'ALTER TABLE %s RENAME COLUMN %s TO %s;'
                 % (qn(model._meta.db_table),
                    qn(old_field.column),
-                   qn(new_field.column))
+                   qn(new_field.column)),
             ])
         else:
             return SQLiteAlterTableSQLResult(
@@ -671,7 +671,7 @@ class EvolutionOperations(BaseEvolutionOperations):
                 'op': 'CHANGE COLUMN TYPE',
                 'old_field': old_field,
                 'new_field': new_field,
-            }]
+            }],
         )
 
     def get_change_unique_sql(self, model, field, new_unique_value,
@@ -887,7 +887,7 @@ class EvolutionOperations(BaseEvolutionOperations):
             index_name = row[1]
             indexes[index_name] = {
                 'unique': bool(row[2]),
-                'columns': []
+                'columns': [],
             }
 
             cursor.execute('PRAGMA index_info(%s)' % qn(index_name))

@@ -28,8 +28,7 @@ class Command(BaseCommand):
         "\n"
         "This is an advanced command that should only be used if you know "
         "what you're doing, or are guided by support as part of a database "
-        "repair."
-    )
+        "repair.")
 
     def add_arguments(self, parser):
         """Add arguments to the command.

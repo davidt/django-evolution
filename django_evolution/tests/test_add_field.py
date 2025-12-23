@@ -256,7 +256,7 @@ class AddFieldTests(EvolutionTestCase):
             self.DIFF_TEXT,
             [
                 "AddField('TestModel', 'added_field', models.IntegerField,"
-                " null=True)"
+                " null=True)",
             ],
             'AddNullColumnWithInitialColumnModel')
 
@@ -276,7 +276,7 @@ class AddFieldTests(EvolutionTestCase):
             self.DIFF_TEXT,
             [
                 "AddField('TestModel', 'added_field', models.CharField,"
-                " initial=<<USER VALUE REQUIRED>>, max_length=10)"
+                " initial=<<USER VALUE REQUIRED>>, max_length=10)",
             ],
             'AddStringColumnModel')
 
@@ -296,7 +296,7 @@ class AddFieldTests(EvolutionTestCase):
             self.DIFF_TEXT,
             [
                 "AddField('TestModel', 'added_field', models.CharField,"
-                " initial='', max_length=10)"
+                " initial='', max_length=10)",
             ],
             'AddBlankStringColumnModel')
 
@@ -399,7 +399,7 @@ class AddFieldTests(EvolutionTestCase):
             self.DIFF_TEXT,
             [
                 "AddField('TestModel', 'added_field', models.TextField,"
-                " initial='test')"
+                " initial='test')",
             ],
             'AddTextFieldWithInitialColumnModel')
 
@@ -420,7 +420,7 @@ class AddFieldTests(EvolutionTestCase):
             self.DIFF_TEXT,
             [
                 "AddField('TestModel', 'added_field', models.BinaryField,"
-                " initial='test')"
+                " initial='test')",
             ],
             'AddBinaryFieldWithInitialColumnModel')
 

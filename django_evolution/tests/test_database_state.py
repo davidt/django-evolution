@@ -292,7 +292,7 @@ class DatabaseStateTests(TestCase):
         database_state.add_table('my_test_table')
 
         self.assertIsNone(database_state.get_index(table_name='my_test_table',
-                                                   index_name='my_index'),)
+                                                   index_name='my_index'))
 
     def test_find_index(self):
         """Testing DatabaseState.find_index"""

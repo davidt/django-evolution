@@ -963,7 +963,7 @@ def change_field(connection):
 
         'RemoveDBIndexChangeModel': [
             'DROP INDEX "%s";'
-            % generate_index_name('tests_testmodel', 'int_field1')
+            % generate_index_name('tests_testmodel', 'int_field1'),
         ],
 
         'RemoveDBIndexAddUniqueChangeModel': [
@@ -2613,7 +2613,7 @@ def indexes(connection):
         'setting_from_empty_with_condition': [
             'CREATE INDEX "my_index"'
             ' ON "tests_testmodel" ("int_field1")'
-            ' WHERE "int_field2" >= 10;'
+            ' WHERE "int_field2" >= 10;',
         ],
 
         # NOTE: db_tablespace is ignored for SQLite3.
@@ -2628,19 +2628,19 @@ def indexes(connection):
 
         'setting_from_empty_with_expressions': [
             'CREATE INDEX "my_index"'
-            ' ON "tests_testmodel" ((("int_field1" + "int_field2")));'
+            ' ON "tests_testmodel" ((("int_field1" + "int_field2")));',
         ],
 
         # NOTE: include is ignored for SQLite3.
         'setting_from_empty_with_include': [
             'CREATE INDEX "my_index"'
-            ' ON "tests_testmodel" ("int_field1");'
+            ' ON "tests_testmodel" ("int_field1");',
         ],
 
         # NOTE: opclasses is ignored for SQLite3.
         'setting_from_empty_with_opclasses': [
             'CREATE INDEX "my_index"'
-            ' ON "tests_testmodel" ("char_field1");'
+            ' ON "tests_testmodel" ("char_field1");',
         ],
     }
 

@@ -64,7 +64,7 @@ class PreprocessingTests(EvolutionTestCase):
                          initial='', max_length=20),
                 DeleteField('TestModel', 'added_field'),
                 AddField('TestModel', 'added_field', models.IntegerField,
-                         initial=42)
+                         initial=42),
             ],
             ("In model tests.TestModel:\n"
              "    Field 'added_field' has been added"),
@@ -306,7 +306,7 @@ class PreprocessingTests(EvolutionTestCase):
         self.set_base_model(
             self.default_base_model,
             extra_models=[
-                ('ReffedPreprocModel', ReffedPreprocModel)
+                ('ReffedPreprocModel', ReffedPreprocModel),
             ])
 
         # Prepare the renamed model in the end signature.
@@ -364,7 +364,7 @@ class PreprocessingTests(EvolutionTestCase):
         self.set_base_model(
             self.default_base_model,
             extra_models=[
-                ('ReffedPreprocModel', ReffedPreprocModel)
+                ('ReffedPreprocModel', ReffedPreprocModel),
             ])
 
         # Prepare the renamed model in the end signature.

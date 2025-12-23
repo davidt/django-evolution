@@ -255,7 +255,7 @@ def add_field(connection):
             ' ADD COLUMN `add_field` integer NULL;',
 
             'CREATE INDEX `%s` ON `tests_testmodel` (`add_field`);'
-            % generate_index_name('tests_testmodel', 'add_field')
+            % generate_index_name('tests_testmodel', 'add_field'),
         ],
 
         'AddUniqueColumnModel': [
@@ -496,7 +496,7 @@ def change_field(connection):
         ],
 
         'AddDBIndexRemoveUniqueChangeModel': [
-            'DROP INDEX int_field3 ON `tests_testmodel`;'
+            'DROP INDEX int_field3 ON `tests_testmodel`;',
         ],
 
         'AddDBIndexAddUniqueChangeModel': [
@@ -636,7 +636,7 @@ def delete_model(connection):
 
         'BasicWithM2MModel': [
             'DROP TABLE `tests_basicwithm2mmodel_m2m`;',
-            'DROP TABLE `tests_basicwithm2mmodel`;'
+            'DROP TABLE `tests_basicwithm2mmodel`;',
         ],
 
         'CustomTableModel': [
@@ -859,7 +859,7 @@ def sql_mutation(connection):
             ' ADD COLUMN `added_field1` integer NULL;',
 
             'ALTER TABLE `tests_testmodel`'
-            ' ADD COLUMN `added_field2` integer NULL;'
+            ' ADD COLUMN `added_field2` integer NULL;',
         ],
 
         'AddThirdField': [
@@ -1233,7 +1233,7 @@ def indexes(connection):
         # NOTE: condition is ignored for MySQL.
         'setting_from_empty_with_condition': [
             'CREATE INDEX `my_index`'
-            ' ON `tests_testmodel` (`int_field1`);'
+            ' ON `tests_testmodel` (`int_field1`);',
         ],
 
         # NOTE: db_tablespace is ignored for MySQL.
@@ -1249,13 +1249,13 @@ def indexes(connection):
         # NOTE: include is ignored for MySQL.
         'setting_from_empty_with_include': [
             'CREATE INDEX `my_index`'
-            ' ON `tests_testmodel` (`int_field1`);'
+            ' ON `tests_testmodel` (`int_field1`);',
         ],
 
         # NOTE: opclasses is ignored for MySQL.
         'setting_from_empty_with_opclasses': [
             'CREATE INDEX `my_index`'
-            ' ON `tests_testmodel` (`char_field1`);'
+            ' ON `tests_testmodel` (`char_field1`);',
         ],
     }
 
@@ -1270,7 +1270,7 @@ def indexes(connection):
 
             'setting_from_empty_with_expressions': [
                 'CREATE INDEX `my_index`'
-                ' ON `tests_testmodel` (((`int_field1` + `int_field2`)));'
+                ' ON `tests_testmodel` (((`int_field1` + `int_field2`)));',
             ],
         })
     else:

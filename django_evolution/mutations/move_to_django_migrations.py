@@ -90,7 +90,7 @@ class MoveToDjangoMigrations(BaseUpgradeMethodMutation):
             'replace_migrations': {
                 (app_label, migration_name)
                 for migration_name in self.mark_applied
-            }
+            },
         }
 
     def simulate(self, simulation):

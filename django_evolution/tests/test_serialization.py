@@ -206,7 +206,7 @@ class DeserializeFromSignatureTests(TestCase):
                         'kwargs': {
                             '_connector': 'OR',
                         },
-                        'type': 'django.db.models.Q'
+                        'type': 'django.db.models.Q',
                     },
                 ],
                 'kwargs': {},
@@ -529,7 +529,7 @@ class SerializeToSignatureTests(TestCase):
                         'kwargs': {
                             '_connector': 'OR',
                         },
-                        'type': 'django.db.models.Q'
+                        'type': 'django.db.models.Q',
                     },
                 ],
                 'kwargs': {},

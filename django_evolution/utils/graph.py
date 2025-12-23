@@ -154,9 +154,9 @@ class DependencyGraph:
 
     def add_dependency(
         self,
-        node_key,       # type: str
-        dep_node_key,   # type: str
-        optional=False  # type: bool
+        node_key,        # type: str
+        dep_node_key,    # type: str
+        optional=False,  # type: bool
     ):  # type: (...) -> None
         """Add a dependency between two nodes.
 

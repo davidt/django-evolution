@@ -728,7 +728,7 @@ class ChangeFieldTests(EvolutionTestCase):
              "        Property 'null' has changed"),
             [
                 "ChangeField('TestModel', 'm2m_field1', initial=None,"
-                " null=True)"
+                " null=True)",
             ],
             'M2MNullChangeModel')
 
@@ -1341,7 +1341,7 @@ class ChangeFieldTests(EvolutionTestCase):
              "        Property 'decimal_places' has changed"),
             [
                 "ChangeField('TestModel', 'dec_field2', decimal_places=2,"
-                " initial=None)"
+                " initial=None)",
             ],
             'decimal_field_decimal_places')
 
@@ -1384,7 +1384,7 @@ class ChangeFieldTests(EvolutionTestCase):
              "        Property 'max_digits' has changed"),
             [
                 "ChangeField('TestModel', 'dec_field1', initial=None,"
-                " max_digits=10)"
+                " max_digits=10)",
             ],
             'decimal_field_max_digits')
 
@@ -1431,7 +1431,7 @@ class ChangeFieldTests(EvolutionTestCase):
              "        Property 'max_digits' has changed"),
             [
                 "ChangeField('TestModel', 'dec_field1', decimal_places=1,"
-                " initial=None, max_digits=10)"
+                " initial=None, max_digits=10)",
             ],
             'decimal_field_decimal_places_max_digits')
 
@@ -1634,7 +1634,7 @@ class ChangeFieldTests(EvolutionTestCase):
              "        Property 'field_type' has changed"),
             [
                 "ChangeField('TestModel', 'char_field',"
-                " field_type=models.TextField, initial=None, null=True)"
+                " field_type=models.TextField, initial=None, null=True)",
             ],
             'field_type')
 
@@ -1680,7 +1680,7 @@ class ChangeFieldTests(EvolutionTestCase):
             [
                 "ChangeField('TestModel', 'char_field1',"
                 " field_type=models.TextField,"
-                " initial=<<USER VALUE REQUIRED>>)"
+                " initial=<<USER VALUE REQUIRED>>)",
             ],
             'field_type_null_false')
 
@@ -1910,7 +1910,7 @@ class ChangeFieldTests(EvolutionTestCase):
             self.default_base_model,
             pre_extra_models=[
                 ('OtherModel', OtherModel),
-                ('ChangeAnchor1', ChangeAnchor1)
+                ('ChangeAnchor1', ChangeAnchor1),
             ])
 
         end, end_sig = self.make_end_signatures(DestModel, 'TestModel')

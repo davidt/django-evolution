@@ -174,7 +174,7 @@ def add_field(connection):
             ' ADD COLUMN "add_field" integer NULL;',
 
             'CREATE INDEX "%s" ON "tests_testmodel" ("add_field");'
-            % generate_index_name('tests_testmodel', 'add_field')
+            % generate_index_name('tests_testmodel', 'add_field'),
         ],
 
         'AddUniqueColumnModel': [
@@ -783,7 +783,7 @@ def delete_model(connection):
 
         'BasicWithM2MModel': [
             'DROP TABLE "tests_basicwithm2mmodel_m2m";',
-            'DROP TABLE "tests_basicwithm2mmodel";'
+            'DROP TABLE "tests_basicwithm2mmodel";',
         ],
 
         'CustomTableModel': [
@@ -792,7 +792,7 @@ def delete_model(connection):
 
         'CustomTableWithM2MModel': [
             'DROP TABLE "another_custom_table_name_m2m";',
-            'DROP TABLE "another_custom_table_name";'
+            'DROP TABLE "another_custom_table_name";',
         ],
     }
 
@@ -1028,7 +1028,7 @@ def sql_mutation(connection):
             ' ADD COLUMN "added_field1" integer NULL;',
 
             'ALTER TABLE "tests_testmodel"'
-            ' ADD COLUMN "added_field2" integer NULL;'
+            ' ADD COLUMN "added_field2" integer NULL;',
         ],
 
         'AddThirdField': [
@@ -1158,7 +1158,7 @@ def index_together(connection):
             ' ON "tests_testmodel" ("int_field1", "char_field1");'
             % generate_index_name('tests_testmodel',
                                   ['int_field1', 'char_field1'],
-                                  index_together=True)
+                                  index_together=True),
         ],
 
         'replace_list': [
@@ -1376,7 +1376,7 @@ def indexes(connection):
         'setting_from_empty_with_condition': [
             'CREATE INDEX "my_index"'
             ' ON "tests_testmodel" ("int_field1")'
-            ' WHERE "int_field2" >= 10;'
+            ' WHERE "int_field2" >= 10;',
         ],
 
         'setting_from_empty_with_db_tablespace': [
@@ -1390,13 +1390,13 @@ def indexes(connection):
 
         'setting_from_empty_with_expressions': [
             'CREATE INDEX "my_index"'
-            ' ON "tests_testmodel" ((("int_field1" + "int_field2")));'
+            ' ON "tests_testmodel" ((("int_field1" + "int_field2")));',
         ],
 
         'setting_from_empty_with_include': [
             'CREATE INDEX "my_index"'
             ' ON "tests_testmodel" ("int_field1")'
-            ' INCLUDE ("char_field1", "char_field2");'
+            ' INCLUDE ("char_field1", "char_field2");',
         ],
 
         'setting_from_empty_with_opclasses': [

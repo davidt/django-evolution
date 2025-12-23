@@ -165,7 +165,7 @@ class EvolutionOperations(BaseEvolutionOperations):
         return AlterTableSQLResult(
             self,
             model,
-            [{'sql': 'DROP CONSTRAINT %s' % qn(index_name)}]
+            [{'sql': 'DROP CONSTRAINT %s' % qn(index_name)}],
         )
 
     def get_default_index_name(self, table_name, field):
@@ -249,7 +249,7 @@ class EvolutionOperations(BaseEvolutionOperations):
             if index_name not in indexes:
                 indexes[index_name] = {
                     'unique': row[2],
-                    'columns': []
+                    'columns': [],
                 }
 
             indexes[index_name]['columns'].append(col_name)
@@ -306,7 +306,7 @@ class EvolutionOperations(BaseEvolutionOperations):
                 'op': 'ALTER COLUMN',
                 'column': field.column,
                 'params': ['TYPE', field.db_type(connection=self.connection)],
-            }]
+            }],
         )
 
     def _are_column_types_compatible(self, old_field, new_field):

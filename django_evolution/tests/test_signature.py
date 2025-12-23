@@ -1961,7 +1961,7 @@ class ModelSignatureTests(BaseSignatureTestCase):
         old_model_sig = ModelSignature(
             model_name='TestModel',
             table_name='testmodel',
-            unique_together=(('field1', 'field2',)),
+            unique_together=(('field1', 'field2')),
             unique_together_applied=True)
 
         self.assertTrue(
@@ -1982,7 +1982,7 @@ class ModelSignatureTests(BaseSignatureTestCase):
         old_model_sig = ModelSignature(
             model_name='TestModel',
             table_name='testmodel',
-            unique_together=(('field1', 'field2',)),
+            unique_together=(('field1', 'field2')),
             unique_together_applied=True)
 
         self.assertTrue(
@@ -2196,7 +2196,7 @@ class ModelSignatureTests(BaseSignatureTestCase):
                         'attrs': {
                             'db_index': True,
                             'unique': True,
-                        }
+                        },
                     },
                     'int_field': {
                         'type': 'django.db.models.IntegerField',
@@ -2206,7 +2206,7 @@ class ModelSignatureTests(BaseSignatureTestCase):
                         'attrs': {
                             'db_column': 'size_column',
                             'null': True,
-                        }
+                        },
                     },
                     'object_id': {
                         'type': 'django.db.models.PositiveIntegerField',
@@ -2629,7 +2629,7 @@ class IndexSignatureTests(BaseSignatureTestCase):
                     ),
                     'kwargs': {},
                     'type': 'django.db.models.expressions.CombinedExpression',
-                }
+                },
             ]
         else:
             expressions = []
@@ -2708,7 +2708,7 @@ class IndexSignatureTests(BaseSignatureTestCase):
 
                     # This one still uses the legacy path on Django 4.1.
                     'type': 'django.db.models.expressions.CombinedExpression',
-                }
+                },
             ]
         else:
             expressions = []

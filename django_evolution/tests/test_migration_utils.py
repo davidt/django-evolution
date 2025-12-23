@@ -48,7 +48,7 @@ class InitialMigration(migrations.Migration):
                                         primary_key=True)),
                 ('field1', models.IntegerField()),
                 ('field2', models.CharField(max_length=10)),
-            ]
+            ],
         ),
     ]
 
@@ -826,7 +826,7 @@ class MigrationUtilsTests(MigrationsTestsMixin, TestCase):
                 exclude=[
                     ('app3', '0001_initial'),
                     ('app1', '0002_stuff'),
-                ]
+                ],
             ),
             [
                 ('app1', '0001_initial'),

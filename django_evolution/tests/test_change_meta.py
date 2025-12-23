@@ -232,7 +232,7 @@ class ChangeMetaConstraintsTests(BaseChangeMetaTestCase):
                             'name': 'new_unique_constraint_plain',
                             'fields': ['int_field1', 'int_field2'],
                         },
-                    ])
+                    ]),
             ],
             diff_text=self.DIFF_TEXT,
             expected_hint=[
@@ -298,7 +298,7 @@ class ChangeMetaConstraintsTests(BaseChangeMetaTestCase):
                             'name': 'new_unique_constraint_plain',
                             'fields': ['int_field1', 'char_field1'],
                         },
-                    ])
+                    ]),
             ],
             diff_text=self.DIFF_TEXT,
             expected_hint=[
@@ -382,7 +382,7 @@ class ChangeMetaConstraintsTests(BaseChangeMetaTestCase):
                             'name': 'new_check_constraint',
                             **check_kwargs_2,
                         },
-                    ])
+                    ]),
             ],
             diff_text=self.DIFF_TEXT,
             expected_hint=[
@@ -419,11 +419,11 @@ class ChangeMetaConstraintsTests(BaseChangeMetaTestCase):
         self.perform_evolution_tests(
             dest_model=DestModel,
             evolutions=[
-                ChangeMeta('TestModel', 'constraints', [])
+                ChangeMeta('TestModel', 'constraints', []),
             ],
             diff_text=self.DIFF_TEXT,
             expected_hint=[
-                "ChangeMeta('TestModel', 'constraints', [])"
+                "ChangeMeta('TestModel', 'constraints', [])",
             ],
             sql_name='removing')
 
@@ -534,7 +534,7 @@ class ChangeMetaDbTableCommentTests(BaseChangeMetaTestCase):
             [
                 ChangeMeta('TestModel',
                            'db_table_comment',
-                           'New comment!')
+                           'New comment!'),
             ],
             self.DIFF_TEXT,
             [
@@ -559,7 +559,7 @@ class ChangeMetaDbTableCommentTests(BaseChangeMetaTestCase):
             [
                 ChangeMeta('TestModel',
                            'db_table_comment',
-                           'New comment!')
+                           'New comment!'),
             ],
             self.DIFF_TEXT,
             [
@@ -660,14 +660,14 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
                             'fields': ['char_field1', '-char_field2'],
                             'name': 'my_custom_index',
                         },
-                    ])
+                    ]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'indexes',"
                 " [{'fields': ['int_field1']},"
                 " {'fields': ['char_field1', '-char_field2'],"
-                " 'name': 'my_custom_index'}])"
+                " 'name': 'my_custom_index'}])",
             ],
             'setting_from_empty')
 
@@ -702,14 +702,14 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
                             'fields': ['int_field1'],
                             'name': 'my_index',
                         },
-                    ])
+                    ]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'indexes',"
                 " [{'condition': models.Q(int_field2__gte=10),"
                 " 'fields': ['int_field1'],"
-                " 'name': 'my_index'}])"
+                " 'name': 'my_index'}])",
             ],
             'setting_from_empty_with_condition')
 
@@ -748,14 +748,14 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
                             'db_tablespace': tablespace,
                             'fields': ['int_field1'],
                         },
-                    ])
+                    ]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'indexes',"
                 " [{'db_tablespace': '%s',"
                 " 'fields': ['int_field1']}])"
-                % tablespace
+                % tablespace,
             ],
             'setting_from_empty_with_db_tablespace')
 
@@ -790,14 +790,14 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
                             ),
                             'name': 'my_index',
                         },
-                    ])
+                    ]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'indexes',"
                 " [{'expressions': (models.F('int_field1') +"
                 " models.F('int_field2'),),"
-                " 'name': 'my_index'}])"
+                " 'name': 'my_index'}])",
             ],
             'setting_from_empty_with_expressions')
 
@@ -832,14 +832,14 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
                             'include': ('char_field1', 'char_field2'),
                             'name': 'my_index',
                         },
-                    ])
+                    ]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'indexes',"
                 " [{'fields': ['int_field1'],"
                 " 'include': ['char_field1', 'char_field2'],"
-                " 'name': 'my_index'}])"
+                " 'name': 'my_index'}])",
             ],
             'setting_from_empty_with_include')
 
@@ -874,14 +874,14 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
                             'name': 'my_index',
                             'opclasses': ['text_pattern_ops'],
                         },
-                    ])
+                    ]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'indexes',"
                 " [{'fields': ['char_field1'],"
                 " 'name': 'my_index',"
-                " 'opclasses': ['text_pattern_ops']}])"
+                " 'opclasses': ['text_pattern_ops']}])",
             ],
             'setting_from_empty_with_opclasses')
 
@@ -927,14 +927,14 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
                             'fields': ['int_field1'],
                             'name': 'my_index',
                         },
-                    ])
+                    ]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'indexes',"
                 " [{'condition': models.Q(int_field2__lte=20),"
                 " 'fields': ['int_field1'],"
-                " 'name': 'my_index'}])"
+                " 'name': 'my_index'}])",
             ],
             'replace_condition')
 
@@ -985,7 +985,7 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
                             'fields': ['int_field1'],
                             'name': 'my_index',
                         },
-                    ])
+                    ]),
             ],
             self.DIFF_TEXT,
             [
@@ -993,7 +993,7 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
                 " [{'db_tablespace': '%s',"
                 " 'fields': ['int_field1'],"
                 " 'name': 'my_index'}])"
-                % tablespace
+                % tablespace,
             ],
             'replace_db_tablespace')
 
@@ -1037,14 +1037,14 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
                                             F('int_field1'),),
                             'name': 'my_index',
                         },
-                    ])
+                    ]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'indexes',"
                 " [{'expressions': (models.F('int_field2') -"
                 " models.F('int_field1'),),"
-                " 'name': 'my_index'}])"
+                " 'name': 'my_index'}])",
             ],
             'replace_expressions')
 
@@ -1090,14 +1090,14 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
                             'include': ['char_field2', 'char_field1'],
                             'name': 'my_index',
                         },
-                    ])
+                    ]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'indexes',"
                 " [{'fields': ['int_field1'],"
                 " 'include': ['char_field2', 'char_field1'],"
-                " 'name': 'my_index'}])"
+                " 'name': 'my_index'}])",
             ],
             'replace_include')
 
@@ -1143,14 +1143,14 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
                             'name': 'my_index',
                             'opclasses': ['text_pattern_ops'],
                         },
-                    ])
+                    ]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'indexes',"
                 " [{'fields': ['char_field1'],"
                 " 'name': 'my_index',"
-                " 'opclasses': ['text_pattern_ops']}])"
+                " 'opclasses': ['text_pattern_ops']}])",
             ],
             'replace_opclasses')
 
@@ -1172,12 +1172,12 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
             DestModel,
             [
                 ChangeMeta('TestModel', 'indexes',
-                           [{'fields': ['int_field2']}])
+                           [{'fields': ['int_field2']}]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'indexes',"
-                " [{'fields': ['int_field2']}])"
+                " [{'fields': ['int_field2']}])",
             ],
             'replace_list')
 
@@ -1215,7 +1215,7 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
                         {
                             'fields': ['int_field2'],
                         },
-                    ])
+                    ]),
             ],
             self.DIFF_TEXT,
             [
@@ -1223,7 +1223,7 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
                 " [{'fields': ['int_field1']},"
                 " {'fields': ['char_field1', '-char_field2'],"
                 " 'name': 'my_custom_index'},"
-                " {'fields': ['int_field2']}])"
+                " {'fields': ['int_field2']}])",
             ],
             'append_list')
 
@@ -1239,11 +1239,11 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
         self.perform_evolution_tests(
             DestModel,
             [
-                ChangeMeta('TestModel', 'indexes', [])
+                ChangeMeta('TestModel', 'indexes', []),
             ],
             self.DIFF_TEXT,
             [
-                "ChangeMeta('TestModel', 'indexes', [])"
+                "ChangeMeta('TestModel', 'indexes', [])",
             ],
             'removing')
 
@@ -1270,12 +1270,12 @@ class ChangeMetaIndexesTests(BaseChangeMetaTestCase):
             DestModel,
             [
                 ChangeMeta('TestModel', 'indexes',
-                           [{'fields': ['int_field2']}])
+                           [{'fields': ['int_field2']}]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'indexes',"
-                " [{'fields': ['int_field2']}])"
+                " [{'fields': ['int_field2']}])",
             ],
             'ignore_missing_indexes',
             rescan_indexes=False)
@@ -1339,7 +1339,7 @@ class ChangeMetaIndexTogetherTests(BaseChangeMetaTestCase):
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'index_together',"
-                " [('int_field1', 'char_field1')])"
+                " [('int_field1', 'char_field1')])",
             ],
             'setting_from_empty')
 
@@ -1364,7 +1364,7 @@ class ChangeMetaIndexTogetherTests(BaseChangeMetaTestCase):
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'index_together',"
-                " [('int_field2', 'char_field2')])"
+                " [('int_field2', 'char_field2')])",
             ],
             'replace_list')
 
@@ -1392,7 +1392,7 @@ class ChangeMetaIndexTogetherTests(BaseChangeMetaTestCase):
             [
                 "ChangeMeta('TestModel', 'index_together',"
                 " [('int_field1', 'char_field1'),"
-                " ('int_field2', 'char_field2')])"
+                " ('int_field2', 'char_field2')])",
             ],
             'append_list')
 
@@ -1408,11 +1408,11 @@ class ChangeMetaIndexTogetherTests(BaseChangeMetaTestCase):
         self.perform_evolution_tests(
             DestModel,
             [
-                ChangeMeta('TestModel', 'index_together', [])
+                ChangeMeta('TestModel', 'index_together', []),
             ],
             self.DIFF_TEXT,
             [
-                "ChangeMeta('TestModel', 'index_together', [])"
+                "ChangeMeta('TestModel', 'index_together', [])",
             ],
             'removing')
 
@@ -1437,12 +1437,12 @@ class ChangeMetaIndexTogetherTests(BaseChangeMetaTestCase):
             DestModel,
             [
                 ChangeMeta('TestModel', 'index_together',
-                           [('char_field1', 'char_field2')])
+                           [('char_field1', 'char_field2')]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'index_together',"
-                " [('char_field1', 'char_field2')])"
+                " [('char_field1', 'char_field2')])",
             ],
             'ignore_missing_indexes',
             rescan_indexes=False)
@@ -1558,7 +1558,7 @@ class ChangeMetaUniqueTogetherTests(BaseChangeMetaTestCase):
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'unique_together',"
-                " [('int_field1', 'char_field1')])"
+                " [('int_field1', 'char_field1')])",
             ],
             'setting_from_empty')
 
@@ -1583,7 +1583,7 @@ class ChangeMetaUniqueTogetherTests(BaseChangeMetaTestCase):
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'unique_together',"
-                " [('int_field2', 'char_field2')])"
+                " [('int_field2', 'char_field2')])",
             ],
             'replace_list')
 
@@ -1611,7 +1611,7 @@ class ChangeMetaUniqueTogetherTests(BaseChangeMetaTestCase):
             [
                 "ChangeMeta('TestModel', 'unique_together',"
                 " [('int_field1', 'char_field1'),"
-                " ('int_field2', 'char_field2')])"
+                " ('int_field2', 'char_field2')])",
             ],
             'append_list')
 
@@ -1627,11 +1627,11 @@ class ChangeMetaUniqueTogetherTests(BaseChangeMetaTestCase):
         self.perform_evolution_tests(
             DestModel,
             [
-                ChangeMeta('TestModel', 'unique_together', [])
+                ChangeMeta('TestModel', 'unique_together', []),
             ],
             self.DIFF_TEXT,
             [
-                "ChangeMeta('TestModel', 'unique_together', [])"
+                "ChangeMeta('TestModel', 'unique_together', [])",
             ],
             'removing')
 
@@ -1656,12 +1656,12 @@ class ChangeMetaUniqueTogetherTests(BaseChangeMetaTestCase):
                            [('int_field1', 'char_field1'),
                             ('int_field2', 'char_field2')]),
                 ChangeMeta('TestModel', 'unique_together',
-                           [('int_field1', 'char_field1')])
+                           [('int_field1', 'char_field1')]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'unique_together',"
-                " [('int_field1', 'char_field1')])"
+                " [('int_field1', 'char_field1')])",
             ],
             'set_remove')
 
@@ -1686,12 +1686,12 @@ class ChangeMetaUniqueTogetherTests(BaseChangeMetaTestCase):
             DestModel,
             [
                 ChangeMeta('TestModel', 'unique_together',
-                           [('char_field1', 'char_field2')])
+                           [('char_field1', 'char_field2')]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'unique_together',"
-                " [('char_field1', 'char_field2')])"
+                " [('char_field1', 'char_field2')])",
             ],
             'ignore_missing_indexes',
             rescan_indexes=False)
@@ -1723,12 +1723,12 @@ class ChangeMetaUniqueTogetherTests(BaseChangeMetaTestCase):
             DestModel,
             [
                 ChangeMeta('TestModel', 'unique_together',
-                           [('int_field1', 'char_field1')])
+                           [('int_field1', 'char_field1')]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'unique_together',"
-                " [('int_field1', 'char_field1')])"
+                " [('int_field1', 'char_field1')])",
             ],
             'upgrade_from_v1_sig',
             rescan_indexes=False)
@@ -1759,12 +1759,12 @@ class ChangeMetaUniqueTogetherTests(BaseChangeMetaTestCase):
             DestModel,
             [
                 ChangeMeta('TestModel', 'unique_together',
-                           [('int_field1', 'char_field1')])
+                           [('int_field1', 'char_field1')]),
             ],
             self.DIFF_TEXT,
             [
                 "ChangeMeta('TestModel', 'unique_together',"
-                " [('int_field1', 'char_field1')])"
+                " [('int_field1', 'char_field1')])",
             ],
             None,
             rescan_indexes=False)

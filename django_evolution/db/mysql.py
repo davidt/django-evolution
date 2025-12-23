@@ -200,8 +200,8 @@ class EvolutionOperations(BaseEvolutionOperations):
                     'column': field.column,
                     'db_type': field.db_type(connection=self.connection),
                     'params': [null_attr],
-                }
-            ]
+                },
+            ],
         )
 
     def change_column_attr_max_length(self, model, mutation, field, old_value,
@@ -231,7 +231,7 @@ class EvolutionOperations(BaseEvolutionOperations):
                     'column': field.column,
                     'db_type': db_type,
                 },
-            ]
+            ],
         )
 
     def get_drop_index_sql(self, model, index_name):
@@ -239,7 +239,7 @@ class EvolutionOperations(BaseEvolutionOperations):
 
         return SQLResult([
             'DROP INDEX %s ON %s;'
-            % (qn(index_name), qn(model._meta.db_table))
+            % (qn(index_name), qn(model._meta.db_table)),
         ])
 
     def get_change_unique_sql(self, model, field, new_unique_value,
@@ -280,7 +280,7 @@ class EvolutionOperations(BaseEvolutionOperations):
 
         return SQLResult([
             'RENAME TABLE %s TO %s;'
-            % (qn(old_db_table), qn(new_db_table))
+            % (qn(old_db_table), qn(new_db_table)),
         ])
 
     def get_default_index_name(self, table_name, field):

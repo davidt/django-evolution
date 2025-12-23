@@ -17,5 +17,5 @@ AFTER_MIGRATIONS = [
 MUTATIONS = [
     AddField('EvolutionsApp2TestModel', 'fkey', models.ForeignKey,
              related_model='evolutions_app.EvolutionsAppTestModel',
-             null=True)
+             null=True),
 ]

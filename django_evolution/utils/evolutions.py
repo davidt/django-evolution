@@ -375,8 +375,7 @@ def get_unapplied_evolutions(app, database=DEFAULT_DB_ALIAS):
         Evolution.objects
         .using(database)
         .filter(app_label=get_app_label(app))
-        .values_list('label', flat=True)
-    )
+        .values_list('label', flat=True))
 
     return [
         evolution_name
@@ -408,8 +407,7 @@ def get_applied_evolutions(app, database=DEFAULT_DB_ALIAS):
         Evolution.objects
         .using(database)
         .filter(app_label=get_app_label(app))
-        .values_list('label', flat=True)
-    )
+        .values_list('label', flat=True))
 
 
 def get_app_mutations(app, evolution_labels=None, database=DEFAULT_DB_ALIAS):

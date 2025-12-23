@@ -471,7 +471,7 @@ class BaseEvolutionOperations:
                 {
                     'op': 'DROP COLUMN',
                     'column': f.column,
-                    'params': ['CASCADE']
+                    'params': ['CASCADE'],
                 },
             ],
         )
@@ -570,7 +570,7 @@ class BaseEvolutionOperations:
                 # tables, drop that default.
                 sql_result.add_post_sql([
                     'ALTER TABLE %s ALTER COLUMN %s DROP DEFAULT;'
-                    % (qn(table_name), qn(column_name))
+                    % (qn(table_name), qn(column_name)),
                 ])
 
         if field.unique or field.primary_key:
@@ -600,7 +600,7 @@ class BaseEvolutionOperations:
                     'column': field.column,
                     'params': [attr],
                 },
-            ]
+            ],
         )
 
     def create_index(self, model, field):
@@ -978,8 +978,8 @@ class BaseEvolutionOperations:
             alter_table=[{
                 'op': 'MODIFY COLUMN',
                 'column': field.column,
-                'db_type': field.db_type(connection=self.connection)
-            }]
+                'db_type': field.db_type(connection=self.connection),
+            }],
         )
 
     def change_column_attr_max_length(self, model, mutation, field, old_value,
@@ -1003,7 +1003,7 @@ class BaseEvolutionOperations:
                         % (db_type, qn(column), db_type),
                     ],
                 },
-            ]
+            ],
         )
 
     def change_column_attr_db_column(self, model, mutation, field, old_value,
@@ -1253,11 +1253,11 @@ class BaseEvolutionOperations:
         if new_unique_value:
             alter_table_item = {
                 'sql': 'ADD CONSTRAINT %s UNIQUE(%s)'
-                       % (qn(constraint_name), qn(field.column))
+                       % (qn(constraint_name), qn(field.column)),
             }
         else:
             alter_table_item = {
-                'sql': 'DROP CONSTRAINT %s' % qn(constraint_name)
+                'sql': 'DROP CONSTRAINT %s' % qn(constraint_name),
             }
 
         return self.alter_table_sql_result_cls(self, model, [alter_table_item])
