@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import sys
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -48,7 +47,7 @@ try:
 except KeyError:
     raise ImproperlyConfigured(
         'Requested database type "%s" is not a valid choice.'
-        % db_choice)
+        % TEST_DB_CHOICE)
 
 
 # Local time zone for this installation. Choices can be found here:
@@ -99,7 +98,8 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Put strings here, like "/home/html/django_templates" or
+    # "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )

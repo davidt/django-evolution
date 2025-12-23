@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 
+# TODO: Replace with StrEnum once we're on Python 3.11+
 class UpgradeMethod:
     """Upgrade methods available for an application."""
 
@@ -13,6 +14,7 @@ class UpgradeMethod:
     MIGRATIONS = 'migrations'
 
 
+# TODO: Replace with StrEnum once we're on Python 3.11+
 class EvolutionsSource:
     """The source for an app's evolutions."""
 

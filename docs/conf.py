@@ -1,15 +1,17 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# This file does only contain a selection of the most common options. For a
-# full list see the documentation:
-# http://www.sphinx-doc.org/en/master/config
+"""Configuration file for the Sphinx documentation builder.
 
-# -- Path setup --------------------------------------------------------------
+This file does only contain a selection of the most common options. For a
+full list see the documentation:
+http://www.sphinx-doc.org/en/master/config
+"""
 
 from __future__ import annotations
 
 import os
 import sys
+
+
+# -- Path setup --------------------------------------------------------------
 
 _tree_root = os.path.abspath(os.path.join(__file__, '..', '..'))
 sys.path.insert(0, _tree_root)

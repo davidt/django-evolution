@@ -113,7 +113,7 @@ def create_field(project_sig, field_name, field_type, field_attrs,
             # related.create_many_to_many_intermediary_model
             through_app_name = parent_model.app_name
             through_model_name = '%s_%s' % (parent_model._meta.object_name,
-                                            field.name),
+                                            field.name)
 
             through_model_sig = ModelSignature(
                 model_name=through_model_name,

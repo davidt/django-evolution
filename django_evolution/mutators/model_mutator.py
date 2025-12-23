@@ -9,8 +9,7 @@ from __future__ import annotations
 import logging
 
 from django_evolution.db import EvolutionOperationsMulti
-from django_evolution.errors import (CannotSimulate,
-                                     EvolutionBaselineMissingError)
+from django_evolution.errors import EvolutionBaselineMissingError
 from django_evolution.mock_models import MockModel
 from django_evolution.mutations import BaseModelMutation
 from django_evolution.mutators.base import BaseAppStateMutator

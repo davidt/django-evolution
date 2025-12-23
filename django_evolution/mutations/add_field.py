@@ -6,8 +6,6 @@ Version Added:
 
 from __future__ import annotations
 
-from functools import partial
-
 from django.db import models
 
 from django_evolution.mock_models import MockModel, MockRelated, create_field
@@ -168,7 +166,7 @@ class AddField(BaseModelFieldMutation):
                                   model_name=related_model_name,
                                   model_sig=related_sig,
                                   db_name=mutator.database)
-        related = MockRelated(related_model=related_model,
+        _related = MockRelated(related_model=related_model,
                               model=model,
                               field=field)
 

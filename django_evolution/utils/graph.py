@@ -607,15 +607,14 @@ class EvolutionGraph(DependencyGraph):
             The resulting node.
         """
         key = self._make_create_model_key(get_app_label(app), model)
-        node = self.add_node(
+
+        return self.add_node(
             key=key,
             state=dict({
                 'app': app,
                 'model': model,
                 'type': self.NODE_TYPE_CREATE_MODEL,
             }, **extra_state))
-
-        return node
 
     def _add_evolution(self, app, evolution, extra_state={},
                        custom_evolutions=[]):

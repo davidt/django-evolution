@@ -889,12 +889,14 @@ def rename_field(connection):
 
         'RenameNonDefaultColumnNameToNonDefaultNameModel': [
             'ALTER TABLE "tests_testmodel"'
-            ' RENAME COLUMN "custom_db_col_name" TO "non-default_column_name";',
+            ' RENAME COLUMN "custom_db_col_name" TO '
+            '"non-default_column_name";',
         ],
 
         'RenameNonDefaultColumnNameToNonDefaultNameAndTableModel': [
             'ALTER TABLE "tests_testmodel"'
-            ' RENAME COLUMN "custom_db_col_name" TO "non-default_column_name2";',
+            ' RENAME COLUMN "custom_db_col_name" TO '
+            '"non-default_column_name2";',
         ],
 
         'RenameColumnCustomTableModel': [

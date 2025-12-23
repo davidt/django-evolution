@@ -310,11 +310,11 @@ class EnumSerialization(BaseSerialization):
             object:
             A deep copy of the provided value.
         """
-        cls = type(value)
+        cls_type = type(value)
 
         return {
             '_enum': True,
-            'type': '%s.%s' % (cls.__module__, cls.__name__),
+            'type': '%s.%s' % (cls_type.__module__, cls_type.__name__),
             'value': value._name_,
         }
 
@@ -330,9 +330,9 @@ class EnumSerialization(BaseSerialization):
             str:
             The resulting Python code.
         """
-        cls = type(value)
-        cls_name = cls.__name__
-        mod_name = cls.__module__
+        cls_type = type(value)
+        cls_name = cls_type.__name__
+        mod_name = cls_type.__module__
 
         if mod_name.startswith('django.db.models'):
             cls_path = 'models.%s' % cls_name
@@ -554,7 +554,7 @@ class DeconstructedSerialization(BaseSerialization):
             The resulting Python code.
         """
         cls_path, args, kwargs = cls._deconstruct_object(value)
-        module_path, cls_name = cls_path.rsplit('.', 1)
+        _module_path, cls_name = cls_path.rsplit('.', 1)
 
         if cls_path.startswith('django.db.models'):
             cls_name = 'models.%s' % cls_name

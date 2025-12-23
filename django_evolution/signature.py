@@ -167,7 +167,7 @@ class BaseSignature:
     """Base class for a signature."""
 
     @classmethod
-    def deserialize(self, sig_dict, sig_version, database=DEFAULT_DB_ALIAS):
+    def deserialize(cls, sig_dict, sig_version, database=DEFAULT_DB_ALIAS):
         """Deserialize the signature.
 
         Args:
@@ -2005,7 +2005,7 @@ class IndexSignature(BaseSignature):
             IndexSignature:
             The signature based on the index.
         """
-        path, expressions, attrs = index.deconstruct()
+        _path, expressions, attrs = index.deconstruct()
         attrs.pop('name', None)
         attrs.pop('fields', None)
 

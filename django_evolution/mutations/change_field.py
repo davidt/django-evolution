@@ -102,11 +102,12 @@ class ChangeField(BaseModelFieldMutation):
         """
         field_sig = simulation.get_field_sig(self.model_name, self.field_name)
 
-        field_type_changed, old_field, new_field = self._get_field_type_change(
-            connection=connections[simulation.database],
-            model=None,
-            project_sig=simulation.project_sig,
-            old_field_sig=field_sig)
+        field_type_changed, _old_field, _new_field = \
+            self._get_field_type_change(
+                connection=connections[simulation.database],
+                model=None,
+                project_sig=simulation.project_sig,
+                old_field_sig=field_sig)
 
         if self.field_type is not None:
             field_sig.field_type = self.field_type
@@ -148,7 +149,7 @@ class ChangeField(BaseModelFieldMutation):
                         "attribute on '%s.%s'."
                         % (attr_name, self.model_name, field_name))
 
-        field_type_changed, old_field, new_field = self._get_field_type_change(
+        field_type_changed, _old_field, new_field = self._get_field_type_change(
             connection=connections[mutator.database],
             model=model,
             project_sig=mutator.project_sig,

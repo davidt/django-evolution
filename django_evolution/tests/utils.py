@@ -5,7 +5,6 @@ from collections import OrderedDict
 from contextlib import contextmanager
 from functools import partial
 
-import django
 from django import VERSION as DJANGO_VERSION
 from django.apps.registry import apps
 from django.conf import settings
@@ -367,7 +366,7 @@ def create_test_project_sig(models, app_label='tests', version=1):
         if len(parts) == 1:
             app_sig.add_model_sig(ModelSignature.from_model(model))
         else:
-            model_app_label, model_name = parts
+            model_app_label, _model_name = parts
             model_app_sig = project_sig.get_app_sig(model_app_label)
 
             if model_app_sig is None:

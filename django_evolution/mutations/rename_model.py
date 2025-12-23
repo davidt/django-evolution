@@ -55,7 +55,7 @@ class RenameModel(BaseModelMutation):
         ]
 
         if self.db_table:
-            params.append(self.serialize_attr('db_table', self.db_table)),
+            params.append(self.serialize_attr('db_table', self.db_table))
 
         return params
 

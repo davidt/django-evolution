@@ -30,18 +30,19 @@ def get_apps():
     ]
 
 
-def get_app(app_label, emptyOK=False):
+def get_app(app_label, empty_ok=False):
     """Return the app with the given label.
 
     Version Changed:
         3.0:
-        Moved from ``django.compat.apps``.
+        * Moved from ``django.compat.apps``.
+        * Changed the ``emptyOK`` argument to be named ``empty_ok``.
 
     Args:
         app_label (str):
             The label for the app containing the models.
 
-        emptyOK (bool, optional):
+        empty_ok (bool, optional):
             Impacts the return value if the app has no models in it.
 
     Returns:
@@ -49,14 +50,14 @@ def get_app(app_label, emptyOK=False):
         The app module, if available.
 
         If the app module is available, but the models module is not and
-        ``emptyOK`` is set, this will return ``None``. Otherwise, if modules
+        ``empty_ok`` is set, this will return ``None``. Otherwise, if modules
         are not available, this will raise
         :py:exc:`~django.core.exceptions.ImproperlyConfigured`.
 
     Raises:
         django.core.exceptions.ImproperlyConfigured:
             The app module was not found, or it was found but a models module
-            was not and ``emptyOK`` was ``False``.
+            was not and ``empty_ok`` was ``False``.
     """
     try:
         models_module = apps.get_app_config(app_label).models_module
@@ -64,7 +65,7 @@ def get_app(app_label, emptyOK=False):
         # Convert this to an ImproperlyConfigured.
         raise ImproperlyConfigured(*e.args)
 
-    if models_module is None and not emptyOK:
+    if models_module is None and not empty_ok:
         # This is the exact error that Django 1.6 provided.
         raise ImproperlyConfigured(
             'App with label %s is missing a models.py module.'
