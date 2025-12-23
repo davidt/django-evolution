@@ -1507,7 +1507,7 @@ class EvolveAppTask(BaseEvolutionTask):
         lines += [
             '',
             'MUTATIONS = [',
-        ] + mutation_lines + [
+            *mutation_lines,
             ']',
         ]
 

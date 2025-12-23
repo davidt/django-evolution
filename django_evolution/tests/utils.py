@@ -600,7 +600,7 @@ def generate_index_name(connection, table, col_names, field_names=None,
     if model_meta_indexes:
         name = '%s_%s' % (
             col_names[0][:7],
-            digest(connection, *([table] + col_names + ['idx']))[:6],
+            digest(connection, *([table, *col_names, 'idx']))[:6],
         )
         table = table[:11]
     else:

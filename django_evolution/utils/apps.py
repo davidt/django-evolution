@@ -180,7 +180,10 @@ def register_app(app_label, app):
     app_config.label = app_label
     app_config.models_module = app
 
-    apps.set_installed_apps(settings.INSTALLED_APPS + [app_config])
+    apps.set_installed_apps([
+        *settings.INSTALLED_APPS,
+        app_config,
+    ])
 
 
 def unregister_app(app_label):

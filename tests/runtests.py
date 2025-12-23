@@ -9,7 +9,10 @@ import pytest
 
 if __name__ == '__main__':
     if len(sys.argv) >= 2 and sys.argv[1] != '--':
-        args = ['--db', sys.argv[1]] + sys.argv[2:]
+        args = [
+            '--db', sys.argv[1],
+            *sys.argv[2:],
+        ]
     else:
         args = sys.argv[1:]
 

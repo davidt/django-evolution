@@ -82,7 +82,8 @@ class ChangeField(BaseModelFieldMutation):
         return [
             self.serialize_value(self.model_name),
             self.serialize_value(self.field_name),
-        ] + sorted(params)
+            *sorted(params),
+        ]
 
     def simulate(self, simulation):
         """Simulate the mutation.

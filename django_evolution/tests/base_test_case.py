@@ -1064,7 +1064,11 @@ class EvolutionTestCase(TestCase):
         """
         self._models_registered = True
 
-        models = self.pre_extra_models + [(name, model)] + self.extra_models
+        models = [
+            *self.pre_extra_models,
+            (name, model),
+            *self.extra_models,
+        ]
 
         return register_models(database_state=self.database_state,
                                models=models,
