@@ -1,0 +1,406 @@
+{
+  "steps": [
+    {
+      "label": ":pytest: Py 3.10 / Django 4.0",
+      "command": "pip install tox\ntox -e py310-django4_0",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.10"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.10 / Django 4.1",
+      "command": "pip install tox\ntox -e py310-django4_1",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.10"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.10 / Django 4.2",
+      "command": "pip install tox\ntox -e py310-django4_2",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.10"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.10 / Django 5.0",
+      "command": "pip install tox\ntox -e py310-django5_0",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.10"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.10 / Django 5.1",
+      "command": "pip install tox\ntox -e py310-django5_1",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.10"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.10 / Django 5.2",
+      "command": "pip install tox\ntox -e py310-django5_2",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.10"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.11 / Django 4.0",
+      "command": "pip install tox\ntox -e py311-django4_0",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.11"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.11 / Django 4.1",
+      "command": "pip install tox\ntox -e py311-django4_1",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.11"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.11 / Django 4.2",
+      "command": "pip install tox\ntox -e py311-django4_2",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.11"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.11 / Django 5.0",
+      "command": "pip install tox\ntox -e py311-django5_0",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.11"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.11 / Django 5.1",
+      "command": "pip install tox\ntox -e py311-django5_1",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.11"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.11 / Django 5.2",
+      "command": "pip install tox\ntox -e py311-django5_2",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.11"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.12 / Django 4.0",
+      "command": "pip install tox\ntox -e py312-django4_0",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.12"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.12 / Django 4.1",
+      "command": "pip install tox\ntox -e py312-django4_1",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.12"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.12 / Django 4.2",
+      "command": "pip install tox\ntox -e py312-django4_2",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.12"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.12 / Django 5.0",
+      "command": "pip install tox\ntox -e py312-django5_0",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.12"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.12 / Django 5.1",
+      "command": "pip install tox\ntox -e py312-django5_1",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.12"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.12 / Django 5.2",
+      "command": "pip install tox\ntox -e py312-django5_2",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.12"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.13 / Django 4.0",
+      "command": "pip install tox\ntox -e py313-django4_0",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.13"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.13 / Django 4.1",
+      "command": "pip install tox\ntox -e py313-django4_1",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.13"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.13 / Django 4.2",
+      "command": "pip install tox\ntox -e py313-django4_2",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.13"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.13 / Django 5.0",
+      "command": "pip install tox\ntox -e py313-django5_0",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.13"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.13 / Django 5.1",
+      "command": "pip install tox\ntox -e py313-django5_1",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.13"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.13 / Django 5.2",
+      "command": "pip install tox\ntox -e py313-django5_2",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.13"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.14 / Django 4.0",
+      "command": "pip install tox\ntox -e py314-django4_0",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.14"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.14 / Django 4.1",
+      "command": "pip install tox\ntox -e py314-django4_1",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.14"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.14 / Django 4.2",
+      "command": "pip install tox\ntox -e py314-django4_2",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.14"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.14 / Django 5.0",
+      "command": "pip install tox\ntox -e py314-django5_0",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.14"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.14 / Django 5.1",
+      "command": "pip install tox\ntox -e py314-django5_1",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.14"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.14 / Django 5.2",
+      "command": "pip install tox\ntox -e py314-django5_2",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.14"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.12 / Django 6.0",
+      "command": "pip install tox\ntox -e py312-django6_0",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.12"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.13 / Django 6.0",
+      "command": "pip install tox\ntox -e py313-django6_0",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.13"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":pytest: Py 3.14 / Django 6.0",
+      "command": "pip install tox\ntox -e py314-django6_0",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.14"
+          }
+        }
+      ]
+    },
+    "wait",
+    {
+      "label": ":package: Build wheel",
+      "key": "build-wheel",
+      "command": "pip install build\npython -m build --wheel",
+      "artifact_paths": "dist/*.whl",
+      "plugins": [
+        {
+          "docker#v5.13.0": {
+            "image": "python:3.10"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":wastebasket: Delete existing dev package",
+      "key": "delete-old-package",
+      "depends_on": "build-wheel",
+      "plugins": [
+        {
+          "https://github.com/davidt/package-delete-buildkite-plugin.git": {
+            "artifacts": "*.whl",
+            "registry": "david-trowbridge/python"
+          }
+        }
+      ]
+    },
+    {
+      "label": ":buildkite: Publish package",
+      "depends_on": "delete-old-package",
+      "plugins": [
+        {
+          "publish-to-packages#v2.2.0": {
+            "artifacts": "*.whl",
+            "registry": "david-trowbridge/python"
+          }
+        }
+      ]
+    }
+  ]
+}

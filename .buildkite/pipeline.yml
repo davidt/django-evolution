@@ -1,0 +1,9 @@
+steps:
+  - label: ":pipeline: Generate pipeline"
+    command: |
+      pip install tox
+      python .buildkite/generate_pipeline.py | buildkite-agent pipeline upload
+    plugins:
+      - docker#v5.13.0:
+          image: "python:3.10"
+          mount-buildkite-agent: true
